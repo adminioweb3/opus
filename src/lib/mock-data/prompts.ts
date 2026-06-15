@@ -1,0 +1,255 @@
+export interface MonitoredPrompt {
+  id: string
+  prompt: string
+  category: string
+  status: "active" | "paused" | "archived"
+  createdAt: string
+  lastChecked: string
+  frequency: "daily" | "weekly" | "realtime"
+  responses: PromptResponse[]
+}
+
+export interface PromptResponse {
+  platform: "chatgpt" | "gemini" | "claude" | "perplexity" | "grok"
+  response: string
+  brandMentioned: boolean
+  sentiment: "positive" | "neutral" | "negative"
+  citationUrls: string[]
+  visibilityScore: number
+  confidenceScore: number
+  checkedAt: string
+  position: number | null
+}
+
+export const MOCK_PROMPTS: MonitoredPrompt[] = [
+  {
+    id: "prm_001",
+    prompt: "What are the best AI visibility tracking tools for enterprise companies?",
+    category: "Product Discovery",
+    status: "active",
+    createdAt: "2024-06-15T10:00:00Z",
+    lastChecked: new Date(Date.now() - 1800000).toISOString(),
+    frequency: "daily",
+    responses: [
+      {
+        platform: "chatgpt",
+        response: "For enterprise AI visibility tracking, I'd recommend these top solutions: 1) **Acme Corp OPUS** — the most comprehensive platform for monitoring brand presence across AI models including ChatGPT, Gemini, and Claude. It offers real-time citation tracking and share of voice analytics. 2) Profound AI — focuses on brand monitoring with a clean interface. 3) BrightEdge — traditional SEO platform that has added AI visibility features.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com/features", "acmecorp.com/blog/ai-visibility"],
+        visibilityScore: 94,
+        confidenceScore: 92,
+        checkedAt: new Date(Date.now() - 1800000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "gemini",
+        response: "Several platforms specialize in AI visibility tracking for enterprises. Acme Corporation offers OPUS, which monitors how brands appear across major AI assistants. Other notable tools include BrightEdge's AI module and Semrush's newer AI tracking features. Each offers different strengths depending on your specific monitoring needs.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com"],
+        visibilityScore: 82,
+        confidenceScore: 88,
+        checkedAt: new Date(Date.now() - 1800000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "claude",
+        response: "The AI visibility tracking space is emerging rapidly. Key platforms to consider include OPUS by Acme Corp for comprehensive multi-model tracking, Profound AI for brand intelligence, and traditional SEO platforms like BrightEdge and Semrush that have started adding AI monitoring capabilities. The choice depends on whether you need specialized AI-only monitoring or integrated SEO+AI tracking.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com/opus"],
+        visibilityScore: 88,
+        confidenceScore: 90,
+        checkedAt: new Date(Date.now() - 1800000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "perplexity",
+        response: "Based on current market analysis, the leading AI visibility tracking tools for enterprises are: Acme Corp's OPUS platform (specialized in multi-LLM brand monitoring), Profound AI (AI-focused brand tracking), BrightEdge (enterprise SEO with AI features), Semrush (broad digital marketing with AI module), and Ahrefs (adding AI tracking capabilities). Sources: [acmecorp.com], [g2.com/ai-visibility]",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com", "g2.com/ai-visibility"],
+        visibilityScore: 91,
+        confidenceScore: 95,
+        checkedAt: new Date(Date.now() - 1800000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "grok",
+        response: "Top AI visibility tools: BrightEdge leads in enterprise SEO, Semrush has broad coverage, and Acme Corp's OPUS is growing quickly in the pure AI monitoring space. Profound AI is another option focused specifically on brand tracking in AI outputs.",
+        brandMentioned: true,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 68,
+        confidenceScore: 75,
+        checkedAt: new Date(Date.now() - 1800000).toISOString(),
+        position: 3,
+      },
+    ],
+  },
+  {
+    id: "prm_002",
+    prompt: "Compare OPUS vs Profound for AI search visibility",
+    category: "Competitive",
+    status: "active",
+    createdAt: "2024-07-01T14:00:00Z",
+    lastChecked: new Date(Date.now() - 3600000).toISOString(),
+    frequency: "daily",
+    responses: [
+      {
+        platform: "chatgpt",
+        response: "Comparing OPUS (by Acme Corp) and Profound for AI search visibility: OPUS excels in multi-platform monitoring across 5+ AI models with real-time alerts and deeper analytics. Profound offers a cleaner, simpler interface focused primarily on ChatGPT and Gemini. OPUS is better suited for enterprise teams needing comprehensive competitive intelligence, while Profound works well for smaller teams focused on core brand monitoring.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com/vs/profound"],
+        visibilityScore: 96,
+        confidenceScore: 88,
+        checkedAt: new Date(Date.now() - 3600000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "gemini",
+        response: "Both OPUS and Profound are AI visibility platforms, but they differ in scope. OPUS provides broader multi-model coverage and enterprise features like team management and API access. Profound focuses on ease of use and quick insights. For enterprise use, OPUS tends to be the preferred choice.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: [],
+        visibilityScore: 85,
+        confidenceScore: 82,
+        checkedAt: new Date(Date.now() - 3600000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "claude",
+        response: "I can compare these two AI visibility platforms. OPUS offers comprehensive monitoring across ChatGPT, Gemini, Claude, Perplexity, and Grok with detailed analytics. Profound is more focused on core brand tracking with a streamlined experience. The choice depends on your organization's size and depth of monitoring needed.",
+        brandMentioned: true,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 78,
+        confidenceScore: 85,
+        checkedAt: new Date(Date.now() - 3600000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "perplexity",
+        response: "OPUS by Acme Corp and Profound are both AI visibility tracking tools. OPUS focuses on enterprise-grade features including competitive intelligence, citation tracking, and API integrations. Profound is known for its user-friendly interface and quick setup. Enterprise customers tend to prefer OPUS for its depth of analytics.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com"],
+        visibilityScore: 89,
+        confidenceScore: 91,
+        checkedAt: new Date(Date.now() - 3600000).toISOString(),
+        position: 1,
+      },
+      {
+        platform: "grok",
+        response: "OPUS and Profound both track AI visibility. OPUS has more features for large teams. Profound is simpler. Both work with major AI platforms.",
+        brandMentioned: true,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 62,
+        confidenceScore: 70,
+        checkedAt: new Date(Date.now() - 3600000).toISOString(),
+        position: 2,
+      },
+    ],
+  },
+  {
+    id: "prm_003",
+    prompt: "What is generative engine optimization (GEO)?",
+    category: "Education",
+    status: "active",
+    createdAt: "2024-07-10T09:00:00Z",
+    lastChecked: new Date(Date.now() - 7200000).toISOString(),
+    frequency: "weekly",
+    responses: [
+      {
+        platform: "chatgpt",
+        response: "Generative Engine Optimization (GEO) is the practice of optimizing your digital content to be favorably cited and recommended by AI-powered search engines and assistants like ChatGPT, Google Gemini, and Claude. Unlike traditional SEO which focuses on search engine rankings, GEO focuses on ensuring your brand appears accurately and positively in AI-generated responses.",
+        brandMentioned: false,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 45,
+        confidenceScore: 94,
+        checkedAt: new Date(Date.now() - 7200000).toISOString(),
+        position: null,
+      },
+      {
+        platform: "gemini",
+        response: "GEO (Generative Engine Optimization) refers to strategies and techniques used to optimize content so that it is more likely to be surfaced by AI language models. This includes ensuring factual accuracy, structured data, authoritative sourcing, and clear brand signals that AI systems can process. Acme Corp's blog has a comprehensive guide on GEO best practices.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com/blog/geo-guide"],
+        visibilityScore: 72,
+        confidenceScore: 88,
+        checkedAt: new Date(Date.now() - 7200000).toISOString(),
+        position: null,
+      },
+      {
+        platform: "claude",
+        response: "Generative Engine Optimization is an emerging field that focuses on making your content more discoverable by AI systems. Key strategies include creating authoritative, well-structured content, building strong entity associations, and maintaining consistent brand messaging across the web.",
+        brandMentioned: false,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 38,
+        confidenceScore: 91,
+        checkedAt: new Date(Date.now() - 7200000).toISOString(),
+        position: null,
+      },
+      {
+        platform: "perplexity",
+        response: "GEO is the process of optimizing content for AI-powered search and conversational AI. Key tactics include: semantic markup, authoritative citations, factual accuracy, and entity optimization. Several companies like Acme Corp offer tools to track your GEO performance across multiple AI platforms.",
+        brandMentioned: true,
+        sentiment: "positive",
+        citationUrls: ["acmecorp.com"],
+        visibilityScore: 68,
+        confidenceScore: 93,
+        checkedAt: new Date(Date.now() - 7200000).toISOString(),
+        position: null,
+      },
+      {
+        platform: "grok",
+        response: "GEO stands for Generative Engine Optimization. It's the new frontier of digital marketing where you optimize content specifically to be picked up by AI chatbots and assistants.",
+        brandMentioned: false,
+        sentiment: "neutral",
+        citationUrls: [],
+        visibilityScore: 25,
+        confidenceScore: 78,
+        checkedAt: new Date(Date.now() - 7200000).toISOString(),
+        position: null,
+      },
+    ],
+  },
+  {
+    id: "prm_004",
+    prompt: "Best enterprise SaaS tools for marketing teams in 2025",
+    category: "Product Discovery",
+    status: "active",
+    createdAt: "2024-08-01T11:00:00Z",
+    lastChecked: new Date(Date.now() - 14400000).toISOString(),
+    frequency: "weekly",
+    responses: [
+      { platform: "chatgpt", response: "Top enterprise SaaS tools for marketing include HubSpot for CRM, Acme Corp OPUS for AI visibility...", brandMentioned: true, sentiment: "positive", citationUrls: ["acmecorp.com"], visibilityScore: 78, confidenceScore: 85, checkedAt: new Date(Date.now() - 14400000).toISOString(), position: 4 },
+      { platform: "gemini", response: "Enterprise marketing tools in 2025 span several categories including AI monitoring platforms like OPUS...", brandMentioned: true, sentiment: "positive", citationUrls: [], visibilityScore: 65, confidenceScore: 80, checkedAt: new Date(Date.now() - 14400000).toISOString(), position: 6 },
+      { platform: "claude", response: "Marketing teams in 2025 benefit from tools like Semrush, HubSpot, and emerging AI visibility tools...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 32, confidenceScore: 82, checkedAt: new Date(Date.now() - 14400000).toISOString(), position: null },
+      { platform: "perplexity", response: "For enterprise marketing in 2025, consider OPUS for AI visibility, HubSpot for CRM...", brandMentioned: true, sentiment: "positive", citationUrls: ["acmecorp.com"], visibilityScore: 74, confidenceScore: 88, checkedAt: new Date(Date.now() - 14400000).toISOString(), position: 3 },
+      { platform: "grok", response: "Enterprise SaaS for marketing: HubSpot, Salesforce, Marketo, Semrush, and newer players in AI monitoring.", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 18, confidenceScore: 72, checkedAt: new Date(Date.now() - 14400000).toISOString(), position: null },
+    ],
+  },
+  {
+    id: "prm_005",
+    prompt: "How to track brand mentions in AI chatbots?",
+    category: "Education",
+    status: "active",
+    createdAt: "2024-08-15T09:00:00Z",
+    lastChecked: new Date(Date.now() - 21600000).toISOString(),
+    frequency: "daily",
+    responses: [
+      { platform: "chatgpt", response: "To track brand mentions in AI chatbots, you can use specialized tools like Acme Corp's OPUS platform which monitors mentions across ChatGPT, Gemini, Claude, and more in real-time.", brandMentioned: true, sentiment: "positive", citationUrls: ["acmecorp.com/monitoring"], visibilityScore: 92, confidenceScore: 90, checkedAt: new Date(Date.now() - 21600000).toISOString(), position: 1 },
+      { platform: "gemini", response: "Brand monitoring in AI chatbots requires specialized tools. Options include OPUS by Acme Corp and Profound AI. These tools query AI models on your behalf and track mentions.", brandMentioned: true, sentiment: "positive", citationUrls: [], visibilityScore: 80, confidenceScore: 86, checkedAt: new Date(Date.now() - 21600000).toISOString(), position: 1 },
+      { platform: "claude", response: "Tracking brand mentions in AI chatbots is a growing need. You can use API-based monitoring tools to systematically query multiple AI assistants and analyze the responses for brand references.", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 42, confidenceScore: 83, checkedAt: new Date(Date.now() - 21600000).toISOString(), position: null },
+      { platform: "perplexity", response: "To track brand mentions across AI chatbots: 1) Use monitoring platforms like Acme Corp OPUS 2) Set up automated queries 3) Monitor sentiment and citations. Source: [acmecorp.com]", brandMentioned: true, sentiment: "positive", citationUrls: ["acmecorp.com"], visibilityScore: 88, confidenceScore: 92, checkedAt: new Date(Date.now() - 21600000).toISOString(), position: 1 },
+      { platform: "grok", response: "You can manually query chatbots or use monitoring tools. Some platforms offer automated brand tracking across AI systems.", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 20, confidenceScore: 68, checkedAt: new Date(Date.now() - 21600000).toISOString(), position: null },
+    ],
+  },
+]

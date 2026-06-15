@@ -16,6 +16,19 @@ export interface MockUser {
 
 export const MOCK_USERS: MockUser[] = [
   {
+    id: "usr_superadmin_000",
+    email: "admin@opus.com",
+    name: "OPUS Founder",
+    avatar: "OP",
+    role: "superadmin",
+    title: "CEO",
+    department: "Founders",
+    lastActive: new Date().toISOString(),
+    createdAt: "2024-01-01T00:00:00Z",
+    isVerified: true,
+    twoFactorEnabled: true,
+  },
+  {
     id: "usr_owner_001",
     email: "sarah.chen@acmecorp.com",
     name: "Sarah Chen",

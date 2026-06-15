@@ -49,7 +49,7 @@ export function sleep(ms = 800): Promise<void> {
 }
 
 // --- Permissions ---
-export type UserRole = "owner" | "admin" | "manager" | "analyst" | "viewer"
+export type UserRole = "superadmin" | "owner" | "admin" | "manager" | "analyst" | "viewer"
 
 const PERMISSION_MATRIX: Record<string, UserRole[]> = {
   "dashboard.view": ["owner", "admin", "manager", "analyst", "viewer"],

@@ -89,8 +89,15 @@ export default function JourneyOnboardingPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        <div className="w-full max-w-xl">
+      <div className="flex-1 flex flex-col relative p-8">
+        <div className="absolute top-8 right-8">
+          <Button variant="ghost" onClick={() => router.push('/login')} className="text-muted-foreground hover:text-foreground">
+            Already have an account? Log in
+          </Button>
+        </div>
+        
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-full max-w-xl">
           {/* Mobile Progress */}
           <div className="lg:hidden mb-8">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
@@ -226,6 +233,7 @@ export default function JourneyOnboardingPage() {
                 Run AI Visibility Analysis <Sparkles className="w-4 h-4 ml-2" />
               </Button>
             )}
+          </div>
           </div>
         </div>
       </div>

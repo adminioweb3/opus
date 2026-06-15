@@ -11,6 +11,8 @@ interface AuthState {
   isLoading: boolean
   error: string | null
   sessionStartedAt: string | null
+  registeredUsers: MockUser[]
+  registeredCredentials: Record<string, string>
 
   // Actions
   login: (email: string, password: string) => Promise<boolean>
@@ -28,6 +30,8 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       sessionStartedAt: null,
+      registeredUsers: [],
+      registeredCredentials: {},
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null })
@@ -35,10 +39,23 @@ export const useAuthStore = create<AuthState>()(
         await new Promise(r => setTimeout(r, 1000))
 
         // Check demo credentials
-        const matchedUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
-        if (matchedUser && (password === DEMO_CREDENTIALS.password || password === "demo1234")) {
+        const matchedDemoUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
+        if (matchedDemoUser && (password === DEMO_CREDENTIALS.password || password === "demo1234")) {
           set({
-            user: { ...matchedUser, lastActive: new Date().toISOString() },
+            user: { ...matchedDemoUser, lastActive: new Date().toISOString() },
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+            sessionStartedAt: new Date().toISOString(),
+          })
+          return true
+        }
+
+        // Check registered users
+        const matchedRegisteredUser = get().registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+        if (matchedRegisteredUser && get().registeredCredentials[email.toLowerCase()] === password) {
+          set({
+            user: { ...matchedRegisteredUser, lastActive: new Date().toISOString() },
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -51,12 +68,14 @@ export const useAuthStore = create<AuthState>()(
         return false
       },
 
-      register: async (name: string, email: string, _password: string) => {
+      register: async (name: string, email: string, password: string) => {
         set({ isLoading: true, error: null })
         await new Promise(r => setTimeout(r, 1200))
 
+        const lowerEmail = email.toLowerCase()
+
         // Check if email already exists
-        if (MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+        if (MOCK_USERS.find(u => u.email.toLowerCase() === lowerEmail) || get().registeredUsers.find(u => u.email.toLowerCase() === lowerEmail)) {
           set({ isLoading: false, error: "An account with this email already exists." })
           return false
         }
@@ -75,13 +94,15 @@ export const useAuthStore = create<AuthState>()(
           twoFactorEnabled: false,
         }
 
-        set({
+        set((state) => ({
           user: newUser,
           isAuthenticated: true,
           isLoading: false,
           error: null,
           sessionStartedAt: new Date().toISOString(),
-        })
+          registeredUsers: [...state.registeredUsers, newUser],
+          registeredCredentials: { ...state.registeredCredentials, [lowerEmail]: password }
+        }))
         return true
       },
 
@@ -114,6 +135,8 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         sessionStartedAt: state.sessionStartedAt,
+        registeredUsers: state.registeredUsers,
+        registeredCredentials: state.registeredCredentials,
       }),
     }
   )

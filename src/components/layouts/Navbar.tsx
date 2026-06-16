@@ -27,7 +27,7 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-4">
           <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors hidden sm:block">Log in</Link>
-          <Button onClick={() => router.push('/onboarding')} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] transition-all">
+          <Button onClick={() => router.push('/register')} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] transition-all">
             Book Demo
           </Button>
         </div>

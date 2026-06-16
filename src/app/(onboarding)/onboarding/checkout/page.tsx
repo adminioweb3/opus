@@ -3,13 +3,11 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
-import { useAuthStore } from "@/lib/stores/auth-store"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Check, ShieldCheck, ArrowRight, Loader2, AlertCircle } from "lucide-react"
+import { Check, ShieldCheck, ArrowRight, Loader2 } from "lucide-react"
 
 const PLANS = [
   {
@@ -39,38 +37,19 @@ const PLANS = [
 export default function CheckoutPage() {
   const router = useRouter()
   const { setSubscribed, setState, website, businessName } = useJourneyStore()
-  const { register } = useAuthStore()
+
   const [selectedPlan, setSelectedPlan] = useState("growth")
   const [loading, setLoading] = useState(false)
-  
-  // Account state
-  const [name, setName] = useState(businessName || "")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [authError, setAuthError] = useState("")
 
   const handleSubscribe = async () => {
-    if (!name || !email || !password) {
-      setAuthError("Please fill out all account details to continue.")
-      return
-    }
-    
     setLoading(true)
-    setAuthError("")
     
     // Simulate API delay
     await new Promise(r => setTimeout(r, 1000))
     
-    const success = await register(name, email, password)
-    
-    if (success) {
-      setSubscribed(true)
-      setState("subscribed")
-      router.push("/dashboard")
-    } else {
-      setAuthError("Account creation failed. Please try a different email.")
-      setLoading(false)
-    }
+    setSubscribed(true)
+    setState("subscribed")
+    router.push("/dashboard")
   }
 
   return (
@@ -133,25 +112,6 @@ export default function CheckoutPage() {
         </div>
 
         <div className="mt-16 max-w-md mx-auto space-y-8">
-          <Card className="border-border shadow-md">
-            <CardContent className="p-6">
-              <h4 className="font-bold mb-4 flex items-center gap-2">Create your account</h4>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Work Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@company.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           <Card className="border-border shadow-lg">
             <CardContent className="p-6">
@@ -170,12 +130,6 @@ export default function CheckoutPage() {
                   <span>${PLANS.find(p => p.id === selectedPlan)?.price}</span>
                 </div>
               </div>
-              {authError && (
-                <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                  <span>{authError}</span>
-                </div>
-              )}
               <Button 
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
                 size="lg"

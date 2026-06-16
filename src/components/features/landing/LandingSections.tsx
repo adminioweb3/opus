@@ -169,7 +169,7 @@ export function CtaBanner() {
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join industry leaders who use OPUS to monitor, protect, and optimize their brand presence across the next generation of search.
           </p>
-          <button onClick={() => router.push('/onboarding')} className="bg-foreground text-background px-8 py-4 rounded-lg font-semibold text-lg hover:bg-foreground/90 transition-colors">
+          <button onClick={() => router.push('/register')} className="bg-foreground text-background px-8 py-4 rounded-lg font-semibold text-lg hover:bg-foreground/90 transition-colors">
             Start Your Free Trial
           </button>
         </div>

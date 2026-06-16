@@ -46,7 +46,7 @@ export function Pricing() {
                 <span className="text-5xl font-bold">{plan.price}</span>
                 <span className="text-muted-foreground">/mo</span>
               </div>
-              <button onClick={() => router.push('/onboarding')} className={`w-full py-3 rounded-lg font-semibold mb-8 transition-colors ${plan.highlighted ? 'bg-accent text-white hover:bg-accent/90' : 'bg-section-bg text-primary-text border border-border hover:bg-border'}`}>
+              <button onClick={() => router.push('/register')} className={`w-full py-3 rounded-lg font-semibold mb-8 transition-colors ${plan.highlighted ? 'bg-accent text-white hover:bg-accent/90' : 'bg-section-bg text-primary-text border border-border hover:bg-border'}`}>
                 Get Started
               </button>
               <ul className="space-y-4">

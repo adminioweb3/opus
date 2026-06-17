@@ -36,7 +36,7 @@ const PLANS = [
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { setSubscribed, setState, website, businessName } = useJourneyStore()
+  const { setSubscribed, setState } = useJourneyStore()
 
   const [selectedPlan, setSelectedPlan] = useState("growth")
   const [loading, setLoading] = useState(false)

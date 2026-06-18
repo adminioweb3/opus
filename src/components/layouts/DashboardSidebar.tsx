@@ -3,22 +3,42 @@
 import { 
   BarChart3, 
   Settings, 
-  Activity, 
-  Target, 
-  ShieldCheck, 
-  BrainCircuit, 
-  PieChart, 
-  FileText, 
-  Bell, 
-  Users, 
-  CreditCard, 
+  LayoutDashboard,
+  BrainCircuit,
+  Search,
+  MessageSquare,
+  Users,
+  PieChart,
+  FileText,
+  Target,
+  Lightbulb,
+  Wand2,
+  TrendingUp,
+  Sparkles,
+  Bot,
+  Zap,
+  FileEdit,
+  DollarSign,
+  Send,
+  ShoppingCart,
+  ShieldCheck,
+  Ghost,
+  Terminal,
+  Library,
+  Briefcase,
+  BarChart2,
+  Rocket,
+  Globe,
+  Map,
+  HeartHandshake,
+  Store,
   Plug,
   Key,
-  Lightbulb,
-  Bot,
-  Sparkles,
-  TrendingUp,
-  Lock
+  CreditCard,
+  Lock,
+  Activity,
+  Bell,
+  GitBranch
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -39,11 +59,71 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar"
 
+const osItems = [
+  { title: "Executive War Room", url: "/dashboard/war-room", icon: Globe, permission: "dashboard.view" },
+  { title: "AI Copilot", url: "/dashboard/copilot", icon: MessageSquare, permission: "dashboard.view" },
+  { title: "AI Agents", url: "/dashboard/agents", icon: Bot, permission: "dashboard.view" },
+  { title: "Workspace", url: "/dashboard/workspace", icon: LayoutDashboard, permission: "dashboard.view" },
+  { title: "Campaign Builder", url: "/dashboard/campaigns", icon: Rocket, permission: "dashboard.view" },
+  { title: "AI Strategy", url: "/dashboard/strategy", icon: Map, permission: "dashboard.view" },
+  { title: "Customer Success", url: "/dashboard/customer-success", icon: HeartHandshake, permission: "dashboard.view" },
+  { title: "Marketplace", url: "/dashboard/marketplace", icon: Store, permission: "dashboard.view" },
+]
+
+const deploymentItems = [
+  { title: "Website Manager", url: "/dashboard/websites", icon: Globe, permission: "dashboard.view" },
+  { title: "Integrations", url: "/dashboard/integrations", icon: Plug, permission: "dashboard.view" },
+  { title: "Content Inventory", url: "/dashboard/content-inventory", icon: FileText, permission: "dashboard.view" },
+  { title: "Deployment Center", url: "/dashboard/deployments", icon: Send, permission: "dashboard.view" },
+  { title: "Content Review", url: "/dashboard/content-review", icon: FileEdit, permission: "dashboard.view" },
+  { title: "Repositories", url: "/dashboard/repositories", icon: GitBranch, permission: "dashboard.view" },
+  { title: "CMS Publishing", url: "/dashboard/cms-publishing", icon: Zap, permission: "dashboard.view" },
+  { title: "Website Scanner", url: "/dashboard/scanner", icon: Search, permission: "dashboard.view" },
+  { title: "Automation", url: "/dashboard/automation", icon: Zap, permission: "dashboard.view" },
+  { title: "Deployment Agents", url: "/dashboard/deployment-agents", icon: Bot, permission: "dashboard.view" },
+]
+
 const coreItems = [
-  { title: "Overview", url: "/dashboard", icon: BarChart3, permission: "dashboard.view" },
-  { title: "AI Monitoring", url: "/dashboard/monitoring", icon: Activity, permission: "monitoring.view" },
-  { title: "Brand Intelligence", url: "/dashboard/brand", icon: ShieldCheck, permission: "brand.view" },
+  { title: "Overview", url: "/dashboard/overview", icon: BarChart3, permission: "dashboard.view" },
+  { title: "Visibility", url: "/dashboard/visibility", icon: Activity, permission: "dashboard.view" },
+  { title: "Citations", url: "/dashboard/citations", icon: FileText, permission: "dashboard.view" },
+  { title: "Mentions", url: "/dashboard/mentions", icon: Bell, permission: "dashboard.view" },
+  { title: "Platforms", url: "/dashboard/platforms", icon: PieChart, permission: "dashboard.view" },
   { title: "Competitors", url: "/dashboard/competitors", icon: Target, permission: "competitors.view" },
+]
+
+const geoAeoItems = [
+  { title: "Prompt Intel", url: "/dashboard/prompt-intelligence", icon: MessageSquare, permission: "dashboard.view" },
+  { title: "Opportunities", url: "/dashboard/opportunities", icon: Target, permission: "dashboard.view" },
+  { title: "Bot Analytics", url: "/dashboard/bot-analytics", icon: Bot, permission: "dashboard.view" },
+  { title: "Search Journey", url: "/dashboard/search-journey", icon: Search, permission: "dashboard.view" },
+  { title: "Regional Intel", url: "/dashboard/regional-intelligence", icon: Globe, permission: "dashboard.view" },
+]
+
+const actionLayerItems = [
+  { title: "Action Center", url: "/dashboard/actions", icon: Zap, permission: "dashboard.view" },
+  { title: "Recommendations", url: "/dashboard/recommendations", icon: Lightbulb, permission: "dashboard.view" },
+  { title: "Content Center", url: "/dashboard/content-center", icon: FileEdit, permission: "dashboard.view" },
+]
+
+const revenueItems = [
+  { title: "Revenue Attrib", url: "/dashboard/revenue", icon: DollarSign, permission: "dashboard.view" },
+  { title: "Publishing Hub", url: "/dashboard/publishing", icon: Send, permission: "dashboard.view" },
+  { title: "Real Time Alerts", url: "/dashboard/alerts", icon: Bell, permission: "alerts.view" },
+]
+
+const moatItems = [
+  { title: "Shopping Visibility", url: "/dashboard/shopping-visibility", icon: ShoppingCart, permission: "dashboard.view" },
+  { title: "Voice Drift", url: "/dashboard/voice-drift", icon: Activity, permission: "dashboard.view" },
+  { title: "Source Authority", url: "/dashboard/source-authority", icon: ShieldCheck, permission: "dashboard.view" },
+  { title: "Shadow Mode", url: "/dashboard/shadow-mode", icon: Ghost, permission: "dashboard.view" },
+  { title: "Answer Simulator", url: "/dashboard/answer-simulator", icon: Terminal, permission: "dashboard.view" },
+]
+
+const enterpriseItems = [
+  { title: "Research Hub", url: "/dashboard/research", icon: Library, permission: "dashboard.view" },
+  { title: "Case Studies", url: "/dashboard/case-studies", icon: Briefcase, permission: "dashboard.view" },
+  { title: "Benchmarks", url: "/dashboard/benchmarks", icon: BarChart2, permission: "dashboard.view" },
 ]
 
 const modelsItems = [
@@ -56,10 +136,10 @@ const modelsItems = [
 const analysisItems = [
   { title: "Analytics", url: "/dashboard/analytics", icon: PieChart, permission: "dashboard.view" },
   { title: "Reports", url: "/dashboard/reports", icon: FileText, permission: "reports.view" },
-  { title: "Alerts", url: "/dashboard/alerts", icon: Bell, permission: "alerts.view" },
 ]
 
 const optimizationItems = [
+  { title: "AEO Optimizer", url: "/dashboard/optimizer", icon: Wand2, permission: "dashboard.view" },
   { title: "Tasks & Recs", url: "/dashboard/recommendations", icon: Lightbulb, permission: "dashboard.view" },
   { title: "AI Simulator", url: "/dashboard/simulator", icon: Bot, permission: "dashboard.view" },
   { title: "Gap Analysis", url: "/dashboard/gaps", icon: Target, permission: "dashboard.view" },
@@ -84,7 +164,7 @@ export function DashboardSidebar() {
   const role = user?.role ?? "viewer"
 
   const isActive = (url: string) => {
-    if (url === "/dashboard") return pathname === "/dashboard"
+    if (url === "/dashboard/overview") return pathname === "/dashboard" || pathname === "/dashboard/overview"
     return pathname.startsWith(url)
   }
 
@@ -106,10 +186,122 @@ export function DashboardSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>OPUS Operating System</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(osItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Deployment Engine</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(deploymentItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
           <SidebarGroupLabel>Intelligence</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {filterByPermission(coreItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>GEO + AEO Intelligence</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(geoAeoItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>AI Action Layer</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(actionLayerItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Revenue & Publishing</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(revenueItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>OPUS Moat Features</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(moatItems).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Enterprise Resources</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filterByPermission(enterpriseItems).map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive(item.url)}>
                       <item.icon />

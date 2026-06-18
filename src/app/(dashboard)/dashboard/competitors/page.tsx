@@ -1,164 +1,174 @@
 "use client"
 
-import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { MOCK_COMPETITORS, type Competitor } from "@/lib/mock-data/competitors"
-import { CURRENT_SCORES } from "@/lib/mock-data/dashboard"
-import { usePermission } from "@/components/auth/PermissionGate"
-import { Plus, Trash2, ArrowUpRight, ArrowDownRight, Trophy, Target, Eye, MessageSquare } from "lucide-react"
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from "recharts"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts"
+import { mockCompetitorsData } from "@/lib/mock-data/intelligence"
+import { ArrowUpRight, ArrowDownRight, Trophy, Target } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { motion } from "framer-motion"
 
 export default function CompetitorsPage() {
-  const [competitors, setCompetitors] = useState<Competitor[]>(MOCK_COMPETITORS)
-  const [showAdd, setShowAdd] = useState(false)
-  const [newName, setNewName] = useState("")
-  const [newDomain, setNewDomain] = useState("")
-  const canCreate = usePermission("competitors.create")
-  const canDelete = usePermission("competitors.delete")
+  const hasCompetitors = mockCompetitorsData.shareOfVoice.length > 0;
 
-  const handleAdd = () => {
-    if (!newName.trim() || !newDomain.trim()) return
-    const newComp: Competitor = {
-      id: `comp_${Date.now()}`,
-      name: newName,
-      domain: newDomain,
-      industry: "General",
-      logo: newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2),
-      visibilityScore: Math.round(Math.random() * 40 + 30),
-      shareOfVoice: Math.round(Math.random() * 15 + 2),
-      citationCount: Math.round(Math.random() * 5000 + 500),
-      sentimentScore: Math.round(Math.random() * 20 + 65),
-      trend: Math.round((Math.random() * 6 - 3) * 10) / 10,
-      addedAt: new Date().toISOString(),
-      platforms: { chatgpt: Math.round(Math.random() * 30 + 40), gemini: Math.round(Math.random() * 30 + 35), claude: Math.round(Math.random() * 30 + 30), perplexity: Math.round(Math.random() * 30 + 40), grok: Math.round(Math.random() * 30 + 25) },
-    }
-    setCompetitors([...competitors, newComp])
-    setNewName("")
-    setNewDomain("")
-    setShowAdd(false)
+  const container = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   }
 
-  // Build comparison chart data
-  const comparisonData = [
-    { name: "Your Brand", visibility: CURRENT_SCORES.visibilityScore, sov: CURRENT_SCORES.shareOfVoice, sentiment: CURRENT_SCORES.sentimentScore, fill: "var(--color-primary)" },
-    ...competitors.slice(0, 6).map(c => ({
-      name: c.name.length > 12 ? c.name.slice(0, 12) + "…" : c.name,
-      visibility: c.visibilityScore,
-      sov: c.shareOfVoice,
-      sentiment: c.sentimentScore,
-      fill: "#94A3B8",
-    })),
-  ]
-
-  const radarData = [
-    { metric: "Visibility", you: CURRENT_SCORES.visibilityScore, ...Object.fromEntries(competitors.slice(0, 3).map(c => [c.name, c.visibilityScore])) },
-    { metric: "SoV", you: CURRENT_SCORES.shareOfVoice * 2.5, ...Object.fromEntries(competitors.slice(0, 3).map(c => [c.name, c.shareOfVoice * 2.5])) },
-    { metric: "Sentiment", you: CURRENT_SCORES.sentimentScore, ...Object.fromEntries(competitors.slice(0, 3).map(c => [c.name, c.sentimentScore])) },
-    { metric: "Citations", you: 85, ...Object.fromEntries(competitors.slice(0, 3).map(c => [c.name, Math.min(100, c.citationCount / 150)])) },
-    { metric: "Reach", you: 78, ...Object.fromEntries(competitors.slice(0, 3).map(c => [c.name, Math.round(Math.random() * 30 + 40)])) },
-  ]
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Competitive Intelligence</h2>
-          <p className="text-muted-foreground">Compare your AI visibility against competitors.</p>
-        </div>
-        {canCreate && (
-          <Button onClick={() => setShowAdd(!showAdd)}>
-            <Plus className="w-4 h-4 mr-2" /> Add Competitor
-          </Button>
-        )}
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Competitor Monitoring</h2>
+        <p className="text-muted-foreground mt-1">
+          Detailed comparison of your performance against key competitors.
+        </p>
       </div>
 
-      {showAdd && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex gap-3">
-              <Input placeholder="Company name" value={newName} onChange={e => setNewName(e.target.value)} />
-              <Input placeholder="domain.com" value={newDomain} onChange={e => setNewDomain(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAdd()} />
-              <Button onClick={handleAdd}>Add</Button>
-              <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {!hasCompetitors ? (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+          <EmptyState 
+            icon={<Target className="w-8 h-8" />}
+            title="No Competitors Tracked"
+            description="Start monitoring your competitors to see how your AI visibility and share of voice stack up against them."
+            actionLabel="Add Competitor"
+            onAction={() => console.log("Add competitor clicked")}
+          />
+        </motion.div>
+      ) : (
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <motion.div variants={item}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Share of Voice</CardTitle>
+                  <CardDescription>Overall AI visibility market share.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 flex items-center justify-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={mockCompetitorsData.shareOfVoice} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value">
+                          {mockCompetitorsData.shareOfVoice.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} formatter={(v: number) => `${v}%`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="space-y-2 mt-4 grid grid-cols-2 gap-x-4">
+                    {mockCompetitorsData.shareOfVoice.map(dataItem => (
+                      <div key={dataItem.name} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dataItem.color }} />
+                          <span className="text-muted-foreground truncate">{dataItem.name}</span>
+                        </div>
+                        <span className="font-medium">{dataItem.value}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-      {/* Visibility Comparison Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Visibility Score Comparison</CardTitle>
-          <CardDescription>Your AI visibility score vs competitors across all platforms.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={comparisonData}>
-                <XAxis dataKey="name" stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
-                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} />
-                <Bar dataKey="visibility" radius={[4, 4, 0, 0]} name="Visibility Score">
-                  {comparisonData.map((entry, i) => (
-                    <rect key={i} fill={i === 0 ? "var(--color-primary)" : "#94A3B8"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <motion.div variants={item}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Citation Share by Source Type</CardTitle>
+                  <CardDescription>How you stack up in specific content categories.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={mockCompetitorsData.citationShare} layout="vertical" margin={{ left: 40 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
+                        <XAxis type="number" stroke="#888" fontSize={12} />
+                        <YAxis dataKey="name" type="category" stroke="#888" fontSize={12} width={100} />
+                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} />
+                        <Legend />
+                        <Bar dataKey="OPUS" stackId="a" fill="var(--color-primary)" />
+                        <Bar dataKey="Comp A" stackId="a" fill="var(--color-slate-400)" />
+                        <Bar dataKey="Comp B" stackId="a" fill="var(--color-slate-600)" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Competitor Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {competitors.map(comp => (
-          <Card key={comp.id}>
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-sm font-bold">
-                    {comp.logo}
+          <div className="grid gap-4 lg:grid-cols-7">
+            <motion.div variants={item} className="lg:col-span-4">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Sentiment Comparison</CardTitle>
+                  <CardDescription>Breakdown of mention sentiment across competitors.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={mockCompetitorsData.sentimentComparison}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                        <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} />
+                        <Legend />
+                        <Bar dataKey="positive" name="Positive" stackId="a" fill="var(--color-emerald-500)" radius={[0, 0, 4, 4]} />
+                        <Bar dataKey="neutral" name="Neutral" stackId="a" fill="var(--color-slate-300)" />
+                        <Bar dataKey="negative" name="Negative" stackId="a" fill="var(--color-red-500)" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
-                  <div>
-                    <div className="font-semibold">{comp.name}</div>
-                    <div className="text-xs text-muted-foreground">{comp.domain}</div>
-                  </div>
-                </div>
-                {canDelete && (
-                  <Button variant="ghost" size="sm" onClick={() => setCompetitors(competitors.filter(c => c.id !== comp.id))}>
-                    <Trash2 className="w-4 h-4 text-muted-foreground" />
-                  </Button>
-                )}
-              </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1"><Eye className="w-3 h-3" /> Visibility</div>
-                  <div className="text-lg font-bold">{comp.visibilityScore}</div>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1"><Target className="w-3 h-3" /> Share of Voice</div>
-                  <div className="text-lg font-bold">{comp.shareOfVoice}%</div>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1"><MessageSquare className="w-3 h-3" /> Citations</div>
-                  <div className="text-lg font-bold">{(comp.citationCount / 1000).toFixed(1)}k</div>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="text-xs text-muted-foreground mb-1">Trend</div>
-                  <div className={`text-lg font-bold inline-flex items-center ${comp.trend >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                    {comp.trend >= 0 ? "+" : ""}{comp.trend}%
-                    {comp.trend >= 0 ? <ArrowUpRight className="w-4 h-4 ml-1" /> : <ArrowDownRight className="w-4 h-4 ml-1" />}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            <motion.div variants={item} className="lg:col-span-3">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Visibility Ranking</CardTitle>
+                  <CardDescription>Current market leaderboards.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12 text-center">Rank</TableHead>
+                        <TableHead>Competitor</TableHead>
+                        <TableHead className="text-right">Score</TableHead>
+                        <TableHead className="text-right w-20">Trend</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {mockCompetitorsData.ranking.map((row) => (
+                        <TableRow key={row.name} className={row.name === "OPUS" ? "bg-primary/5 font-medium" : ""}>
+                          <TableCell className="text-center">
+                            {row.rank === 1 ? <Trophy className="w-4 h-4 text-amber-500 mx-auto" /> : row.rank}
+                          </TableCell>
+                          <TableCell>{row.name}</TableCell>
+                          <TableCell className="text-right">{row.score}</TableCell>
+                          <TableCell className="text-right">
+                            <span className={`inline-flex items-center justify-end ${row.change >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                              {row.change >= 0 ? "+" : ""}{row.change}
+                              {row.change >= 0 ? <ArrowUpRight className="w-3 h-3 ml-0.5" /> : <ArrowDownRight className="w-3 h-3 ml-0.5" />}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

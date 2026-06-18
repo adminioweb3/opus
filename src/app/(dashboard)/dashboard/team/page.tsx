@@ -1,176 +1,124 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { MOCK_USERS, type MockUser } from "@/lib/mock-data/users"
-import { useAuthStore } from "@/lib/stores/auth-store"
-import { usePermission } from "@/components/auth/PermissionGate"
-import { formatDate } from "@/lib/utils"
-import { Plus, UserPlus, Trash2, Shield, Mail, Clock } from "lucide-react"
-import type { UserRole } from "@/lib/utils"
-
-const roleColors: Record<UserRole, string> = {
-  superadmin: "bg-red-100 text-red-700",
-  owner: "bg-amber-100 text-amber-700",
-  admin: "bg-blue-100 text-blue-700",
-  manager: "bg-violet-100 text-violet-700",
-  analyst: "bg-emerald-100 text-emerald-700",
-  viewer: "bg-neutral-100 text-neutral-700",
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { mockEnterpriseData } from "@/lib/mock-data/enterprise"
+import { motion } from "framer-motion"
+import { CheckCircle2, Clock, MessageSquare, Plus, UserPlus } from "lucide-react"
 
 export default function TeamPage() {
-  const [members, setMembers] = useState<MockUser[]>(MOCK_USERS)
-  const [showInvite, setShowInvite] = useState(false)
-  const [inviteEmail, setInviteEmail] = useState("")
-  const [inviteRole, setInviteRole] = useState<UserRole>("analyst")
-  const { user } = useAuthStore()
-  const canInvite = usePermission("team.invite")
-  const canRemove = usePermission("team.remove")
-  const canChangeRole = usePermission("team.changeRole")
-
-  const handleInvite = () => {
-    if (!inviteEmail.trim()) return
-    const newMember: MockUser = {
-      id: `usr_${Date.now()}`,
-      email: inviteEmail,
-      name: inviteEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
-      avatar: inviteEmail.slice(0, 2).toUpperCase(),
-      role: inviteRole,
-      title: "Team Member",
-      department: "General",
-      lastActive: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      isVerified: false,
-      twoFactorEnabled: false,
-    }
-    setMembers([...members, newMember])
-    setInviteEmail("")
-    setShowInvite(false)
+  const container = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   }
 
-  const removeMember = (id: string) => {
-    setMembers(members.filter(m => m.id !== id))
-  }
-
-  const changeRole = (id: string, newRole: UserRole) => {
-    setMembers(members.map(m => m.id === id ? { ...m, role: newRole } : m))
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Team Management</h2>
-          <p className="text-muted-foreground">Manage team members and their roles.</p>
+          <h2 className="text-3xl font-bold tracking-tight">Team Collaboration</h2>
+          <p className="text-muted-foreground mt-1">
+            Manage assignments, tasks, and recent activity across your enterprise.
+          </p>
         </div>
-        {canInvite && (
-          <Button onClick={() => setShowInvite(true)}>
-            <UserPlus className="w-4 h-4 mr-2" /> Invite Member
-          </Button>
-        )}
+        <div className="flex gap-2">
+          <button className="inline-flex items-center gap-2 justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2">
+            <UserPlus className="w-4 h-4" /> Invite Member
+          </button>
+          <button className="inline-flex items-center gap-2 justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
+            <Plus className="w-4 h-4" /> New Task
+          </button>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-6"><div className="text-xs text-muted-foreground mb-1">Total Members</div><div className="text-2xl font-bold">{members.length}</div></CardContent></Card>
-        <Card><CardContent className="pt-6"><div className="text-xs text-muted-foreground mb-1">Admins</div><div className="text-2xl font-bold">{members.filter(m => m.role === "admin" || m.role === "owner").length}</div></CardContent></Card>
-        <Card><CardContent className="pt-6"><div className="text-xs text-muted-foreground mb-1">Active Today</div><div className="text-2xl font-bold">{members.filter(m => Date.now() - new Date(m.lastActive).getTime() < 86400000).length}</div></CardContent></Card>
-        <Card><CardContent className="pt-6"><div className="text-xs text-muted-foreground mb-1">2FA Enabled</div><div className="text-2xl font-bold">{members.filter(m => m.twoFactorEnabled).length}/{members.length}</div></CardContent></Card>
-      </div>
+      <motion.div variants={container} initial="hidden" animate="show" className="grid gap-4 lg:grid-cols-3">
+        <motion.div variants={item} className="lg:col-span-2">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>Active Tasks</CardTitle>
+              <CardDescription>Current assignments mapped to team members.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Task</TableHead>
+                    <TableHead>Assignee</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead className="text-right">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockEnterpriseData.team.tasks.map((task) => (
+                    <TableRow key={task.id}>
+                      <TableCell className="font-medium">{task.title}</TableCell>
+                      <TableCell>{task.assignee}</TableCell>
+                      <TableCell>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          task.priority === 'High' ? 'bg-destructive/10 text-destructive' : 'bg-amber-500/10 text-amber-500'
+                        }`}>
+                          {task.priority}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
+                          task.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-500' :
+                          task.status === 'In Progress' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {task.status === 'Completed' && <CheckCircle2 className="w-3 h-3" />}
+                          {task.status === 'In Progress' && <Clock className="w-3 h-3" />}
+                          {task.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-      {/* Invite Modal */}
-      {showInvite && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex gap-3">
-              <Input type="email" placeholder="colleague@company.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1" />
-              <select value={inviteRole} onChange={e => setInviteRole(e.target.value as UserRole)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="analyst">Analyst</option>
-                <option value="viewer">Viewer</option>
-              </select>
-              <Button onClick={handleInvite}>Send Invite</Button>
-              <Button variant="outline" onClick={() => setShowInvite(false)}>Cancel</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Members Table */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 text-xs font-medium text-muted-foreground">Member</th>
-                  <th className="text-left p-4 text-xs font-medium text-muted-foreground">Role</th>
-                  <th className="text-left p-4 text-xs font-medium text-muted-foreground hidden md:table-cell">Department</th>
-                  <th className="text-left p-4 text-xs font-medium text-muted-foreground hidden lg:table-cell">Last Active</th>
-                  <th className="text-left p-4 text-xs font-medium text-muted-foreground hidden lg:table-cell">Security</th>
-                  <th className="text-right p-4 text-xs font-medium text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {members.map(member => (
-                  <tr key={member.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                          {member.avatar}
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">{member.name}</div>
-                          <div className="text-xs text-muted-foreground">{member.email}</div>
-                        </div>
+        <motion.div variants={item}>
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Live feed of team actions.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {mockEnterpriseData.team.activityFeed.map((activity) => (
+                  <div key={activity.id} className="flex gap-3">
+                    <div className="shrink-0 mt-1">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                        {activity.user.charAt(0)}
                       </div>
-                    </td>
-                    <td className="p-4">
-                      {canChangeRole && member.role !== "owner" ? (
-                        <select
-                          value={member.role}
-                          onChange={e => changeRole(member.id, e.target.value as UserRole)}
-                          className={`text-xs font-medium px-2.5 py-1 rounded-full border-0 ${roleColors[member.role]}`}
-                        >
-                          <option value="admin">Admin</option>
-                          <option value="manager">Manager</option>
-                          <option value="analyst">Analyst</option>
-                          <option value="viewer">Viewer</option>
-                        </select>
-                      ) : (
-                        <Badge className={`${roleColors[member.role]} border-0 text-xs capitalize`}>{member.role}</Badge>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm">
+                        <span className="font-semibold text-foreground">{activity.user}</span>{' '}
+                        <span className="text-muted-foreground">{activity.action}</span>{' '}
+                        <span className="font-medium text-foreground">{activity.target}</span>
+                      </p>
+                      <span className="text-xs text-muted-foreground">{activity.time}</span>
+                      {activity.comment && (
+                        <div className="mt-1 p-3 rounded-md bg-muted text-sm text-muted-foreground flex gap-2">
+                          <MessageSquare className="w-4 h-4 shrink-0 mt-0.5" />
+                          <p>{activity.comment}</p>
+                        </div>
                       )}
-                    </td>
-                    <td className="p-4 hidden md:table-cell">
-                      <span className="text-sm text-muted-foreground">{member.department}</span>
-                    </td>
-                    <td className="p-4 hidden lg:table-cell">
-                      <span className="text-sm text-muted-foreground">{formatDate(member.lastActive, "relative")}</span>
-                    </td>
-                    <td className="p-4 hidden lg:table-cell">
-                      <div className="flex items-center gap-2">
-                        {member.twoFactorEnabled && <Badge variant="outline" className="text-xs"><Shield className="w-3 h-3 mr-1" /> 2FA</Badge>}
-                        {member.isVerified && <Badge variant="outline" className="text-xs text-emerald-600"><Mail className="w-3 h-3 mr-1" /> Verified</Badge>}
-                      </div>
-                    </td>
-                    <td className="p-4 text-right">
-                      {canRemove && member.role !== "owner" && member.id !== user?.id && (
-                        <Button variant="ghost" size="sm" onClick={() => removeMember(member.id)}>
-                          <Trash2 className="w-4 h-4 text-muted-foreground" />
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

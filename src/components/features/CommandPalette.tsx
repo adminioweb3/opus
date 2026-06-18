@@ -36,17 +36,14 @@ export function CommandPalette() {
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => navigate("/dashboard")}><LayoutDashboard className="w-4 h-4 mr-2" /> Dashboard Overview</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/monitoring")}><Activity className="w-4 h-4 mr-2" /> AI Monitoring</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/brand")}><ShieldCheck className="w-4 h-4 mr-2" /> Brand Intelligence</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/competitors")}><Target className="w-4 h-4 mr-2" /> Competitors</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/analytics")}><BarChart3 className="w-4 h-4 mr-2" /> Analytics</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/reports")}><FileText className="w-4 h-4 mr-2" /> Reports</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/alerts")}><Bell className="w-4 h-4 mr-2" /> Alerts</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/team")}><Users className="w-4 h-4 mr-2" /> Team</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/billing")}><CreditCard className="w-4 h-4 mr-2" /> Billing</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/war-room")}><LayoutDashboard className="w-4 h-4 mr-2" /> Executive War Room</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/copilot")}><BrainCircuit className="w-4 h-4 mr-2" /> AI Copilot</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/campaigns")}><Target className="w-4 h-4 mr-2" /> Campaign Builder</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/deployments")}><Activity className="w-4 h-4 mr-2" /> Deployment Center</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/content-review")}><FileText className="w-4 h-4 mr-2" /> Content Review</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/repositories")}><ShieldCheck className="w-4 h-4 mr-2" /> GitHub Repositories</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/automation")}><Settings className="w-4 h-4 mr-2" /> Automations</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/integrations")}><Plug className="w-4 h-4 mr-2" /> Integrations</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/settings")}><Settings className="w-4 h-4 mr-2" /> Settings</CommandItem>
         </CommandGroup>
 
         <CommandSeparator />

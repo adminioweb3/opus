@@ -12,19 +12,22 @@ export const AI_PLATFORMS = [
 export type PlatformId = typeof AI_PLATFORMS[number]["id"]
 
 // --- KPI Scores ---
-export const CURRENT_SCORES = {
-  visibilityScore: 84.2,
-  visibilityChange: 4.8,
-  brandScore: 87,
-  brandChange: 2.1,
-  citationScore: 72.5,
-  citationChange: 8.3,
-  shareOfVoice: 38.4,
-  sovChange: 3.2,
-  aiReach: 12405,
-  reachChange: 14.5,
-  sentimentScore: 91.3,
-  sentimentChange: 1.7,
+export function getCurrentScores(period: "7d" | "30d" | "90d" | "1y" = "30d") {
+  const mult = period === "7d" ? 1 : period === "30d" ? 1.5 : period === "90d" ? 2.5 : 4
+  return {
+    visibilityScore: (84.2 + (Math.random() * 5 - 2)).toFixed(1),
+    visibilityChange: (4.8 * mult + (Math.random() * 2 - 1)).toFixed(1),
+    brandScore: Math.round(87 + (Math.random() * 4 - 2)),
+    brandChange: (2.1 * mult + (Math.random() * 2 - 1)).toFixed(1),
+    citationScore: (72.5 + (Math.random() * 5 - 2)).toFixed(1),
+    citationChange: (8.3 * mult + (Math.random() * 2 - 1)).toFixed(1),
+    shareOfVoice: (38.4 + (Math.random() * 5 - 2)).toFixed(1),
+    sovChange: (3.2 * mult + (Math.random() * 2 - 1)).toFixed(1),
+    aiReach: Math.round(12405 * mult * (1 + Math.random() * 0.2)),
+    reachChange: (14.5 * mult + (Math.random() * 2 - 1)).toFixed(1),
+    sentimentScore: (91.3 + (Math.random() * 2 - 1)).toFixed(1),
+    sentimentChange: (1.7 * mult + (Math.random() * 2 - 1)).toFixed(1),
+  }
 }
 
 // --- Time Series Data ---
@@ -39,7 +42,7 @@ export function getDashboardTimeSeries(period: "7d" | "30d" | "90d" | "1y" = "30
 }
 
 // --- Platform Breakdown ---
-export function getPlatformBreakdown() {
+export function getPlatformBreakdown(period: "7d" | "30d" | "90d" | "1y" = "30d") {
   return AI_PLATFORMS.map(p => ({
     ...p,
     visibility: randomBetween(50, 95),

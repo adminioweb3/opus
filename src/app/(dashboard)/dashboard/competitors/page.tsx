@@ -58,6 +58,7 @@ export default function CompetitorsPage() {
                             <Cell key={entry.name} fill={entry.color} />
                           ))}
                         </Pie>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} formatter={(v: any) => `${v}%`} />
                       </PieChart>
                     </ResponsiveContainer>

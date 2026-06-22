@@ -1,15 +1,13 @@
 "use client"
 
-import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight, ArrowDownRight, Target, TrendingUp, Eye, ShieldAlert, Zap, Globe, Search, Download } from "lucide-react"
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell, BarChart, Bar } from "recharts"
-import { mockExecutiveScores, mockCitationsData, mockPlatformComparison } from "@/lib/mock-data/intelligence"
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from "recharts"
+import { mockExecutiveScores, mockCitationsData } from "@/lib/mock-data/intelligence"
 import { SHARE_OF_VOICE_DATA } from "@/lib/mock-data/dashboard"
 import { useUIStore } from "@/lib/stores/ui-store"
-import { useAuthStore } from "@/lib/stores/auth-store"
-import { formatNumber, formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 const DATE_RANGES = [
@@ -21,7 +19,6 @@ const DATE_RANGES = [
 
 export default function DashboardOverviewPage() {
   const { activeDateRange, setDateRange } = useUIStore()
-  const { user } = useAuthStore()
 
   const kpis = [
     { title: "AI Visibility Score", value: mockExecutiveScores.visibilityScore, change: mockExecutiveScores.visibilityChange, icon: Eye, color: "text-primary" },
@@ -152,6 +149,7 @@ export default function DashboardOverviewPage() {
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} formatter={(v: any) => `${v}%`} />
                 </PieChart>
               </ResponsiveContainer>

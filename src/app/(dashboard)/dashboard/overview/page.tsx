@@ -152,7 +152,7 @@ export default function DashboardOverviewPage() {
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} formatter={(v: number) => `${v}%`} />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} formatter={(v: any) => `${v}%`} />
                 </PieChart>
               </ResponsiveContainer>
             </div>

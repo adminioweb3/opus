@@ -58,7 +58,7 @@ export default function CompetitorsPage() {
                             <Cell key={entry.name} fill={entry.color} />
                           ))}
                         </Pie>
-                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} formatter={(v: number) => `${v}%`} />
+                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} formatter={(v: any) => `${v}%`} />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>

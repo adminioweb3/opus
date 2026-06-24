@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -51,7 +51,7 @@ export const useOrganizationStore = create<OrganizationState>()(
           companyDomain: "acmecorp.com",
           industry: "Enterprise Software",
           competitors: ["tryprofound.com", "brightedge.com", "semrush.com"],
-          brandKeywords: ["Acme", "AcmeCorp", "Acme Corporation", "OPUS"],
+          brandKeywords: ["Acme", "AcmeCorp", "Acme Corporation", "CITATIONLY"],
           aiPlatforms: ["chatgpt", "gemini", "claude", "perplexity", "grok"],
           invitedEmails: [],
           dashboardWidgets: ["visibility", "mentions", "sentiment", "citations"],
@@ -99,6 +99,6 @@ export const useOrganizationStore = create<OrganizationState>()(
 
       upgradePlan: (plan) => set({ plan }),
     }),
-    { name: "opus-organization" }
+    { name: "citationly-organization" }
   )
 )

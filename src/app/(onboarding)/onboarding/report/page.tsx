@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
@@ -32,7 +32,7 @@ export default function PaywallReportPage() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="font-bold text-primary-foreground text-lg leading-none">O</span>
             </div>
-            <span className="font-bold tracking-tight">OPUS</span>
+            <span className="font-bold tracking-tight">CITATIONLY</span>
           </div>
           <Button onClick={() => router.push("/onboarding/checkout")} className="bg-blue-600 hover:bg-blue-700">
             Unlock Full Report <Unlock className="w-4 h-4 ml-2" />

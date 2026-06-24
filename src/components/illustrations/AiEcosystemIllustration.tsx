@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 
@@ -17,7 +17,7 @@ export function AiEcosystemIllustration() {
 
       {/* Connection Lines (Animated) */}
       <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        {/* OPUS is at center (50%, 50%) */}
+        {/* CITATIONLY is at center (50%, 50%) */}
         {/* ChatGPT (20%, 20%) */}
         <motion.path d="M 20% 20% Q 35% 20% 50% 50%" fill="none" stroke="currentColor" strokeWidth="2" className="text-border" />
         <motion.path d="M 20% 20% Q 35% 20% 50% 50%" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5" className="text-accent" 
@@ -45,11 +45,11 @@ export function AiEcosystemIllustration() {
       </svg>
 
       {/* Nodes */}
-      {/* Central OPUS Node */}
+      {/* Central CITATIONLY Node */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <div className="w-32 h-32 bg-white rounded-2xl border-2 border-accent shadow-card flex items-center justify-center relative">
           <div className="absolute -inset-4 bg-accent/20 rounded-3xl blur-xl animate-pulse" />
-          <span className="text-2xl font-bold tracking-tight text-primary-text relative z-10">OPUS</span>
+          <span className="text-2xl font-bold tracking-tight text-primary-text relative z-10">CITATIONLY</span>
         </div>
       </div>
 

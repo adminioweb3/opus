@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -264,7 +264,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "opus-firebase-auth",
+      name: "citationly-firebase-auth",
       partialize: (state) => ({
         token: state.token,
         isAuthenticated: state.isAuthenticated,

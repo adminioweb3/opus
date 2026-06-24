@@ -1,4 +1,4 @@
-export const mockOsData = {
+﻿export const mockOsData = {
   copilot: {
     suggestedPrompts: [
       "Why did visibility drop?",
@@ -67,7 +67,7 @@ export const mockOsData = {
   strategy: {
     plan: [
       { day: "30 Day", tasks: ["Deploy FAQ Schema", "Reclaim 5 lost citations", "Optimize Top 10 Pages for AEO"] },
-      { day: "60 Day", tasks: ["Launch 3 New Topic Clusters", "Initiate Competitor Defense Campaign", "Integrate Shopify with OPUS Hub"] },
+      { day: "60 Day", tasks: ["Launch 3 New Topic Clusters", "Initiate Competitor Defense Campaign", "Integrate Shopify with CITATIONLY Hub"] },
       { day: "90 Day", tasks: ["Achieve 90% AI Visibility Score", "Generate $500k in AI-Attributed Revenue", "Fully Automate Content Pipeline"] }
     ]
   },

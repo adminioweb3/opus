@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
@@ -37,7 +37,7 @@ export default function SimulatorPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">AI Vector Search Simulator</h2>
-        <p className="text-muted-foreground">Test how OPUS retrieves your content using Vector Similarity (Cosine Distance) to build LLM context.</p>
+        <p className="text-muted-foreground">Test how CITATIONLY retrieves your content using Vector Similarity (Cosine Distance) to build LLM context.</p>
       </div>
 
       <Card>

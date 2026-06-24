@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -89,6 +89,6 @@ export const useJourneyStore = create<AIJourneyStore>()(
 
       resetJourney: () => set(initialState),
     }),
-    { name: "opus-journey" }
+    { name: "citationly-journey" }
   )
 )

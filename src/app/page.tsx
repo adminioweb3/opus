@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layouts/Navbar"
+﻿import { Navbar } from "@/components/layouts/Navbar"
 import { Footer } from "@/components/layouts/Footer"
 import { Hero } from "@/components/features/landing/Hero"
 import { HowItWorks } from "@/components/features/landing/HowItWorks"
@@ -29,21 +29,21 @@ export default function Home() {
     "@graph": [
       {
         "@type": "Organization",
-        "name": "OPUS",
-        "url": "https://opus.com",
-        "logo": "https://opus.com/logo.png",
+        "name": "CITATIONLY",
+        "url": "https://citationly.com",
+        "logo": "https://citationly.com/logo.png",
         "sameAs": [
-          "https://twitter.com/opus_hq",
-          "https://linkedin.com/company/opus-hq"
+          "https://twitter.com/citationly_hq",
+          "https://linkedin.com/company/citationly-hq"
         ]
       },
       {
         "@type": "Product",
-        "name": "OPUS AI Visibility Tracker",
+        "name": "CITATIONLY AI Visibility Tracker",
         "description": "Enterprise platform for AI Search Optimization, ChatGPT SEO, and Share of Voice monitoring.",
         "brand": {
           "@type": "Brand",
-          "name": "OPUS"
+          "name": "CITATIONLY"
         },
         "offers": {
           "@type": "Offer",

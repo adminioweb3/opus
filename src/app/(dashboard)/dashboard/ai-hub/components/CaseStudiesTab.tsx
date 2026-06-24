@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockEnterpriseData } from "@/lib/mock-data/enterprise"
@@ -21,7 +21,7 @@ export default function CaseStudiesTab() {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Case Studies</h2>
         <p className="text-muted-foreground mt-1">
-          Real-world enterprise success stories utilizing the OPUS platform.
+          Real-world enterprise success stories utilizing the CITATIONLY platform.
         </p>
       </div>
 

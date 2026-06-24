@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Activity, ShieldCheck, TrendingUp, Link as LinkIcon, Database, Eye, CheckCircle2 } from "lucide-react"
 import { AiEcosystemIllustration } from "@/components/illustrations/AiEcosystemIllustration"
@@ -66,7 +66,7 @@ export function CitationTracking() {
               AI <span className="text-accent">Citation Tracking</span>
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              When AI models generate answers, they cite sources. OPUS tracks every URL on your domain to show you exactly which pages are driving AI traffic and visibility.
+              When AI models generate answers, they cite sources. CITATIONLY tracks every URL on your domain to show you exactly which pages are driving AI traffic and visibility.
             </p>
             <ul className="space-y-4 pt-4">
               <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-accent" /> Page-level attribution</li>
@@ -115,7 +115,7 @@ export function PlatformComparison() {
     <section className="py-24">
       <div className="container mx-auto px-6 max-w-5xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Why choose OPUS?</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Why choose CITATIONLY?</h2>
           <p className="text-muted-foreground text-lg">Compare our enterprise platform against standard SEO tools.</p>
         </div>
         <div className="glass-card rounded-2xl overflow-hidden border border-border/50">
@@ -123,17 +123,17 @@ export function PlatformComparison() {
             <thead>
               <tr className="border-b border-border/50 bg-surface/50">
                 <th className="p-6 font-semibold">Feature</th>
-                <th className="p-6 font-bold text-primary">OPUS</th>
+                <th className="p-6 font-bold text-primary">CITATIONLY</th>
                 <th className="p-6 font-semibold text-muted-foreground">Standard SEO</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { feature: "AI Model Tracking", opus: true, standard: false },
-                { feature: "Real-time Sentiment", opus: true, standard: false },
-                { feature: "Citation Attribution", opus: true, standard: false },
-                { feature: "Traditional SERP Tracking", opus: true, standard: true },
-                { feature: "Hallucination Alerts", opus: true, standard: false },
+                { feature: "AI Model Tracking", citationly: true, standard: false },
+                { feature: "Real-time Sentiment", citationly: true, standard: false },
+                { feature: "Citation Attribution", citationly: true, standard: false },
+                { feature: "Traditional SERP Tracking", citationly: true, standard: true },
+                { feature: "Hallucination Alerts", citationly: true, standard: false },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-border/50 last:border-0 hover:bg-white/2 transition-colors">
                   <td className="p-6 font-medium">{row.feature}</td>

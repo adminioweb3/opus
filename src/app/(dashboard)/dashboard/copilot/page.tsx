@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { mockOsData } from "@/lib/mock-data/os"
@@ -21,7 +21,7 @@ export default function CopilotPage() {
       <div className="mb-4">
         <h2 className="text-3xl font-bold tracking-tight">AI Command Center</h2>
         <p className="text-muted-foreground mt-1">
-          Your conversational copilot for the OPUS operating system.
+          Your conversational copilot for the CITATIONLY operating system.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export default function CopilotPage() {
           <div className="relative">
             <input 
               type="text" 
-              placeholder="Ask OPUS anything about your visibility, competitors, or strategy..." 
+              placeholder="Ask CITATIONLY anything about your visibility, competitors, or strategy..." 
               className="w-full h-12 pl-4 pr-12 rounded-lg border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary shadow-inner"
               readOnly
             />

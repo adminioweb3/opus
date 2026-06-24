@@ -1,4 +1,4 @@
-export const mockExecutiveScores = {
+﻿export const mockExecutiveScores = {
   visibilityScore: 78,
   visibilityChange: 5.2,
   citationScore: 82,
@@ -86,25 +86,25 @@ export const mockPlatformComparison = {
 
 export const mockCompetitorsData = {
   shareOfVoice: [
-    { name: "OPUS (You)", value: 35, color: "var(--color-primary)" },
+    { name: "CITATIONLY (You)", value: 35, color: "var(--color-primary)" },
     { name: "Competitor A", value: 25, color: "var(--color-slate-400)" },
     { name: "Competitor B", value: 20, color: "var(--color-slate-500)" },
     { name: "Competitor C", value: 15, color: "var(--color-slate-600)" },
     { name: "Others", value: 5, color: "var(--color-slate-300)" },
   ],
   citationShare: [
-    { name: "Documentation", "OPUS": 45, "Comp A": 30, "Comp B": 15 },
-    { name: "Blogs", "OPUS": 25, "Comp A": 40, "Comp B": 20 },
-    { name: "News", "OPUS": 30, "Comp A": 20, "Comp B": 35 },
+    { name: "Documentation", "CITATIONLY": 45, "Comp A": 30, "Comp B": 15 },
+    { name: "Blogs", "CITATIONLY": 25, "Comp A": 40, "Comp B": 20 },
+    { name: "News", "CITATIONLY": 30, "Comp A": 20, "Comp B": 35 },
   ],
   sentimentComparison: [
-    { name: "OPUS", positive: 65, neutral: 25, negative: 10 },
+    { name: "CITATIONLY", positive: 65, neutral: 25, negative: 10 },
     { name: "Competitor A", positive: 45, neutral: 40, negative: 15 },
     { name: "Competitor B", positive: 30, neutral: 50, negative: 20 },
     { name: "Competitor C", positive: 55, neutral: 30, negative: 15 },
   ],
   ranking: [
-    { rank: 1, name: "OPUS", score: 85, change: 2 },
+    { rank: 1, name: "CITATIONLY", score: 85, change: 2 },
     { rank: 2, name: "Competitor A", score: 78, change: -1 },
     { rank: 3, name: "Competitor C", score: 72, change: 3 },
     { rank: 4, name: "Competitor B", score: 65, change: -1 },

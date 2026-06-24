@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface OrganizationState {
@@ -16,7 +16,7 @@ export const useOrganizationStore = create<OrganizationState>()(
       setOrganizationId: (id: string) => set({ organizationId: id }),
     }),
     {
-      name: 'opus-organization-store',
+      name: 'citationly-organization-store',
     }
   )
 );

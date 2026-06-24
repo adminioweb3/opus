@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { 
@@ -248,8 +248,8 @@ export function DashboardSidebar() {
             </span>
           </div>
           <div className="flex flex-col overflow-hidden">
-            <span className="font-bold text-lg tracking-tight text-foreground leading-tight truncate" title={orgName || "OPUS"}>
-              {orgName || "OPUS"}
+            <span className="font-bold text-lg tracking-tight text-foreground leading-tight truncate" title={orgName || "CITATIONLY"}>
+              {orgName || "CITATIONLY"}
             </span>
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{plan} plan</span>
           </div>

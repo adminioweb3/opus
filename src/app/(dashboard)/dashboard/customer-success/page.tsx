@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { mockOsData } from "@/lib/mock-data/os"
@@ -34,7 +34,7 @@ export default function CustomerSuccessPage() {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Customer Success</h2>
         <p className="text-muted-foreground mt-1">
-          Track your OPUS maturity and onboarding progress.
+          Track your CITATIONLY maturity and onboarding progress.
         </p>
       </div>
 

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import { CheckCircle2, ChevronDown, Bot, Zap, Globe, PieChart, ShieldAlert } from "lucide-react"
@@ -115,7 +115,7 @@ export function CompetitiveIntelligence() {
               Competitive <span className="text-secondary">Intelligence</span>
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Don't just track your own brand—see exactly how you stack up against competitors. Identify opportunity gaps where AI models recommend rivals over you.
+              Don't just track your own brandâ€”see exactly how you stack up against competitors. Identify opportunity gaps where AI models recommend rivals over you.
             </p>
             <ul className="space-y-4 pt-4">
               {['Head-to-head Comparisons', 'Gap Analysis', 'Market Positioning Overlap'].map((item, i) => (
@@ -141,7 +141,7 @@ export function Faq() {
         </div>
         <div className="space-y-4">
           {[
-            { q: "Which AI models do you track?", a: "We currently track ChatGPT (3.5, 4, 4o), Claude (Opus, Sonnet, Haiku), Gemini (Pro, Ultra), Perplexity, and Grok." },
+            { q: "Which AI models do you track?", a: "We currently track ChatGPT (3.5, 4, 4o), Claude (Citationly, Sonnet, Haiku), Gemini (Pro, Ultra), Perplexity, and Grok." },
             { q: "How often is data updated?", a: "Enterprise plans feature real-time streaming updates. Professional plans receive daily aggregated syncs." },
             { q: "Can I track my competitors?", a: "Yes, you can track up to 10 competitors simultaneously depending on your subscription tier." }
           ].map((faq, i) => (
@@ -167,7 +167,7 @@ export function CtaBanner() {
         <div className="glass-card rounded-3xl p-12 text-center border border-primary/20 bg-primary/5">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to dominate AI Search?</h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join industry leaders who use OPUS to monitor, protect, and optimize their brand presence across the next generation of search.
+            Join industry leaders who use CITATIONLY to monitor, protect, and optimize their brand presence across the next generation of search.
           </p>
           <button onClick={() => router.push('/register')} className="bg-foreground text-background px-8 py-4 rounded-lg font-semibold text-lg hover:bg-foreground/90 transition-colors">
             Start Your Free Trial

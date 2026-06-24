@@ -1,4 +1,4 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="font-bold text-primary-foreground text-xl leading-none">O</span>
               </div>
-              <span className="font-bold text-xl tracking-tight text-foreground">OPUS</span>
+              <span className="font-bold text-xl tracking-tight text-foreground">CITATIONLY</span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-sm mb-8">
               The enterprise standard for AI Search Optimization and LLM Visibility. Monitor and optimize your Share of Voice across ChatGPT, Gemini, and Claude.
@@ -61,7 +61,7 @@ export function Footer() {
         </div>
         
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} OPUS Inc. All rights reserved.</p>
+          <p>Â© {new Date().getFullYear()} CITATIONLY Inc. All rights reserved.</p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
             <Link href="https://twitter.com" className="hover:text-primary transition-colors">Twitter</Link>
             <Link href="https://linkedin.com" className="hover:text-primary transition-colors">LinkedIn</Link>

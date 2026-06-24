@@ -1,4 +1,4 @@
-import type { UserRole } from "@/lib/utils"
+﻿import type { UserRole } from "@/lib/utils"
 
 export interface MockUser {
   id: string
@@ -17,8 +17,8 @@ export interface MockUser {
 export const MOCK_USERS: MockUser[] = [
   {
     id: "usr_superadmin_000",
-    email: "admin@opus.com",
-    name: "OPUS Founder",
+    email: "admin@citationly.com",
+    name: "CITATIONLY Founder",
     avatar: "OP",
     role: "superadmin",
     title: "CEO",

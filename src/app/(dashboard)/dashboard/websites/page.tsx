@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -66,7 +66,7 @@ export default function WebsitesPage() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Website Manager</h2>
           <p className="text-muted-foreground mt-1">
-            Centrally manage all domains and CMS connected to OPUS.
+            Centrally manage all domains and CMS connected to CITATIONLY.
           </p>
         </div>
         
@@ -78,7 +78,7 @@ export default function WebsitesPage() {
             <DialogHeader>
               <DialogTitle>Connect New Website</DialogTitle>
               <DialogDescription>
-                Add a new domain to start syncing with OPUS.
+                Add a new domain to start syncing with CITATIONLY.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -117,7 +117,7 @@ export default function WebsitesPage() {
           <Card>
             <CardHeader>
               <CardTitle>Connected Domains</CardTitle>
-              <CardDescription>Domains currently actively syncing with the OPUS Deployment Engine.</CardDescription>
+              <CardDescription>Domains currently actively syncing with the CITATIONLY Deployment Engine.</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (

@@ -1,4 +1,4 @@
-export const mockPromptIntelligence = {
+﻿export const mockPromptIntelligence = {
   overview: {
     volume: "1.2M",
     volumeChange: "+15%",
@@ -46,7 +46,7 @@ export const mockOpportunities = {
   ],
   missingCitations: [
     { keyword: "Best AI CRM 2026", engine: "Perplexity", competitor: "Comp A", mentions: 120 },
-    { keyword: "Copilot vs Opus", engine: "ChatGPT", competitor: "Comp B", mentions: 85 },
+    { keyword: "Copilot vs Citationly", engine: "ChatGPT", competitor: "Comp B", mentions: 85 },
   ]
 };
 

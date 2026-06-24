@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -23,9 +23,9 @@ interface APIKey {
 }
 
 const MOCK_API_KEYS: APIKey[] = [
-  { id: "key_001", name: "Production API Key", key: "opus_live_sk_a3f8b2c1d4e5f6g7h8i9j0k1l2m3n4o5", createdAt: "2024-06-15T10:00:00Z", lastUsed: new Date(Date.now() - 3600000).toISOString(), status: "active" },
-  { id: "key_002", name: "Development Key", key: "opus_test_sk_z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4", createdAt: "2024-08-01T14:00:00Z", lastUsed: new Date(Date.now() - 86400000).toISOString(), status: "active" },
-  { id: "key_003", name: "CI/CD Pipeline", key: "opus_live_sk_j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7", createdAt: "2024-09-10T09:00:00Z", lastUsed: null, status: "revoked" },
+  { id: "key_001", name: "Production API Key", key: "citationly_live_sk_a3f8b2c1d4e5f6g7h8i9j0k1l2m3n4o5", createdAt: "2024-06-15T10:00:00Z", lastUsed: new Date(Date.now() - 3600000).toISOString(), status: "active" },
+  { id: "key_002", name: "Development Key", key: "citationly_test_sk_z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4", createdAt: "2024-08-01T14:00:00Z", lastUsed: new Date(Date.now() - 86400000).toISOString(), status: "active" },
+  { id: "key_003", name: "CI/CD Pipeline", key: "citationly_live_sk_j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7", createdAt: "2024-09-10T09:00:00Z", lastUsed: null, status: "revoked" },
 ]
 
 export default function SettingsPage() {
@@ -60,7 +60,7 @@ export default function SettingsPage() {
     const newKey: APIKey = {
       id: `key_${Date.now()}`,
       name: newKeyName,
-      key: `opus_live_sk_${Array.from({ length: 32 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join("")}`,
+      key: `citationly_live_sk_${Array.from({ length: 32 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join("")}`,
       createdAt: new Date().toISOString(),
       lastUsed: null,
       status: "active",
@@ -92,7 +92,7 @@ export default function SettingsPage() {
     setVisibleKeys(next)
   }
 
-  const maskKey = (key: string) => key.slice(0, 12) + "•".repeat(24) + key.slice(-4)
+  const maskKey = (key: string) => key.slice(0, 12) + "â€¢".repeat(24) + key.slice(-4)
 
   return (
     <div className="space-y-6">

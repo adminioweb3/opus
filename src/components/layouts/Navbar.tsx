@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -18,7 +18,7 @@ export function Navbar() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="font-bold text-white text-xl leading-none">O</span>
           </div>
-          <span className="font-bold text-xl tracking-tight">OPUS</span>
+          <span className="font-bold text-xl tracking-tight">CITATIONLY</span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           <Link href="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>

@@ -1,15 +1,15 @@
-"use client"
+﻿"use client"
 
 import { Quote } from "lucide-react"
 
 const testimonials = [
   {
-    quote: "OPUS fundamentally changed how we measure our digital presence. Traditional SEO is dead; AI visibility is all that matters now.",
+    quote: "CITATIONLY fundamentally changed how we measure our digital presence. Traditional SEO is dead; AI visibility is all that matters now.",
     author: "Sarah Jenkins",
     role: "CMO, TechNova",
   },
   {
-    quote: "We caught a hallucination in ChatGPT that was recommending a competitor's inferior product. OPUS alerted us instantly so we could correct the narrative.",
+    quote: "We caught a hallucination in ChatGPT that was recommending a competitor's inferior product. CITATIONLY alerted us instantly so we could correct the narrative.",
     author: "Marcus Chen",
     role: "VP of Comms, FinServe",
   },

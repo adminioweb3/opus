@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -58,7 +58,7 @@ export default function JourneyOnboardingPage() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="font-bold text-primary-foreground text-xl leading-none">O</span>
           </div>
-          <span className="font-bold text-xl tracking-tight">OPUS</span>
+          <span className="font-bold text-xl tracking-tight">CITATIONLY</span>
         </div>
 
         <nav className="flex-1 space-y-1">
@@ -184,7 +184,7 @@ export default function JourneyOnboardingPage() {
                 {competitors.map(c => (
                   <span key={c} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted text-sm font-medium">
                     {c}
-                    <button onClick={() => removeCompetitor(c)} className="text-muted-foreground hover:text-foreground">×</button>
+                    <button onClick={() => removeCompetitor(c)} className="text-muted-foreground hover:text-foreground">Ã—</button>
                   </span>
                 ))}
               </div>

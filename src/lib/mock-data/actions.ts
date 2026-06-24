@@ -1,4 +1,4 @@
-export const mockActions = {
+﻿export const mockActions = {
   actionCards: [
     { id: 1, type: "Visibility Drop", title: "Sharp decline in GPT-4 answers", severity: "High", impactScore: 92, detectedAt: "2 hours ago" },
     { id: 2, type: "Citation Loss", title: "Lost Perplexity citation to Competitor A", severity: "Medium", impactScore: 78, detectedAt: "5 hours ago" },
@@ -31,7 +31,7 @@ export const mockRecommendations = [
     id: "REC-002",
     issue: "Lost 'Best AI CRM' citation on Perplexity", 
     rootCause: "Competitor launched dedicated landing page", 
-    suggestedFix: "Create dedicated 'Why OPUS is the Best AI CRM' page", 
+    suggestedFix: "Create dedicated 'Why CITATIONLY is the Best AI CRM' page", 
     expectedGain: "Regain #1 Citation Slot" 
   },
   { 
@@ -52,17 +52,17 @@ export const mockRecommendations = [
 
 export const mockContentCenter = {
   faqs: [
-    { question: "How does OPUS handle enterprise data privacy?", volume: "12.5k", difficulty: "Low", status: "Ready to Publish" },
-    { question: "Can I migrate from Competitor A to OPUS?", volume: "8.2k", difficulty: "Medium", status: "Draft Generated" },
-    { question: "What are the API rate limits for OPUS?", volume: "5.1k", difficulty: "Low", status: "Pending Review" }
+    { question: "How does CITATIONLY handle enterprise data privacy?", volume: "12.5k", difficulty: "Low", status: "Ready to Publish" },
+    { question: "Can I migrate from Competitor A to CITATIONLY?", volume: "8.2k", difficulty: "Medium", status: "Draft Generated" },
+    { question: "What are the API rate limits for CITATIONLY?", volume: "5.1k", difficulty: "Low", status: "Pending Review" }
   ],
   blogs: [
     { title: "The Future of Agentic AI in Enterprise CRM", keywords: ["Agentic AI", "Enterprise CRM", "Automation"], intent: "Educational", status: "Draft Generated" },
     { title: "Implementing Secure AI Workflows in Healthcare", keywords: ["AI Workflows", "Healthcare", "HIPAA"], intent: "Transactional", status: "Brief Ready" }
   ],
   comparisons: [
-    { title: "OPUS vs Competitor A: Comprehensive Guide", targetEngine: "Perplexity", priority: "High", status: "Reviewing Outline" },
-    { title: "Why OPUS is the Best Alternative to Legacy CRMs", targetEngine: "ChatGPT", priority: "Medium", status: "Drafting" }
+    { title: "CITATIONLY vs Competitor A: Comprehensive Guide", targetEngine: "Perplexity", priority: "High", status: "Reviewing Outline" },
+    { title: "Why CITATIONLY is the Best Alternative to Legacy CRMs", targetEngine: "ChatGPT", priority: "Medium", status: "Drafting" }
   ],
   landingPages: [
     { url: "/solutions/healthcare-ai", focus: "Vertical Expansion", conversionEst: "4.5%", status: "Ready for Dev" },

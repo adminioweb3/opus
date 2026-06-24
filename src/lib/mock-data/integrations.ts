@@ -1,4 +1,4 @@
-export interface Integration {
+﻿export interface Integration {
   id: string
   name: string
   description: string
@@ -58,7 +58,7 @@ export const MOCK_INTEGRATIONS: Integration[] = [
   {
     id: "int_zapier",
     name: "Zapier",
-    description: "Connect OPUS to 5,000+ apps with automated workflows and triggers.",
+    description: "Connect CITATIONLY to 5,000+ apps with automated workflows and triggers.",
     icon: "zapier",
     category: "automation",
     status: "disconnected",

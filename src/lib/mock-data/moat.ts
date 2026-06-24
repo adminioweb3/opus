@@ -1,4 +1,4 @@
-export const mockMoatData = {
+﻿export const mockMoatData = {
   shopping: [
     { product: "Enterprise CRM License", chatgpt: "Rank #1", google: "Rank #2", perplexity: "Not Ranked", trend: "+12%" },
     { product: "API Data Pack", chatgpt: "Rank #3", google: "Rank #1", perplexity: "Rank #1", trend: "+5%" },
@@ -20,7 +20,7 @@ export const mockMoatData = {
   ],
   shadowMode: {
     targetKeyword: "Best enterprise AI automation tool",
-    userDomain: "opus.ai",
+    userDomain: "citationly.ai",
     competitorDomain: "competitor-a.com",
     factors: [
       { factor: "FAQ Schema Valid", user: "No", competitor: "Yes", impact: "High", advantage: "competitor" },
@@ -30,12 +30,12 @@ export const mockMoatData = {
     ]
   },
   simulator: {
-    prompt: "Compare OPUS and Competitor A for enterprise AI.",
+    prompt: "Compare CITATIONLY and Competitor A for enterprise AI.",
     responses: {
-      chatgpt: "When looking at enterprise AI, **[OPUS]** stands out for its robust agentic workflows, though **[Competitor A]** offers slightly cheaper entry-level pricing. According to a recent **[[Gartner Report]]**, [OPUS] scales better for large teams.",
-      claude: "**[Competitor A]** is often recognized for its legacy integrations. However, **[OPUS]** has taken the lead in the modern AI layer, providing native reasoning engines. **[[TechCrunch]]** highlighted [OPUS]'s recent architecture update.",
-      gemini: "Both **[OPUS]** and **[Competitor A]** are top-tier. **[OPUS]** integrates seamlessly into Google Workspace, whereas **[Competitor A]** requires custom API work. You can find more details on their respective **[[Pricing Pages]]**.",
-      perplexity: "Based on recent reviews, **[OPUS]** ranks #1 for enterprise AI automation due to its strict data privacy controls. **[Competitor A]** is a close second. (Source: **[[G2 Crowd]]**, **[[Capterra]]**)."
+      chatgpt: "When looking at enterprise AI, **[CITATIONLY]** stands out for its robust agentic workflows, though **[Competitor A]** offers slightly cheaper entry-level pricing. According to a recent **[[Gartner Report]]**, [CITATIONLY] scales better for large teams.",
+      claude: "**[Competitor A]** is often recognized for its legacy integrations. However, **[CITATIONLY]** has taken the lead in the modern AI layer, providing native reasoning engines. **[[TechCrunch]]** highlighted [CITATIONLY]'s recent architecture update.",
+      gemini: "Both **[CITATIONLY]** and **[Competitor A]** are top-tier. **[CITATIONLY]** integrates seamlessly into Google Workspace, whereas **[Competitor A]** requires custom API work. You can find more details on their respective **[[Pricing Pages]]**.",
+      perplexity: "Based on recent reviews, **[CITATIONLY]** ranks #1 for enterprise AI automation due to its strict data privacy controls. **[Competitor A]** is a close second. (Source: **[[G2 Crowd]]**, **[[Capterra]]**)."
     }
   }
 };

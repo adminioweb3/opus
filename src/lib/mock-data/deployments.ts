@@ -1,4 +1,4 @@
-export const mockDeploymentsData = {
+﻿export const mockDeploymentsData = {
   websites: [
     { url: "acmecorp.com", type: "Next.js", health: 92, visibility: 85, lastSync: "10m ago", status: "Connected" },
     { url: "blog.acmecorp.com", type: "WordPress", health: 88, visibility: 72, lastSync: "1h ago", status: "Connected" },
@@ -59,8 +59,8 @@ export const mockDeploymentsData = {
     { name: "acme-corp/docs", framework: "Nuxt", branch: "master", status: "Synced", prs: 0 }
   ],
   pullRequests: [
-    { title: "feat: update FAQ schema for AEO", branch: "opus/update-faq", status: "Review Required", commits: 3, lines: "+45 -12" },
-    { title: "fix: missing metadata on pricing", branch: "opus/fix-meta", status: "Ready to Merge", commits: 1, lines: "+8 -0" }
+    { title: "feat: update FAQ schema for AEO", branch: "citationly/update-faq", status: "Review Required", commits: 3, lines: "+45 -12" },
+    { title: "fix: missing metadata on pricing", branch: "citationly/fix-meta", status: "Ready to Merge", commits: 1, lines: "+8 -0" }
   ],
   cmsPublishing: {
     queue: [

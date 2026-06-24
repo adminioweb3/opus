@@ -1,4 +1,4 @@
-export function CompetitiveDashboardSvg() {
+﻿export function CompetitiveDashboardSvg() {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full drop-shadow-xl" xmlns="http://www.w3.org/2000/svg">
       {/* Base App Window */}
@@ -21,10 +21,10 @@ export function CompetitiveDashboardSvg() {
       <line x1="56" y1="420" x2="476" y2="420" stroke="#E2E8F0" strokeWidth="1" />
       
       {/* Lines */}
-      {/* OPUS Line */}
+      {/* CITATIONLY Line */}
       <path d="M 56 400 L 120 380 L 180 320 L 240 280 L 300 300 L 360 210 L 420 190 L 476 140" fill="none" stroke="#2563EB" strokeWidth="3" />
       <circle cx="476" cy="140" r="5" fill="#ffffff" stroke="#2563EB" strokeWidth="3" />
-      <text x="440" y="125" fill="#2563EB" fontSize="12" fontWeight="bold" fontFamily="sans-serif">OPUS</text>
+      <text x="440" y="125" fill="#2563EB" fontSize="12" fontWeight="bold" fontFamily="sans-serif">CITATIONLY</text>
       
       {/* Competitor A */}
       <path d="M 56 300 L 120 290 L 180 310 L 240 340 L 300 330 L 360 380 L 420 370 L 476 390" fill="none" stroke="#94A3B8" strokeWidth="2" strokeDasharray="6" />
@@ -37,8 +37,8 @@ export function CompetitiveDashboardSvg() {
       <text x="548" y="132" fill="#0F172A" fontSize="16" fontWeight="bold" fontFamily="sans-serif">Visibility by Competitor</text>
       
       <g transform="translate(548, 180)">
-        {/* OPUS */}
-        <text x="0" y="12" fill="#0F172A" fontSize="12" fontWeight="bold" fontFamily="sans-serif">OPUS</text>
+        {/* CITATIONLY */}
+        <text x="0" y="12" fill="#0F172A" fontSize="12" fontWeight="bold" fontFamily="sans-serif">CITATIONLY</text>
         <rect x="0" y="20" width="180" height="24" rx="4" fill="#2563EB" />
         <text x="190" y="36" fill="#0F172A" fontSize="12" fontWeight="bold" fontFamily="sans-serif">84</text>
         

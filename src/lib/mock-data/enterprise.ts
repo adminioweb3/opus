@@ -1,4 +1,4 @@
-export const mockEnterpriseData = {
+﻿export const mockEnterpriseData = {
   team: {
     tasks: [
       { id: "TSK-01", title: "Update Pricing Page Schema", assignee: "Sarah Connor", status: "In Progress", priority: "High" },
@@ -24,9 +24,9 @@ export const mockEnterpriseData = {
     { title: "The Shift from Traditional SEO", category: "SEO Report", reads: 650, readTime: "5 min" },
   ],
   caseStudies: [
-    { company: "Acme Corp", industry: "SaaS", result: "+145% AI Visibility", summary: "How Acme Corp dominated Perplexity and ChatGPT using OPUS Agentic Action Layer." },
+    { company: "Acme Corp", industry: "SaaS", result: "+145% AI Visibility", summary: "How Acme Corp dominated Perplexity and ChatGPT using CITATIONLY Agentic Action Layer." },
     { company: "Globex Retail", industry: "E-Commerce", result: "3.2x Revenue from AI", summary: "Globex optimized their Shopify catalog for Google AI Overviews, resulting in massive ROI." },
-    { company: "Initech", industry: "Finance", result: "Zero Hallucinations", summary: "Initech utilized OPUS Voice Drift and Alerting to maintain 100% compliance in AI responses." },
+    { company: "Initech", industry: "Finance", result: "Zero Hallucinations", summary: "Initech utilized CITATIONLY Voice Drift and Alerting to maintain 100% compliance in AI responses." },
   ],
   benchmarks: {
     userMetrics: {

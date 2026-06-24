@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Shield, Lock, Server, Key, Users } from "lucide-react"
 
@@ -11,7 +11,7 @@ export function EnterpriseSecurity() {
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mb-6">Enterprise-grade security</h2>
           <p className="text-secondary-text text-lg leading-relaxed">
-            Your <span className="text-accent font-medium">AI Visibility Tracking</span> data is sensitive. OPUS is built from the ground up to meet the strict security and compliance requirements of Fortune 500 companies.
+            Your <span className="text-accent font-medium">AI Visibility Tracking</span> data is sensitive. CITATIONLY is built from the ground up to meet the strict security and compliance requirements of Fortune 500 companies.
           </p>
         </div>
 

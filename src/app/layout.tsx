@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -18,22 +18,22 @@ const geistMono = Geist_Mono({
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
-  title: "OPUS | Enterprise AI Visibility Tracking & AI Search Optimization",
+  title: "CITATIONLY | Enterprise AI Visibility Tracking & AI Search Optimization",
   description: "Optimize your brand's Share of Voice across ChatGPT, Gemini, Claude, and Perplexity. The leading platform for GEO, AI Citation Monitoring, and LLM Visibility.",
   openGraph: {
-    title: "OPUS | Enterprise AI Visibility Tracking",
+    title: "CITATIONLY | Enterprise AI Visibility Tracking",
     description: "Optimize your brand's Share of Voice across ChatGPT, Gemini, Claude, and Perplexity.",
-    url: "https://opus.com",
-    siteName: "OPUS",
-    images: [{ url: "https://opus.com/og.png", width: 1200, height: 630 }],
+    url: "https://citationly.com",
+    siteName: "CITATIONLY",
+    images: [{ url: "https://citationly.com/og.png", width: 1200, height: 630 }],
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "OPUS | Enterprise AI Visibility Tracking",
+    title: "CITATIONLY | Enterprise AI Visibility Tracking",
     description: "Optimize your brand's Share of Voice across ChatGPT, Gemini, Claude, and Perplexity.",
-    creator: "@opus_hq",
+    creator: "@citationly_hq",
   },
 };
 

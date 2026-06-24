@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,7 +20,7 @@ export default function AnswerSimulatorPage() {
   // A helper function to parse and highlight the mock text
   const renderHighlightedText = (text: string) => {
     // We split by our custom mock syntax:
-    // **[OPUS]** -> Brand Mention
+    // **[CITATIONLY]** -> Brand Mention
     // **[Competitor A]** -> Competitor Mention
     // **[[Citation]]** -> Citation
     
@@ -33,7 +33,7 @@ export default function AnswerSimulatorPage() {
       }
       if (part.startsWith('**[') && part.endsWith(']**')) {
         const mention = part.slice(3, -3)
-        if (mention === 'OPUS') {
+        if (mention === 'CITATIONLY') {
           return <span key={index} className="px-1.5 py-0.5 mx-0.5 rounded bg-primary/15 text-primary font-bold border border-primary/20">{mention}</span>
         } else {
           return <span key={index} className="px-1.5 py-0.5 mx-0.5 rounded bg-destructive/10 text-destructive font-bold border border-destructive/20">{mention}</span>

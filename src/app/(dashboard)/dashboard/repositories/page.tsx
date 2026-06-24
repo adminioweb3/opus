@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { mockDeploymentsData } from "@/lib/mock-data/deployments"
@@ -83,7 +83,7 @@ export default function RepositoriesPage() {
                         <span className="font-mono bg-muted px-2 py-0.5 rounded-md text-xs border">
                           <GitBranch className="w-3 h-3 inline mr-1" />{pr.branch}
                         </span>
-                        <span>opened by <span className="text-foreground font-medium">OPUS-Agent</span></span>
+                        <span>opened by <span className="text-foreground font-medium">CITATIONLY-Agent</span></span>
                       </div>
                     </div>
                     <div>

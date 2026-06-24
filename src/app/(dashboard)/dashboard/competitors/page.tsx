@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -93,7 +93,7 @@ export default function CompetitorsPage() {
                         <YAxis dataKey="name" type="category" stroke="#888" fontSize={12} width={100} />
                         <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} />
                         <Legend />
-                        <Bar dataKey="OPUS" stackId="a" fill="var(--color-primary)" />
+                        <Bar dataKey="CITATIONLY" stackId="a" fill="var(--color-primary)" />
                         <Bar dataKey="Comp A" stackId="a" fill="var(--color-slate-400)" />
                         <Bar dataKey="Comp B" stackId="a" fill="var(--color-slate-600)" />
                       </BarChart>
@@ -148,7 +148,7 @@ export default function CompetitorsPage() {
                     </TableHeader>
                     <TableBody>
                       {mockCompetitorsData.ranking.map((row) => (
-                        <TableRow key={row.name} className={row.name === "OPUS" ? "bg-primary/5 font-medium" : ""}>
+                        <TableRow key={row.name} className={row.name === "CITATIONLY" ? "bg-primary/5 font-medium" : ""}>
                           <TableCell className="text-center">
                             {row.rank === 1 ? <Trophy className="w-4 h-4 text-amber-500 mx-auto" /> : row.rank}
                           </TableCell>

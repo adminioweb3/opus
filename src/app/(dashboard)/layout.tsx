@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { DashboardSidebar } from "@/components/layouts/DashboardSidebar"
@@ -44,7 +44,7 @@ function DashboardHeader() {
       >
         <Search className="w-4 h-4" />
         <span>Search prompts, reports, competitors...</span>
-        <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border border-border font-mono">⌘K</kbd>
+        <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border border-border font-mono">âŒ˜K</kbd>
       </button>
 
       <div className="flex-1" />
@@ -82,7 +82,7 @@ function DashboardHeader() {
                 <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center font-bold text-primary text-xs uppercase">
                   {orgName ? orgName.charAt(0) : "O"}
                 </div>
-                <div className="text-sm font-semibold truncate" title={orgName || "OPUS"}>{orgName || "OPUS"}</div>
+                <div className="text-sm font-semibold truncate" title={orgName || "CITATIONLY"}>{orgName || "CITATIONLY"}</div>
               </div>
               <div>
                 <div className="text-sm font-medium">{userName}</div>

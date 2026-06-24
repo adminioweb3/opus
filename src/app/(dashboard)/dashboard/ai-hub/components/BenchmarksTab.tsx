@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { mockEnterpriseData } from "@/lib/mock-data/enterprise"
 import { motion } from "framer-motion"
 
-export default function BenchmarksPage() {
+export default function BenchmarksTab() {
   const container = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }

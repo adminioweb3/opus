@@ -3,6 +3,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { Recommendation, MOCK_RECOMMENDATIONS } from "../mock-data/journey"
+import { type OnboardingAnalysisResult } from "../api/onboardingApi"
 
 export type JourneyState = "not_started" | "onboarding" | "analyzing" | "paywall" | "subscribed"
 
@@ -22,12 +23,14 @@ interface AIJourneyStore {
   // State
   currentState: JourneyState
   hasSubscribed: boolean
+  analysisResult: OnboardingAnalysisResult | null
   
   // Recommendations
   tasks: Recommendation[]
   
   // Actions
-  updateOnboardingData: (data: Partial<Omit<AIJourneyStore, "currentState" | "hasSubscribed" | "tasks" | "updateOnboardingData" | "setState" | "setSubscribed" | "addCompetitor" | "removeCompetitor" | "updateTaskStatus" | "deleteTask">>) => void
+  updateOnboardingData: (data: Partial<Omit<AIJourneyStore, "currentState" | "hasSubscribed" | "tasks" | "updateOnboardingData" | "setState" | "setSubscribed" | "addCompetitor" | "removeCompetitor" | "updateTaskStatus" | "deleteTask" | "analysisResult" | "setAnalysisResult">>) => void
+  setAnalysisResult: (result: OnboardingAnalysisResult) => void
   addCompetitor: (competitor: string) => void
   removeCompetitor: (competitor: string) => void
   setState: (state: JourneyState) => void
@@ -50,6 +53,7 @@ const initialState = {
   rankingGoal: "",
   currentState: "not_started" as JourneyState,
   hasSubscribed: false,
+  analysisResult: null as OnboardingAnalysisResult | null,
   tasks: MOCK_RECOMMENDATIONS,
 }
 
@@ -70,6 +74,8 @@ export const useJourneyStore = create<AIJourneyStore>()(
       setState: (currentState) => set({ currentState }),
       
       setSubscribed: (hasSubscribed) => set({ hasSubscribed }),
+
+      setAnalysisResult: (analysisResult) => set({ analysisResult }),
 
       updateTaskStatus: (id, status) =>
         set((state) => ({

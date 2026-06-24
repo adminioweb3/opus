@@ -6,7 +6,7 @@ import { mockEnterpriseData } from "@/lib/mock-data/enterprise"
 import { motion } from "framer-motion"
 import { BookOpen, ExternalLink, Library } from "lucide-react"
 
-export default function ResearchPage() {
+export default function ResearchTab() {
   const container = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }

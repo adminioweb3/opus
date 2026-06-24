@@ -5,7 +5,7 @@ import { mockEnterpriseData } from "@/lib/mock-data/enterprise"
 import { motion } from "framer-motion"
 import { Briefcase, TrendingUp } from "lucide-react"
 
-export default function CaseStudiesPage() {
+export default function CaseStudiesTab() {
   const container = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }

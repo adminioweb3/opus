@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
+import { completeOnboarding } from "@/lib/api/onboardingApi"
+import { LIMITED_REPORT } from "@/lib/mock-data/journey"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -36,7 +38,7 @@ const PLANS = [
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { setSubscribed, setState } = useJourneyStore()
+  const { websiteUrl, businessName, competitors, analysisResult, setSubscribed, setState } = useJourneyStore()
 
   const [selectedPlan, setSelectedPlan] = useState("growth")
   const [loading, setLoading] = useState(false)
@@ -44,8 +46,27 @@ export default function CheckoutPage() {
   const handleSubscribe = async () => {
     setLoading(true)
     
-    // Simulate API delay
-    await new Promise(r => setTimeout(r, 1000))
+    try {
+      // Map all onboarding data into the dashboard database
+      await completeOnboarding({
+        websiteUrl: websiteUrl || "",
+        businessName: businessName || "",
+        competitors: competitors || "",
+        visibilityScore: analysisResult?.visibilityScore ?? LIMITED_REPORT.visibilityScore,
+        brandAuthority: analysisResult?.brandAuthority ?? LIMITED_REPORT.brandAuthority,
+        contentStrength: analysisResult?.contentStrength ?? LIMITED_REPORT.contentStrength,
+        citationScore: analysisResult?.citationScore ?? LIMITED_REPORT.citationScore
+      })
+
+      // Update the local organization store so the sidebar/navbar show the correct details
+      useOrganizationStore.getState().updateOrg({
+        orgName: businessName || "My Organization",
+        orgDomain: websiteUrl || ""
+      })
+    } catch (error) {
+      console.error("Failed to complete onboarding mapping:", error)
+      // Proceed to dashboard anyway so user is not stuck
+    }
     
     setSubscribed(true)
     setState("subscribed")

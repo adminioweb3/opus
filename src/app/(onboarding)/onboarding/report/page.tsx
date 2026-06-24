@@ -9,13 +9,19 @@ import { Lock, Eye, ShieldCheck, FileText, Quote, ChevronRight, Unlock } from "l
 
 export default function PaywallReportPage() {
   const router = useRouter()
-  const { websiteUrl } = useJourneyStore()
+  const { websiteUrl, analysisResult } = useJourneyStore()
+
+  // Use the live AI results if available, otherwise fallback
+  const visibilityScore = analysisResult?.visibilityScore ?? LIMITED_REPORT.visibilityScore;
+  const brandAuthority = analysisResult?.brandAuthority ?? LIMITED_REPORT.brandAuthority;
+  const contentStrength = analysisResult?.contentStrength ?? LIMITED_REPORT.contentStrength;
+  const citationScore = analysisResult?.citationScore ?? LIMITED_REPORT.citationScore;
 
   const metrics = [
-    { label: "AI Visibility Score", value: LIMITED_REPORT.visibilityScore, icon: Eye, color: "text-red-500", suffix: "/100", status: "Critical" },
-    { label: "Brand Authority", value: LIMITED_REPORT.brandAuthority, icon: ShieldCheck, color: "text-amber-500", suffix: "/100", status: "Poor" },
-    { label: "Content Strength", value: LIMITED_REPORT.contentStrength, icon: FileText, color: "text-amber-500", suffix: "/100", status: "Fair" },
-    { label: "Citation Score", value: LIMITED_REPORT.citationScore, icon: Quote, color: "text-red-500", suffix: "/100", status: "Critical" },
+    { label: "AI Visibility Score", value: visibilityScore, icon: Eye, color: "text-red-500", suffix: "/100", status: visibilityScore < 50 ? "Critical" : "Fair" },
+    { label: "Brand Authority", value: brandAuthority, icon: ShieldCheck, color: "text-amber-500", suffix: "/100", status: brandAuthority < 50 ? "Poor" : "Good" },
+    { label: "Content Strength", value: contentStrength, icon: FileText, color: "text-amber-500", suffix: "/100", status: contentStrength < 60 ? "Fair" : "Good" },
+    { label: "Citation Score", value: citationScore, icon: Quote, color: "text-red-500", suffix: "/100", status: citationScore < 40 ? "Critical" : "Fair" },
   ]
 
   return (

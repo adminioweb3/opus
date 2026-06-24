@@ -5,6 +5,7 @@ import { DashboardSidebar } from "@/components/layouts/DashboardSidebar"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { CommandPalette } from "@/components/features/CommandPalette"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { useOrganizationStore } from "@/lib/stores/organization-store"
 import { useNotificationStore } from "@/lib/stores/notification-store"
 import { useUIStore } from "@/lib/stores/ui-store"
 import { Bell, Search, LogOut, Settings, User, ChevronDown } from "lucide-react"
@@ -13,10 +14,14 @@ import { useState, useRef, useEffect } from "react"
 
 function DashboardHeader() {
   const { user, logout } = useAuthStore()
+  const { orgName } = useOrganizationStore()
   const { unreadCount } = useNotificationStore()
   const { setCommandPaletteOpen } = useUIStore()
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
+
+  const userName = user ? ('name' in user ? user.name : user.displayName) : "Guest"
+  const userAvatar = user ? ('avatar' in user ? user.avatar : user.photoURL) : "?"
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -61,20 +66,28 @@ function DashboardHeader() {
           className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-muted transition-colors"
         >
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-            {user?.avatar}
+            {userAvatar}
           </div>
           <div className="hidden md:block text-left">
-            <div className="text-sm font-medium leading-tight">{user?.name}</div>
-            <div className="text-xs text-muted-foreground capitalize">{user?.role}</div>
+            <div className="text-sm font-medium leading-tight truncate max-w-30">{userName}</div>
+            <div className="text-xs text-muted-foreground capitalize truncate max-w-30">{orgName}</div>
           </div>
           <ChevronDown className="w-4 h-4 text-muted-foreground hidden md:block" />
         </button>
 
         {profileOpen && (
           <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 z-50">
-            <div className="px-4 py-3 border-b border-border">
-              <div className="text-sm font-medium">{user?.name}</div>
-              <div className="text-xs text-muted-foreground">{user?.email}</div>
+            <div className="px-4 py-3 border-b border-border flex flex-col gap-2">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center font-bold text-primary text-xs uppercase">
+                  {orgName ? orgName.charAt(0) : "O"}
+                </div>
+                <div className="text-sm font-semibold truncate" title={orgName || "OPUS"}>{orgName || "OPUS"}</div>
+              </div>
+              <div>
+                <div className="text-sm font-medium">{userName}</div>
+                <div className="text-xs text-muted-foreground truncate">{user?.email}</div>
+              </div>
             </div>
             <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors" onClick={() => setProfileOpen(false)}>
               <User className="w-4 h-4 text-muted-foreground" />

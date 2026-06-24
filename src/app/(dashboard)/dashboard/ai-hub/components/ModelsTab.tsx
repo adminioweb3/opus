@@ -1,7 +1,4 @@
-"use client"
-
-import { useMemo, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getPlatformBreakdown } from "@/lib/mock-data/dashboard"
@@ -9,17 +6,15 @@ import { MOCK_PROMPTS } from "@/lib/mock-data/prompts"
 import { Eye, ThumbsUp, ThumbsDown, Quote, BrainCircuit } from "lucide-react"
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-const platformMeta: Record<string, { name: string; description: string; color: string; bgColor: string }> = {
-  chatgpt: { name: "ChatGPT", description: "OpenAI's flagship conversational AI", color: "#10A37F", bgColor: "bg-[#10A37F]/10" },
-  gemini: { name: "Gemini", description: "Google DeepMind's AI assistant", color: "#4285F4", bgColor: "bg-[#4285F4]/10" },
-  claude: { name: "Claude", description: "Anthropic's AI assistant", color: "#D97757", bgColor: "bg-[#D97757]/10" },
-  perplexity: { name: "Perplexity", description: "AI-powered search engine", color: "#22B8CD", bgColor: "bg-[#22B8CD]/10" },
-  grok: { name: "Grok", description: "xAI's real-time AI model", color: "#6B7280", bgColor: "bg-neutral-100" },
+const platformMeta: Record<string, { id: string; name: string; description: string; color: string; bgColor: string }> = {
+  chatgpt: { id: "chatgpt", name: "ChatGPT", description: "OpenAI's flagship conversational AI", color: "#10A37F", bgColor: "bg-[#10A37F]/10" },
+  gemini: { id: "gemini", name: "Gemini", description: "Google DeepMind's AI assistant", color: "#4285F4", bgColor: "bg-[#4285F4]/10" },
+  claude: { id: "claude", name: "Claude", description: "Anthropic's AI assistant", color: "#D97757", bgColor: "bg-[#D97757]/10" },
+  perplexity: { id: "perplexity", name: "Perplexity", description: "AI-powered search engine", color: "#22B8CD", bgColor: "bg-[#22B8CD]/10" },
 }
 
-function ModelsContent() {
-  const searchParams = useSearchParams()
-  const platform = searchParams.get("platform") ?? "chatgpt"
+export default function ModelsTab() {
+  const [platform, setPlatform] = useState("chatgpt")
   const meta = platformMeta[platform] ?? platformMeta.chatgpt
   const platforms = useMemo(() => getPlatformBreakdown(), [])
   const currentPlatform = platforms.find(p => p.id === platform)
@@ -34,7 +29,7 @@ function ModelsContent() {
     date: new Date(Date.now() - (29 - i) * 86400000).toISOString(),
     visibility: Math.round(50 + Math.random() * 30 + i * 0.3),
     mentions: Math.round(20 + Math.random() * 40 + i * 0.5),
-  })), [])
+  })), [platform])
 
   const stats = {
     visibility: currentPlatform?.visibility ?? 0,
@@ -47,7 +42,20 @@ function ModelsContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start gap-4">
+      {/* Model Selector Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        {Object.values(platformMeta).map(p => (
+          <button
+            key={p.id}
+            onClick={() => setPlatform(p.id)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap border ${platform === p.id ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-background hover:bg-muted text-muted-foreground'}`}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-start gap-4 pt-4">
         <div className={`w-14 h-14 rounded-2xl ${meta.bgColor} flex items-center justify-center`}>
           <BrainCircuit className="w-7 h-7" style={{ color: meta.color }} />
         </div>
@@ -124,13 +132,5 @@ function ModelsContent() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-export default function ModelsPage() {
-  return (
-    <Suspense fallback={<div className="p-8 text-muted-foreground">Loading...</div>}>
-      <ModelsContent />
-    </Suspense>
   )
 }

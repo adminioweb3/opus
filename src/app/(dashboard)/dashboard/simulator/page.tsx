@@ -1,34 +1,43 @@
 "use client"
 
 import { useState } from "react"
-import { useJourneyStore } from "@/lib/stores/journey-store"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { searchSimilar, SearchResult } from "@/lib/api/simulatorApi"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Loader2, Search, Bot, User, CheckCircle2 } from "lucide-react"
+import { Loader2, Search, User, Database } from "lucide-react"
 
 export default function SimulatorPage() {
-  const { websiteUrl, businessName } = useJourneyStore()
+  const { organizationId } = useOrganizationStore()
   const [query, setQuery] = useState("")
   const [simulating, setSimulating] = useState(false)
-  const [result, setResult] = useState<string | null>(null)
+  const [results, setResults] = useState<SearchResult[] | null>(null)
 
-  const handleSimulate = () => {
+  const handleSimulate = async () => {
     if (!query) return
     setSimulating(true)
-    setResult(null)
+    setResults(null)
     
-    setTimeout(() => {
+    try {
+      const data = await searchSimilar({
+        organizationId,
+        queryText: query,
+        topK: 3
+      })
+      setResults(data)
+    } catch (error) {
+      console.error("Simulation failed", error)
+    } finally {
       setSimulating(false)
-      setResult(`Based on an analysis of current market solutions for "${query}", here are the top recommended options:\n\n1. **${businessName || "Your Company"}** - Highly recommended for its robust feature set and excellent AI integration capabilities. Many users highlight its ease of use.\n2. **Competitor A** - A solid legacy option, though some users report it can be complex to configure.\n3. **Competitor B** - Good for very specific niche use-cases but lacks the broad appeal of ${businessName || "Your Company"}.\n\nIf you prioritize modern workflows, **${businessName || "Your Company"}** (${websiteUrl || "your website"}) appears to be the most frequently cited solution among experts.`)
-    }, 2000)
+    }
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">AI Search Simulator</h2>
-        <p className="text-muted-foreground">Test how AI models like ChatGPT and Claude respond to your target queries.</p>
+        <h2 className="text-3xl font-bold tracking-tight">AI Vector Search Simulator</h2>
+        <p className="text-muted-foreground">Test how OPUS retrieves your content using Vector Similarity (Cosine Distance) to build LLM context.</p>
       </div>
 
       <Card>
@@ -51,13 +60,13 @@ export default function SimulatorPage() {
       {simulating && (
         <Card className="border-primary/20 bg-primary/2 animate-pulse">
           <CardContent className="p-8 text-center space-y-4">
-            <Bot className="w-10 h-10 text-primary mx-auto animate-bounce" />
-            <p className="text-lg font-medium text-primary">Simulating AI Response across 4 models...</p>
+            <Database className="w-10 h-10 text-primary mx-auto animate-pulse" />
+            <p className="text-lg font-medium text-primary">Searching Vector Database across your organization&apos;s embeddings...</p>
           </CardContent>
         </Card>
       )}
 
-      {result && (
+      {results && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex gap-4">
             <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
@@ -70,21 +79,24 @@ export default function SimulatorPage() {
 
           <div className="flex gap-4">
             <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
-              <Bot className="w-5 h-5 text-white" />
+              <Database className="w-5 h-5 text-white" />
             </div>
-            <div className="flex-1 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-2xl rounded-tl-none p-5 relative overflow-hidden">
-              <div className="whitespace-pre-wrap leading-relaxed">
-                {result.split(`**${businessName || "Your Company"}**`).map((part, i, arr) => (
-                  <span key={i}>
-                    {part}
-                    {i < arr.length - 1 && (
-                      <span className="font-bold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-1 rounded inline-flex items-center gap-1">
-                        {businessName || "Your Company"} <CheckCircle2 className="w-3 h-3" />
-                      </span>
-                    )}
-                  </span>
-                ))}
-              </div>
+            <div className="flex-1 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-2xl rounded-tl-none p-5 relative overflow-hidden space-y-4">
+              <p className="font-semibold text-blue-900 dark:text-blue-100">Top 3 Nearest Neighbors (Context Retrieved):</p>
+              {results.length === 0 && (
+                <p className="text-muted-foreground">No relevant embeddings found. Have you crawled your site yet?</p>
+              )}
+              {results.map((result, index) => (
+                <div key={index} className="bg-white dark:bg-slate-900 border rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-semibold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded uppercase">
+                      {result.embedding.referenceType}
+                    </span>
+                    <span className="text-xs text-muted-foreground">Similarity: {(result.similarityScore * 100).toFixed(1)}%</span>
+                  </div>
+                  <p className="text-sm text-foreground line-clamp-3">&quot;{result.embedding.textContent}&quot;</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

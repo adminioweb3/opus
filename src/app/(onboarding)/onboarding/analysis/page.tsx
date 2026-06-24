@@ -23,29 +23,65 @@ export default function AnalysisSimulationPage() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    // Start animation
+    // Start fake progress animation up to 90%
     let currentProgress = 0
     const progressInterval = setInterval(() => {
-      currentProgress += 1
-      setProgress(Math.min(currentProgress, 100))
-    }, 150) // 100 steps * 150ms = 15 seconds
+      if (currentProgress < 90) {
+        currentProgress += 2
+        setProgress(Math.min(currentProgress, 90))
+      }
+    }, 150) 
 
     const stepTimers = SCAN_STEPS.map((step, index) => {
+      // Speed up step animation visually
       return setTimeout(() => {
         setActiveStepIndex(index)
-      }, step.delay)
+      }, step.delay / 3) 
     })
 
-    const finishTimer = setTimeout(() => {
-      clearInterval(progressInterval)
-      setState("paywall")
-      router.push("/onboarding/report")
-    }, 16000)
+    // Call real API
+    const runAnalysis = async () => {
+      try {
+        const { analyzeOnboardingData } = await import("@/lib/api/onboardingApi")
+        const storeState = useJourneyStore.getState()
+        
+        const result = await analyzeOnboardingData({
+          websiteUrl: storeState.websiteUrl,
+          businessName: storeState.businessName,
+          industry: storeState.industry,
+          targetAudience: storeState.targetAudience,
+          keywords: storeState.keywords,
+          competitors: storeState.competitors.join(", "),
+          rankingGoal: storeState.rankingGoal
+        })
+
+        // Ensure we show at least a few seconds of animation
+        await new Promise(resolve => setTimeout(resolve, 3000))
+        
+        clearInterval(progressInterval)
+        setProgress(100)
+        
+        storeState.setAnalysisResult(result)
+        
+        setTimeout(() => {
+          setState("paywall")
+          router.push("/onboarding/report")
+        }, 500)
+
+      } catch (err) {
+        console.error("Analysis failed", err)
+        // Fallback to report on error
+        clearInterval(progressInterval)
+        setState("paywall")
+        router.push("/onboarding/report")
+      }
+    }
+
+    runAnalysis()
 
     return () => {
       clearInterval(progressInterval)
       stepTimers.forEach(clearTimeout)
-      clearTimeout(finishTimer)
     }
   }, [router, setState])
 

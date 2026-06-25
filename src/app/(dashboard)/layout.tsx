@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { DashboardSidebar } from "@/components/layouts/DashboardSidebar"
@@ -65,8 +65,12 @@ function DashboardHeader() {
           onClick={() => setProfileOpen(!profileOpen)}
           className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-muted transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-            {userAvatar}
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary overflow-hidden shrink-0">
+            {userAvatar && userAvatar.startsWith('http') ? (
+              <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              userAvatar ? userAvatar.charAt(0).toUpperCase() : "?"
+            )}
           </div>
           <div className="hidden md:block text-left">
             <div className="text-sm font-medium leading-tight truncate max-w-30">{userName}</div>

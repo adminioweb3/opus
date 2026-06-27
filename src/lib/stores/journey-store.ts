@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -17,8 +17,6 @@ interface AIJourneyStore {
   services: string
   products: string
   keywords: string
-  competitors: string[]
-  rankingGoal: string
   
   // State
   currentState: JourneyState
@@ -29,10 +27,8 @@ interface AIJourneyStore {
   tasks: Recommendation[]
   
   // Actions
-  updateOnboardingData: (data: Partial<Omit<AIJourneyStore, "currentState" | "hasSubscribed" | "tasks" | "updateOnboardingData" | "setState" | "setSubscribed" | "addCompetitor" | "removeCompetitor" | "updateTaskStatus" | "deleteTask" | "analysisResult" | "setAnalysisResult">>) => void
+  updateOnboardingData: (data: Partial<Omit<AIJourneyStore, "currentState" | "hasSubscribed" | "tasks" | "updateOnboardingData" | "setState" | "setSubscribed" | "updateTaskStatus" | "deleteTask" | "analysisResult" | "setAnalysisResult">>) => void
   setAnalysisResult: (result: OnboardingAnalysisResult) => void
-  addCompetitor: (competitor: string) => void
-  removeCompetitor: (competitor: string) => void
   setState: (state: JourneyState) => void
   setSubscribed: (val: boolean) => void
   updateTaskStatus: (id: string, status: Recommendation["status"]) => void
@@ -49,8 +45,6 @@ const initialState = {
   services: "",
   products: "",
   keywords: "",
-  competitors: [],
-  rankingGoal: "",
   currentState: "not_started" as JourneyState,
   hasSubscribed: false,
   analysisResult: null as OnboardingAnalysisResult | null,
@@ -64,12 +58,6 @@ export const useJourneyStore = create<AIJourneyStore>()(
 
       updateOnboardingData: (data) =>
         set((state) => ({ ...state, ...data })),
-
-      addCompetitor: (competitor) =>
-        set((state) => ({ competitors: [...state.competitors, competitor] })),
-
-      removeCompetitor: (competitor) =>
-        set((state) => ({ competitors: state.competitors.filter(c => c !== competitor) })),
 
       setState: (currentState) => set({ currentState }),
       

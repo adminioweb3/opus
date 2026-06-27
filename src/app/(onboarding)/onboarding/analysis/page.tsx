@@ -3,86 +3,99 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
-import { Sparkles, Search, FileText, Activity, ShieldCheck, Quote, Target, Tag, Lightbulb } from "lucide-react"
+import { Sparkles, Search, FileText, Target, Globe, Quote, Lightbulb } from "lucide-react"
 
 const SCAN_STEPS = [
-  { id: "seo", label: "Checking SEO...", icon: Search, delay: 0 },
-  { id: "content", label: "Checking content...", icon: FileText, delay: 2000 },
-  { id: "authority", label: "Checking authority...", icon: ShieldCheck, delay: 4000 },
-  { id: "visibility", label: "Checking AI visibility...", icon: Sparkles, delay: 6000 },
-  { id: "citations", label: "Checking citations...", icon: Quote, delay: 8000 },
-  { id: "competitors", label: "Checking competitors...", icon: Target, delay: 10000 },
-  { id: "keywords", label: "Checking keywords...", icon: Tag, delay: 12000 },
-  { id: "recommendations", label: "Generating recommendations...", icon: Lightbulb, delay: 14000 },
+  { id: "analysis", label: "Analyzing website & business...", icon: FileText },
+  { id: "competitors", label: "Discovering competitors...", icon: Target },
+  { id: "prompts", label: "Generating AI search prompts...", icon: Search },
+  { id: "visibility", label: "Checking AI & platform visibility...", icon: Sparkles },
+  { id: "citations", label: "Analyzing citation sources...", icon: Quote },
+  { id: "personas", label: "Mapping personas & regions...", icon: Globe },
+  { id: "recommendations", label: "Generating GEO roadmap & report...", icon: Lightbulb },
 ]
 
 export default function AnalysisSimulationPage() {
   const router = useRouter()
   const { websiteUrl, setState } = useJourneyStore()
-  const [activeStepIndex, setActiveStepIndex] = useState(-1)
+  const [activeStepIndex, setActiveStepIndex] = useState(0)
   const [progress, setProgress] = useState(0)
 
-  useEffect(() => {
-    // Start fake progress animation up to 90%
-    let currentProgress = 0
-    const progressInterval = setInterval(() => {
-      if (currentProgress < 90) {
-        currentProgress += 2
-        setProgress(Math.min(currentProgress, 90))
-      }
-    }, 150) 
+    useEffect(() => {
+      // Call real API
+      const runAnalysis = async () => {
+        try {
+          const { analyzeOnboardingData, analyzeCompetitors, analyzeAiSearchPrompts, analyzeVisibility, analyzePlatformVisibility, analyzeCitations, analyzePersonas, analyzeRegions, generateRecommendations, generateExecutiveSummary } = await import("@/lib/api/onboardingApi")
+          const storeState = useJourneyStore.getState()
+          const orgStore = (await import("@/lib/stores/organizationStore")).useOrganizationStore.getState()
+          
+          const orgId = orgStore.organizationId || undefined;
 
-    const stepTimers = SCAN_STEPS.map((step, index) => {
-      // Speed up step animation visually
-      return setTimeout(() => {
-        setActiveStepIndex(index)
-      }, step.delay / 3) 
-    })
+          // STEP 0: Analysis
+          setActiveStepIndex(0)
+          setProgress(5)
+          const result = await analyzeOnboardingData({
+            organizationId: orgId,
+            websiteUrl: storeState.websiteUrl,
+            businessName: storeState.businessName,
+            industry: storeState.industry,
+            targetAudience: storeState.targetAudience,
+            keywords: storeState.keywords
+          })
+          storeState.setAnalysisResult(result)
 
-    // Call real API
-    const runAnalysis = async () => {
-      try {
-        const { analyzeOnboardingData } = await import("@/lib/api/onboardingApi")
-        const storeState = useJourneyStore.getState()
-        
-        const result = await analyzeOnboardingData({
-          websiteUrl: storeState.websiteUrl,
-          businessName: storeState.businessName,
-          industry: storeState.industry,
-          targetAudience: storeState.targetAudience,
-          keywords: storeState.keywords,
-          competitors: storeState.competitors.join(", "),
-          rankingGoal: storeState.rankingGoal
-        })
+          if (orgId) {
+            // STEP 1: Competitors
+            setActiveStepIndex(1)
+            setProgress(20)
+            await analyzeCompetitors({ organizationId: orgId })
+            
+            // STEP 2: Prompts
+            setActiveStepIndex(2)
+            setProgress(35)
+            await analyzeAiSearchPrompts({ organizationId: orgId })
 
-        // Ensure we show at least a few seconds of animation
-        await new Promise(resolve => setTimeout(resolve, 3000))
-        
-        clearInterval(progressInterval)
-        setProgress(100)
-        
-        storeState.setAnalysisResult(result)
-        
-        setTimeout(() => {
+            // STEP 3: Visibility & Platforms
+            setActiveStepIndex(3)
+            setProgress(50)
+            await analyzeVisibility({ organizationId: orgId })
+            setProgress(60)
+            await analyzePlatformVisibility({ organizationId: orgId })
+
+            // STEP 4: Citations
+            setActiveStepIndex(4)
+            setProgress(70)
+            await analyzeCitations({ organizationId: orgId })
+
+            // STEP 5: Personas & Regions
+            setActiveStepIndex(5)
+            setProgress(80)
+            await analyzePersonas({ organizationId: orgId })
+            setProgress(85)
+            await analyzeRegions({ organizationId: orgId })
+
+            // STEP 6: Recommendations & Executive Summary
+            setActiveStepIndex(6)
+            setProgress(90)
+            await generateRecommendations({ organizationId: orgId })
+            setProgress(95)
+            await generateExecutiveSummary({ organizationId: orgId })
+          }
+          
+          setProgress(100)
+          
+          setTimeout(() => {
+            router.push(`/report/${orgId}`)
+          }, 1000)
+
+        } catch (err) {
+          console.error("Analysis failed", err)
           setState("paywall")
-          router.push("/onboarding/report")
-        }, 500)
-
-      } catch (err) {
-        console.error("Analysis failed", err)
-        // Fallback to report on error
-        clearInterval(progressInterval)
-        setState("paywall")
-        router.push("/onboarding/report")
+        }
       }
-    }
 
-    runAnalysis()
+      runAnalysis()
 
-    return () => {
-      clearInterval(progressInterval)
-      stepTimers.forEach(clearTimeout)
-    }
   }, [router, setState])
 
   return (
@@ -108,7 +121,7 @@ export default function AnalysisSimulationPage() {
               const isPast = index < activeStepIndex
               
               return (
-                <div key={step.id} className={`flex items-center gap-3 transition-opacity duration-500 ${isPast ? "opacity-50" : isActive ? "opacity-100 scale-105 transform translate-x-2" : "opacity-0"}`}>
+                <div key={step.id} className={`flex items-center gap-3 transition-opacity duration-500 ${isPast ? "opacity-50" : isActive ? "opacity-100 scale-105 transform translate-x-2" : "opacity-30"}`}>
                   <Icon className={`w-4 h-4 ${isActive ? "text-primary animate-spin" : "text-muted-foreground"}`} style={{ animationDuration: isActive && step.id !== "recommendations" ? "3s" : "0s" }} />
                   <span className={`text-sm font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{step.label}</span>
                   {isPast && <div className="ml-auto w-2 h-2 rounded-full bg-emerald-500" />}
@@ -117,15 +130,15 @@ export default function AnalysisSimulationPage() {
             })}
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-medium text-muted-foreground">
-              <span>Analysis Progress</span>
+          <div>
+            <div className="flex justify-between text-sm mb-2 font-medium">
+              <span className="text-muted-foreground">Analysis Progress</span>
               <span>{progress}%</span>
             </div>
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+            <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
               <div 
-                className="h-full bg-primary rounded-full transition-all ease-linear" 
-                style={{ width: `${progress}%`, transitionDuration: '150ms' }} 
+                className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${progress}%` }} 
               />
             </div>
           </div>

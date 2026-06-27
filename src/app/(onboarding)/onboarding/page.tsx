@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -7,27 +7,81 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useJourneyStore } from "@/lib/stores/journey-store"
-import { Check, ChevronRight, ArrowLeft, Globe, Building2, Target, Trophy, Sparkles } from "lucide-react"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { startScraping, getScrapeStatus } from "@/lib/api/scraperApi"
+import { Check, ChevronRight, ArrowLeft, Globe, Building2, Sparkles, Loader2 } from "lucide-react"
 
 const steps = [
   { id: 1, title: "Website", icon: Globe },
   { id: 2, title: "Business Info", icon: Building2 },
-  { id: 3, title: "Competitors", icon: Target },
-  { id: 4, title: "Ranking Goal", icon: Trophy },
 ]
 
 export default function JourneyOnboardingPage() {
   const router = useRouter()
   const { 
-    websiteUrl, businessName, industry, country, targetAudience, services, products, keywords, competitors, rankingGoal,
-    updateOnboardingData, addCompetitor, removeCompetitor, setState 
+    websiteUrl, businessName, industry, country, targetAudience, services, products, keywords,
+    updateOnboardingData, setState 
   } = useJourneyStore()
+  const { organizationId } = useOrganizationStore()
   
   const [currentStep, setCurrentStep] = useState(1)
-  const [competitorInput, setCompetitorInput] = useState("")
+  const [isScraping, setIsScraping] = useState(false)
+  const [scrapeError, setScrapeError] = useState<string | null>(null)
+  const [scrapeProgress, setScrapeProgress] = useState(0)
 
-  const goNext = () => {
-    if (currentStep < 4) {
+  const goNext = async () => {
+    if (currentStep === 1) {
+      setScrapeError(null)
+      if (organizationId) {
+        try {
+          setIsScraping(true)
+          setScrapeProgress(10)
+          const formattedUrl = websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`;
+          const result = await startScraping({
+            organizationId: organizationId,
+            url: formattedUrl,
+            scrapeType: "Website",
+            maxPages: 5
+          })
+          
+          let currentStatus = result.status;
+          let attempts = 0;
+          while (currentStatus === "Pending" || currentStatus === "Processing") {
+             await new Promise(resolve => setTimeout(resolve, 2000));
+             attempts++;
+             
+             setScrapeProgress(Math.min(90, 10 + attempts * 15))
+             
+             try {
+               const statusRes = await getScrapeStatus(result.jobId);
+               currentStatus = statusRes.status;
+             } catch (e) {
+               console.warn("Polling error ignored", e)
+             }
+             
+             if (attempts > 30) {
+               throw new Error("Scraping timed out");
+             }
+          }
+          
+          if (currentStatus === "Failed") {
+             throw new Error("Scraping failed on the server.");
+          }
+          
+          setScrapeProgress(100)
+          await new Promise(resolve => setTimeout(resolve, 500));
+          setCurrentStep(2)
+        } catch (err) {
+          console.error("Failed to start scraping", err)
+          setScrapeError("Failed to connect to the scraping service or task failed. Please try again.")
+        } finally {
+          setIsScraping(false)
+          setScrapeProgress(0)
+        }
+      } else {
+        setCurrentStep(2)
+      }
+    } else if (currentStep < 2) {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -35,13 +89,6 @@ export default function JourneyOnboardingPage() {
   const goBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleAddCompetitor = () => {
-    if (competitorInput.trim() && !competitors.includes(competitorInput.trim())) {
-      addCompetitor(competitorInput.trim())
-      setCompetitorInput("")
     }
   }
 
@@ -99,18 +146,42 @@ export default function JourneyOnboardingPage() {
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="w-full max-w-xl">
           {/* Mobile Progress */}
-          <div className="lg:hidden mb-8">
-            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-              <span>Step {currentStep} of 4</span>
-              <span>{Math.round((currentStep / 4) * 100)}%</span>
+          {!isScraping && (
+            <div className="lg:hidden mb-8">
+              <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                <span>Step {currentStep} of 2</span>
+                <span>{Math.round((currentStep / 2) * 100)}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${(currentStep / 2) * 100}%` }} />
+              </div>
             </div>
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${(currentStep / 4) * 100}%` }} />
-            </div>
-          </div>
+          )}
 
-          {/* Step 1: Website */}
-          {currentStep === 1 && (
+          {isScraping ? (
+            <div className="flex flex-col items-center justify-center space-y-8 py-16 animate-in fade-in zoom-in-95 duration-500">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Globe className="w-8 h-8 text-primary animate-pulse" />
+                </div>
+              </div>
+              <div className="text-center space-y-3">
+                <h3 className="text-3xl font-bold tracking-tight">Scanning Your Website</h3>
+                <p className="text-muted-foreground text-lg">We are analyzing your pages to understand your business entity...</p>
+              </div>
+              <div className="w-full max-w-md bg-muted rounded-full h-3 overflow-hidden">
+                <div 
+                  className="bg-primary h-full transition-all duration-500 ease-out"
+                  style={{ width: `${scrapeProgress}%` }}
+                />
+              </div>
+              <p className="text-sm text-muted-foreground font-medium tracking-wide">{scrapeProgress}% Complete</p>
+            </div>
+          ) : (
+            <>
+              {/* Step 1: Website */}
+              {currentStep === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                 <Globe className="w-8 h-8 text-primary" />
@@ -169,71 +240,33 @@ export default function JourneyOnboardingPage() {
             </div>
           )}
 
-          {/* Step 3: Competitors */}
-          {currentStep === 3 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight">Who are your main competitors?</h2>
-                <p className="mt-2 text-muted-foreground">We&apos;ll track your Share of Voice against these domains across all AI platforms.</p>
-              </div>
-              <div className="flex gap-2">
-                <Input placeholder="competitor.com" value={competitorInput} onChange={e => setCompetitorInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAddCompetitor()} />
-                <Button onClick={handleAddCompetitor} variant="outline">Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {competitors.map(c => (
-                  <span key={c} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted text-sm font-medium">
-                    {c}
-                    <button onClick={() => removeCompetitor(c)} className="text-muted-foreground hover:text-foreground">Ã—</button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: AI Ranking Goal */}
-          {currentStep === 4 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6">
-                <Trophy className="w-8 h-8 text-amber-500" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight">What do you want to rank for?</h2>
-                <p className="mt-3 text-muted-foreground text-lg">Define your primary AI SEO objective. This guides our optimization engine.</p>
-              </div>
-              <div className="space-y-4 pt-4">
-                <div>
-                  <Label>Primary Ranking Goal</Label>
-                  <Textarea 
-                    className="mt-2 text-lg py-4 resize-none" 
-                    rows={3}
-                    placeholder="e.g. When people ask AI for 'Best CRM Software for small business', I want to be the #1 recommended tool." 
-                    value={rankingGoal} 
-                    onChange={e => updateOnboardingData({ rankingGoal: e.target.value })} 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Navigation Buttons */}
-          <div className="flex gap-3 mt-12 pt-6 border-t border-border">
-            {currentStep > 1 && (
-              <Button variant="outline" onClick={goBack} className="w-32">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back
-              </Button>
+          <div className="flex flex-col gap-3 mt-12 pt-6 border-t border-border">
+            {scrapeError && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive text-center mb-2">
+                {scrapeError}
+              </div>
             )}
-            <div className="flex-1" />
-            {currentStep < 4 ? (
-              <Button onClick={goNext} className="w-40" disabled={currentStep === 1 && !websiteUrl}>
-                Continue <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button onClick={finish} className="w-56 bg-blue-600 hover:bg-blue-700 text-white" disabled={!rankingGoal}>
-                Run AI Visibility Analysis <Sparkles className="w-4 h-4 ml-2" />
-              </Button>
-            )}
+            <div className="flex gap-3">
+              {currentStep > 1 && (
+                <Button variant="outline" onClick={goBack} className="w-32">
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+              )}
+              <div className="flex-1" />
+              {currentStep < 2 ? (
+                <Button onClick={goNext} className="w-40" disabled={currentStep === 1 && (!websiteUrl || isScraping)}>
+                  {isScraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Continue"} {!isScraping && <ChevronRight className="w-4 h-4 ml-2" />}
+                </Button>
+              ) : (
+                <Button onClick={finish} className="w-56 bg-blue-600 hover:bg-blue-700 text-white" disabled={!businessName}>
+                  Run AI Visibility Analysis <Sparkles className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
           </div>
+            </>
+          )}
           </div>
         </div>
       </div>

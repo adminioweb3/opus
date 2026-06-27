@@ -4,6 +4,8 @@ export interface SyncUserResponse {
   userId: string;
   organizationId: string;
   role: string;
+  organizationName: string;
+  websiteDomain: string;
 }
 
 export const syncUserToBackend = async (): Promise<SyncUserResponse> => {

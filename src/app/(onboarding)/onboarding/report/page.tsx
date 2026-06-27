@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
@@ -12,10 +12,10 @@ export default function PaywallReportPage() {
   const { websiteUrl, analysisResult } = useJourneyStore()
 
   // Use the live AI results if available, otherwise fallback
-  const visibilityScore = analysisResult?.visibilityScore ?? LIMITED_REPORT.visibilityScore;
-  const brandAuthority = analysisResult?.brandAuthority ?? LIMITED_REPORT.brandAuthority;
-  const contentStrength = analysisResult?.contentStrength ?? LIMITED_REPORT.contentStrength;
-  const citationScore = analysisResult?.citationScore ?? LIMITED_REPORT.citationScore;
+  const visibilityScore = analysisResult?.overallConfidence ?? LIMITED_REPORT.visibilityScore;
+  const brandAuthority = analysisResult?.domainAuthorityEstimate?.value?.estimatedScore ?? LIMITED_REPORT.brandAuthority;
+  const contentStrength = analysisResult?.seoStrength?.value?.score ?? LIMITED_REPORT.contentStrength;
+  const citationScore = analysisResult?.topicalAuthority?.confidence ?? LIMITED_REPORT.citationScore;
 
   const metrics = [
     { label: "AI Visibility Score", value: visibilityScore, icon: Eye, color: "text-red-500", suffix: "/100", status: visibilityScore < 50 ? "Critical" : "Fair" },

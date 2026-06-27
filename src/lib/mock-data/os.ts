@@ -1,4 +1,4 @@
-﻿export const mockOsData = {
+export const mockOsData = {
   copilot: {
     suggestedPrompts: [
       "Why did visibility drop?",
@@ -60,8 +60,23 @@
     brandSentiment: 95,
     opportunityScore: 78,
     recentAlerts: [
-      { type: "Drop", message: "Lost primary Perplexity snippet to Competitor A." },
-      { type: "Gain", message: "New mention mapped to $15k pipeline." }
+      { type: "Drop", message: "Lost primary Perplexity snippet to Competitor A", pipelineImpact: "-$40k pipeline at risk", isCritical: true },
+      { type: "Gain", message: "New mention mapped to $15k pipeline", source: "ChatGPT", time: "2h ago", isCritical: false }
+    ],
+    visibilityTrend: Array.from({ length: 30 }, (_, i) => ({
+      date: `Day ${i + 1}`,
+      score: Math.round(75 + Math.sin(i * 0.5) * 5 + (i * 0.5))
+    })),
+    aiCoverage: [
+      { platform: "ChatGPT", score: 91, citations: 142, change: "+4%", color: "text-emerald-600" },
+      { platform: "Claude", score: 87, citations: 127, change: "+3%", color: "text-emerald-600" },
+      { platform: "Gemini", score: 74, citations: 88, change: "+1%", color: "text-emerald-600" },
+      { platform: "Perplexity", score: 68, citations: 56, change: "Needs Attention", color: "text-destructive" }
+    ],
+    recommendedActions: [
+      { action: "Close 3 GEO gaps on sourcing queries", impact: "+$80k", status: "high" },
+      { action: "Boost Gemini citation rate", impact: "+6%", status: "medium" },
+      { action: "Publish 5 ready FAQ pages", impact: "Ready", status: "neutral" }
     ]
   },
   strategy: {

@@ -41,6 +41,7 @@ import {
   Bell,
   GitBranch,
   ChevronRight,
+  Folder,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,13 +68,34 @@ import {
 
 const menuCategories = [
   {
-    title: "Assistant",
+    title: "AI Assistant",
     icon: Sparkles,
+    url: "/dashboard/assistant",
+    permission: "dashboard.view",
+  },
+  {
+    title: "Executive War Room",
+    icon: Globe,
+    url: "/dashboard/war-room",
+    permission: "dashboard.view",
+  },
+  {
+    title: "Workspaces",
+    icon: Folder,
     items: [
       {
-        title: "AI Assistant",
-        url: "/dashboard/assistant",
-        icon: Sparkles,
+        title: "Projects",
+        url: "/dashboard/projects",
+        permission: "dashboard.view",
+      },
+      {
+        title: "Agents",
+        url: "/dashboard/agents",
+        permission: "dashboard.view",
+      },
+      {
+        title: "Knowledge vault",
+        url: "/dashboard/knowledge-vault",
         permission: "dashboard.view",
       },
     ],
@@ -82,12 +104,6 @@ const menuCategories = [
     title: "Operating System",
     icon: LayoutDashboard,
     items: [
-      {
-        title: "Executive War Room",
-        url: "/dashboard/war-room",
-        icon: Globe,
-        permission: "dashboard.view",
-      },
       {
         title: "AI Copilot",
         url: "/dashboard/copilot",
@@ -305,6 +321,12 @@ const menuCategories = [
         permission: "dashboard.view",
       },
       {
+        title: "Website Scraper",
+        url: "/dashboard/scraper",
+        icon: Globe,
+        permission: "dashboard.view",
+      },
+      {
         title: "Automation",
         url: "/dashboard/automation",
         icon: Zap,
@@ -476,21 +498,43 @@ function CollapsibleMenu({
   const [isOpen, setIsOpen] = useState(false);
 
   // Filter items by permission
-  const visibleItems = category.items.filter(
+  const visibleItems = category.items ? category.items.filter(
     (item: any) => !item.permission || hasPermission(role, item.permission),
-  );
+  ) : [];
 
-  const hasActive = visibleItems.some((item: any) => {
-    if (item.url === "/dashboard/overview")
-      return pathname === "/dashboard" || pathname === "/dashboard/overview";
-    return pathname.startsWith(item.url);
-  });
+  const hasActive = category.url
+    ? pathname.startsWith(category.url)
+    : visibleItems.some((item: any) => {
+        if (item.url === "/dashboard/overview")
+          return pathname === "/dashboard" || pathname === "/dashboard/overview";
+        return pathname.startsWith(item.url);
+      });
 
   useEffect(() => {
     if (hasActive) setIsOpen(true);
   }, [hasActive]);
 
-  if (visibleItems.length === 0) return null;
+  // Check permission for direct link
+  if (category.url && category.permission && !hasPermission(role, category.permission)) {
+    return null;
+  }
+
+  if (!category.url && visibleItems.length === 0) return null;
+
+  if (category.url) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          render={<Link href={category.url} />}
+          isActive={hasActive}
+          className="hover:bg-muted/50"
+        >
+          <category.icon className="w-4 h-4 text-muted-foreground" />
+          <span className="font-medium">{category.title}</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
   return (
     <SidebarMenuItem>
@@ -525,8 +569,21 @@ function CollapsibleMenu({
                 <SidebarMenuSubButton
                   render={<Link href={item.url} />}
                   isActive={isActive}
+                  className={cn(
+                    "transition-all py-2",
+                    isActive 
+                      ? "bg-primary/10 border border-primary/20 text-primary font-medium shadow-sm" 
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent"
+                  )}
                 >
-                  <item.icon className="w-3.5 h-3.5" />
+                  {item.icon ? (
+                    <item.icon className="w-3.5 h-3.5" />
+                  ) : (
+                    <div className={cn(
+                      "w-1.5 h-1.5 rounded-full mr-0.5 shrink-0 transition-colors",
+                      isActive ? "bg-primary" : "bg-muted-foreground/60"
+                    )} />
+                  )}
                   <span>{item.title}</span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
@@ -541,15 +598,26 @@ function CollapsibleMenu({
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { user } = useAuthStore();
-  const { orgName, plan } = useOrganizationStore();
+  const { orgName, orgDomain, plan } = useOrganizationStore();
   const role = user?.role ?? "viewer";
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-md overflow-hidden">
-            <span className="font-bold text-primary-foreground text-xl leading-none uppercase">
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm overflow-hidden border border-border">
+            {orgDomain ? (
+              <img 
+                src={`https://www.google.com/s2/favicons?domain=${orgDomain}&sz=128`} 
+                alt={`${orgName || "Company"} logo`}
+                className="w-full h-full object-contain p-1"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            <span className={`font-bold text-primary text-xl leading-none uppercase ${orgDomain ? 'hidden' : ''}`}>
               {orgName ? orgName.charAt(0) : "O"}
             </span>
           </div>

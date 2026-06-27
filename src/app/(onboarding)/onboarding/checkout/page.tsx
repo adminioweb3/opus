@@ -36,9 +36,11 @@ const PLANS = [
   }
 ]
 
-export default function CheckoutPage() {
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
+
+export default function PaywallCheckoutPage() {
   const router = useRouter()
-  const { websiteUrl, businessName, competitors, analysisResult, setSubscribed, setState } = useJourneyStore()
+  const { websiteUrl, businessName, analysisResult, setSubscribed, setState } = useJourneyStore()
 
   const [selectedPlan, setSelectedPlan] = useState("growth")
   const [loading, setLoading] = useState(false)
@@ -51,11 +53,11 @@ export default function CheckoutPage() {
       await completeOnboarding({
         websiteUrl: websiteUrl || "",
         businessName: businessName || "",
-        competitors: competitors || "",
-        visibilityScore: analysisResult?.visibilityScore ?? LIMITED_REPORT.visibilityScore,
-        brandAuthority: analysisResult?.brandAuthority ?? LIMITED_REPORT.brandAuthority,
-        contentStrength: analysisResult?.contentStrength ?? LIMITED_REPORT.contentStrength,
-        citationScore: analysisResult?.citationScore ?? LIMITED_REPORT.citationScore
+
+        visibilityScore: analysisResult?.overallConfidence ?? LIMITED_REPORT.visibilityScore,
+        brandAuthority: analysisResult?.domainAuthorityEstimate?.value?.estimatedScore ?? LIMITED_REPORT.brandAuthority,
+        contentStrength: analysisResult?.seoStrength?.value?.score ?? LIMITED_REPORT.contentStrength,
+        citationScore: analysisResult?.topicalAuthority?.confidence ?? LIMITED_REPORT.citationScore
       })
 
       // Update the local organization store so the sidebar/navbar show the correct details

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,9 +9,25 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { motion } from "framer-motion"
 import { CheckCircle2, Globe, Plus, RefreshCw, XCircle, Loader2 } from "lucide-react"
-import { fetchWebsites, connectWebsite, Website } from "@/lib/api/websitesApi"
+import { connectWebsite, Website } from "@/lib/api/websitesApi"
+import { getFullReport } from "@/lib/api/reportApi"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 
 export default function WebsitesPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>}>
+      <WebsitesPageContent />
+    </Suspense>
+  )
+}
+
+function WebsitesPageContent() {
+  const { organizationId } = useOrganizationStore()
+  const searchParams = useSearchParams()
+  const orgId = searchParams.get('orgId') || organizationId
+  
   const [websites, setWebsites] = useState<Website[]>([])
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -20,10 +36,35 @@ export default function WebsitesPage() {
   const [connecting, setConnecting] = useState(false)
 
   const loadWebsites = async () => {
+    if (!orgId) return
     try {
-      const data = await fetchWebsites()
-      setWebsites(data)
-    } catch (error) {
+      setLoading(true)
+      const data = await getFullReport(orgId)
+      
+      let healthScore = 85;
+      if (data.executiveSummary?.overallSEOScore) {
+        healthScore = data.executiveSummary.overallSEOScore;
+      } else if (data.websiteProfile?.rawProfileJson) {
+        try {
+          const parsed = JSON.parse(data.websiteProfile.rawProfileJson);
+          healthScore = parsed.domainAuthorityEstimate?.estimatedScore || 85;
+        } catch(e) {}
+      }
+
+      const siteInfo: Website = {
+        id: data.websiteProfile?.id || "temp-id-1",
+        organizationId: orgId,
+        domainUrl: data.websiteProfile?.websiteUrl || "example.com",
+        platformName: "Custom CMS",
+        healthScore: healthScore,
+        visibilityScore: data.visibilitySummary?.overallVisibilityScore || data.executiveSummary?.overallAIVisibilityScore || 50,
+        status: "Connected",
+        lastSyncAt: data.websiteProfile?.createdAt || new Date().toISOString(),
+        createdAt: data.websiteProfile?.createdAt || new Date().toISOString()
+      }
+      
+      setWebsites([siteInfo])
+      } catch (error) {
       console.error("Failed to fetch websites", error)
     } finally {
       setLoading(false)

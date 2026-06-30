@@ -40,10 +40,7 @@ export interface Competitor {
   name: string;
   websiteUrl: string;
   similarityScore: number;
-  brandAuthorityScore: number;
-  seoStrength: number;
-  estimatedAIVisibility: number;
-  estimatedEmployees: string;
+  rawJson: string;
   country: string;
   createdAt: string;
 }
@@ -51,16 +48,22 @@ export interface Competitor {
 export interface AiSearchPrompt {
   id: string;
   organizationId: string;
-  promptText: string;
-  intentCategory: string;
-  targetPersona: string;
-  searchVolumeEstimate: string;
+  queryString: string;
+  searchEngine: string;
+  topic?: string;
+  intent?: string;
+  difficulty?: string;
+  persona?: string;
   commercialValue: number;
-  funnelStage: string;
-  estimatedVisibility: number;
-  averageRank: number;
+  rawJson: string;
+  visibilityScore: number;
+  estimatedRank?: string;
+  confidence: number;
+  appearsInAnswer: boolean;
+  shareOfVoiceContribution: number;
   mentionProbability: number;
-  primaryTopic: string;
+  brandStrength: number;
+  contentStrength: number;
   createdAt: string;
 }
 
@@ -142,11 +145,13 @@ export interface RegionAnalysisSummary {
 export interface RegionScore {
   id: string;
   organizationId: string;
-  regionName: string;
-  visibilityScore: number;
-  averageRank: number;
-  localLeader: string;
-  opportunityLevel: string;
+  region: string;
+  visibility: number;
+  ranking: string;
+  competitorLeader: string;
+  shareOfVoice: number;
+  contentOpportunityJson: string;
+  reason: string;
   createdAt: string;
 }
 

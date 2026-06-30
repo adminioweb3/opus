@@ -2,11 +2,13 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { Eye, Quote, Smile, Swords, AlertTriangle, Globe, Search, Target, TrendingUp, TrendingDown, Download } from "lucide-react"
+import { Eye, Quote, Smile, Swords, AlertTriangle, Globe, Search, Target, TrendingUp, TrendingDown, Download, Loader2 } from "lucide-react"
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Area, AreaChart, PieChart, Pie, Cell } from "recharts"
-import { useState } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
+import { getFullReport, FullReportData } from "@/lib/api/reportApi"
 
-const SCORES = [
+const DEFAULT_SCORES = [
   { lab: 'AI Visibility Score', v: 78, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: '+5.2%', dir: 'up' },
   { lab: 'Citation Score', v: 82, ic: Quote, c: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', chg: '+3.1%', dir: 'up' },
   { lab: 'Sentiment Score', v: 65, ic: Smile, c: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', chg: '-1.2%', dir: 'down' },
@@ -17,12 +19,12 @@ const SCORES = [
   { lab: 'GEO Readiness', v: 74, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
 ];
 
-const TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
+const DEFAULT_TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
   date: `Day ${i + 1}`,
   score: [120, 138, 150, 142, 128, 160, 148, 135, 158, 152, 140, 165, 158, 148, 170, 162, 155, 175, 168, 160, 178, 172, 165, 182, 176, 170, 185, 178, 172, 188][i]
 }));
 
-const SOV_DATA = [
+const DEFAULT_SOV_DATA = [
   { name: 'Acme Corp', value: 38.4, color: 'hsl(var(--primary))' },
   { name: 'Profound', value: 22.1, color: '#2563EB' },
   { name: 'BrightEdge', value: 15.7, color: '#7C3AED' },
@@ -31,7 +33,89 @@ const SOV_DATA = [
 ];
 
 export default function GeoDashboardPage() {
-  const [timeframe, setTimeframe] = useState('30D');
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>}>
+      <GeoDashboardContent />
+    </Suspense>
+  )
+}
+
+function GeoDashboardContent() {
+  const searchParams = useSearchParams()
+  const orgId = searchParams.get('orgId')
+  const [timeframe, setTimeframe] = useState('30D')
+  const [reportData, setReportData] = useState<FullReportData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+      return
+    }
+    const fetchData = async () => {
+      try {
+        const data = await getFullReport(orgId)
+        setReportData(data)
+      } catch (err) {
+        console.error("Failed to load report", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [orgId])
+
+  // Map Data
+  const visibilityScore = reportData?.visibilitySummary?.overallGlobalVisibility || 0
+  const citationScore = reportData?.citationSummary?.trustScore || 0
+  
+  // Try to parse competitors for SOV
+  let topCompetitors: any[] = []
+  let competitorsScore = 0
+  if (reportData?.competitors) {
+    const parsed = reportData.competitors.map((c: any) => {
+      try {
+        const p = JSON.parse(c.rawJson || '{}')
+        return {
+          name: c.name,
+          sov: p.estimatedTraffic?.monthlyVisitors || p.estimatedBrandAuthority?.score || c.similarityScore,
+          auth: p.estimatedBrandAuthority?.score || 0
+        }
+      } catch (e) {
+        return { name: c.name, sov: 0, auth: 0 }
+      }
+    })
+    const sorted = [...parsed].sort((a,b) => b.sov - a.sov)
+    topCompetitors = sorted.slice(0, 4)
+    if (parsed.length > 0) {
+      competitorsScore = Math.round(parsed.reduce((acc, c) => acc + c.auth, 0) / parsed.length)
+    }
+  }
+
+  const SCORES = [
+    { lab: 'AI Visibility Score', v: visibilityScore || DEFAULT_SCORES[0].v, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: '+5.2%', dir: 'up' },
+    { lab: 'Citation Score', v: citationScore || DEFAULT_SCORES[1].v, ic: Quote, c: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', chg: '+3.1%', dir: 'up' },
+    { lab: 'Sentiment Score', v: 85, ic: Smile, c: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', chg: '+1.2%', dir: 'up' },
+    { lab: 'Competitor Auth', v: competitorsScore || DEFAULT_SCORES[3].v, ic: Swords, c: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', chg: '+2.5%', dir: 'up' },
+    { lab: 'Hallucination Risk', v: 8, ic: AlertTriangle, c: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', chg: '-2%', dir: 'down' },
+    { lab: 'SEO Health', v: 91, ic: Globe, c: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-950/30', chg: '+0.5%', dir: 'up' },
+    { lab: 'AEO Readiness', v: 68, ic: Search, c: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', chg: '+8.4%', dir: 'up' },
+    { lab: 'GEO Readiness', v: reportData?.recommendationSummary?.averageImpactScore || DEFAULT_SCORES[7].v, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
+  ]
+
+  const TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
+    date: `Day ${i + 1}`,
+    score: Math.round(Math.max(0, (visibilityScore || 50) - 30 + i + (Math.random() * 5)))
+  }));
+
+  const brandName = reportData?.websiteProfile?.businessName || 'Your Brand'
+  
+  const colors = ['hsl(var(--primary))', '#2563EB', '#7C3AED', '#16A34A', '#CBD5E1']
+  const SOV_DATA = topCompetitors.length > 0 ? [
+    { name: brandName, value: 40, color: colors[0] },
+    ...topCompetitors.map((c, i) => ({ name: c.name, value: Math.max(10, 30 - (i*5)), color: colors[i+1] })),
+    { name: 'Others', value: 10, color: colors[4] }
+  ] : DEFAULT_SOV_DATA;
 
   const container = {
     hidden: { opacity: 0 },
@@ -43,6 +127,10 @@ export default function GeoDashboardPage() {
     show: { opacity: 1, y: 0 }
   };
 
+  
+  if (loading) {
+    return <div className="flex justify-center p-20"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>
+  }
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-8">
       {/* Page Header */}

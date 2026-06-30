@@ -382,7 +382,7 @@ const menuCategories = [
       },
       {
         title: "Prompt Strategy",
-        url: "/dashboard/prompts",
+        url: "/dashboard/prompt-intelligence",
         icon: Sparkles,
         permission: "dashboard.view",
       },
@@ -658,21 +658,29 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm overflow-hidden shrink-0">
-            {user?.avatar && user.avatar.startsWith("http") ? (
-              <img
-                src={user.avatar}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
-            ) : user?.avatar ? (
-              user.avatar.charAt(0).toUpperCase()
-            ) : (
-              "?"
-            )}
+            {(() => {
+              const avatar = user ? ("avatar" in user ? user.avatar : user.photoURL) : null;
+              const name = user ? ("name" in user ? user.name : user.displayName || user.email) : "Guest";
+              return (
+                <>
+                  {avatar && avatar.startsWith("http") ? (
+                    <img
+                      src={avatar}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : avatar ? (
+                    avatar.charAt(0).toUpperCase()
+                  ) : (
+                    "?"
+                  )}
+                </>
+              );
+            })()}
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-medium truncate">
-              {user?.name ?? "Guest"}
+              {user ? ("name" in user ? user.name : user.displayName || user.email) : "Guest"}
             </span>
             <span className="text-xs text-muted-foreground truncate">
               {orgName}

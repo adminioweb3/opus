@@ -6,7 +6,21 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
   const competitors = data.competitors || []
   if (competitors.length === 0) return null
 
-  const chartData = competitors.slice(0, 10).map(c => ({
+  const parsedCompetitors = competitors.map(c => {
+    let parsed: any = {};
+    try {
+      parsed = JSON.parse(c.rawJson || '{}');
+    } catch (e) {}
+
+    return {
+      ...c,
+      estimatedAIVisibility: parsed?.estimatedAIVisibility?.score || 0,
+      seoStrength: parsed?.estimatedSEOStrength?.score || 0,
+      brandAuthorityScore: parsed?.estimatedBrandAuthority?.score || 0
+    }
+  });
+
+  const chartData = parsedCompetitors.slice(0, 10).map(c => ({
     name: c.name.substring(0, 15) + (c.name.length > 15 ? '...' : ''),
     similarity: c.similarityScore,
     visibility: c.estimatedAIVisibility
@@ -35,7 +49,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {competitors.slice(0, 8).map((c, i) => (
+                {parsedCompetitors.slice(0, 8).map((c, i) => (
                   <tr key={i} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-slate-900">{c.name}</td>
                     <td className="px-6 py-4">

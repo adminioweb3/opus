@@ -1,13 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus,
-  Mic,
-  ArrowUp,
   Sparkles,
-  User,
   AlertTriangle,
   Target,
   Quote,
@@ -21,10 +18,14 @@ import {
   MapPin,
   DollarSign,
   Paperclip,
+  Mic,
+  ArrowUp,
   Cpu,
-  Search,
   History,
   Bot,
+  Plus,
+  MessageSquare,
+  Search
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -46,117 +47,112 @@ type Message = {
 
 const ASST_CHIPS = [
   {
-    ic: AlertTriangle,
-    c: "text-red-600",
-    t: "Win back my lost Perplexity snippet",
+    icon: AlertTriangle,
+    colorClass: "text-red-600",
+    text: "Win back my lost Perplexity snippet",
     tag: "$40k at risk",
     warn: true,
   },
   {
-    ic: Target,
-    c: "text-primary",
-    t: "Close my top 3 GEO gaps",
+    icon: Target,
+    colorClass: "text-primary",
+    text: "Close my top 3 GEO gaps",
     tag: "+$80k",
-    warn: false,
   },
   {
-    ic: Quote,
-    c: "text-green-600",
-    t: "How do I boost Gemini citations?",
+    icon: Quote,
+    colorClass: "text-green-600",
+    text: "How do I boost Gemini citations?",
     tag: "+6%",
-    warn: false,
   },
   {
-    ic: TrendingUp,
-    c: "text-blue-600",
-    t: "Summarize this week’s visibility wins",
-    warn: false,
+    icon: TrendingUp,
+    colorClass: "text-blue-600",
+    text: "Summarize this week's visibility wins",
   },
   {
-    ic: Swords,
-    c: "text-purple-600",
-    t: "What is Competitor A doing differently?",
-    warn: false,
+    icon: Swords,
+    colorClass: "text-purple-600",
+    text: "What is Competitor A doing differently?",
   },
   {
-    ic: Rocket,
-    c: "text-sky-500",
-    t: "Draft & publish 5 FAQ pages",
-    warn: false,
+    icon: Rocket,
+    colorClass: "text-sky-500",
+    text: "Draft & publish 5 FAQ pages",
   },
 ];
 
 const ASST_AGENTS = [
   {
-    ic: Pencil,
-    c: "text-purple-600",
-    bg: "bg-purple-50 dark:bg-purple-950/30 border-purple-100 dark:border-purple-900",
-    n: "Content",
+    icon: Pencil,
+    colorClass: "text-purple-600",
+    bgClass: "bg-purple-50 dark:bg-purple-950/30",
+    name: "Content",
   },
   {
-    ic: Globe,
-    c: "text-primary",
-    bg: "bg-primary/10 border-primary/20",
-    n: "GEO",
+    icon: Globe,
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
+    name: "GEO",
   },
   {
-    ic: Quote,
-    c: "text-sky-500",
-    bg: "bg-sky-50 dark:bg-sky-950/30 border-sky-100 dark:border-sky-900",
-    n: "Citation",
+    icon: Quote,
+    colorClass: "text-sky-500",
+    bgClass: "bg-sky-50 dark:bg-sky-950/30",
+    name: "Citation",
   },
   {
-    ic: Swords,
-    c: "text-red-600",
-    bg: "bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900",
-    n: "Competitor",
+    icon: Swords,
+    colorClass: "text-red-600",
+    bgClass: "bg-red-50 dark:bg-red-950/30",
+    name: "Competitor",
   },
   {
-    ic: Award,
-    c: "text-green-600",
-    bg: "bg-green-50 dark:bg-green-950/30 border-green-100 dark:border-green-900",
-    n: "Authority",
+    icon: Award,
+    colorClass: "text-green-600",
+    bgClass: "bg-green-50 dark:bg-green-950/30",
+    name: "Authority",
   },
   {
-    ic: Code,
-    c: "text-slate-600 dark:text-slate-400",
-    bg: "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700",
-    n: "Technical",
+    icon: Code,
+    colorClass: "text-slate-600 dark:text-slate-400",
+    bgClass: "bg-slate-100 dark:bg-slate-800",
+    name: "Technical",
   },
   {
-    ic: MapPin,
-    c: "text-amber-600",
-    bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900",
-    n: "Local",
+    icon: MapPin,
+    colorClass: "text-amber-600",
+    bgClass: "bg-amber-50 dark:bg-amber-950/30",
+    name: "Local",
   },
   {
-    ic: DollarSign,
-    c: "text-emerald-700",
-    bg: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900",
-    n: "Revenue",
+    icon: DollarSign,
+    colorClass: "text-emerald-700",
+    bgClass: "bg-emerald-50 dark:bg-emerald-950/30",
+    name: "Revenue",
   },
 ];
 
 const ASST_RECENT = [
   {
-    ic: Quote,
-    c: "text-sky-500",
-    bg: "bg-sky-50 dark:bg-sky-950/30",
-    t: "Improving citation rate on Claude",
+    icon: Quote,
+    colorClass: "text-sky-500",
+    bgClass: "bg-sky-50 dark:bg-sky-950/30",
+    text: "Improving citation rate on Claude",
     time: "2h ago",
   },
   {
-    ic: Swords,
-    c: "text-red-600",
-    bg: "bg-red-50 dark:bg-red-950/30",
-    t: "Competitor A snippet analysis",
+    icon: Swords,
+    colorClass: "text-red-600",
+    bgClass: "bg-red-50 dark:bg-red-950/30",
+    text: "Competitor A snippet analysis",
     time: "Yesterday",
   },
   {
-    ic: Rocket,
-    c: "text-primary",
-    bg: "bg-primary/10",
-    t: "FAQ content batch for Q3",
+    icon: Rocket,
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
+    text: "FAQ content batch for Q3",
     time: "2 days ago",
   },
 ];
@@ -165,46 +161,95 @@ export default function AssistantPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<"ask" | "inspect">("ask");
   const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  const [thinkingStatuses, setThinkingStatuses] = useState<string[]>([]);
+  const [isThinking, setIsThinking] = useState(false);
 
   useEffect(() => {
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, thinkingStatuses]);
 
   const handleSend = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
     const userMsg = text.trim();
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: userMsg }]);
+    
+    const newMessages = [...messages, { role: "user", content: userMsg }];
+    setMessages(newMessages as any);
     setIsLoading(true);
+    setThinkingStatuses([]);
+    setIsThinking(true);
+    setMode("ask");
 
     try {
-      const res = await apiClient.post("/assistant/chat", {
-        message: userMsg,
-        history: messages,
+      const baseUrl = apiClient.defaults.baseURL || "http://localhost:5100/api";
+      const token = useAuthStore.getState().token;
+      
+      const response = await fetch(baseUrl + "/assistant/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          message: userMsg,
+          history: messages
+        })
       });
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: res.data.reply },
-      ]);
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.replace('data: ', ''));
+                if (data.status) {
+                  if (data.status === "STATUS_DONE") {
+                    setIsThinking(false);
+                  } else if (data.status.startsWith("RESPONSE:")) {
+                    const finalResponse = data.status.substring(9);
+                    setMessages(prev => [...prev, { role: "assistant", content: finalResponse }]);
+                  } else {
+                    setThinkingStatuses(prev => [...prev, data.status]);
+                  }
+                }
+              } catch (e) {
+                console.error("Parse error", e, line);
+              }
+            }
+          }
+        }
+      }
     } catch (err: any) {
-      const errorMsg =
-        err.response?.data?.error || err.message || "An error occurred";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `Error: ${errorMsg}` },
-      ]);
+      const errorMsg = err.message || "An error occurred";
+      setMessages(prev => [...prev, { role: "assistant", content: `Error: ${errorMsg}` }]);
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
     }
   };
 
   const renderComposer = () => (
     <div className="w-full">
-      <div className="flex items-end gap-2.5 bg-muted/30 dark:bg-muted/10 border-2 border-transparent focus-within:border-primary/50 focus-within:bg-background transition-all rounded-[16px] p-2.5">
+      <div className="flex items-end gap-2.5 bg-background border-2 border-border focus-within:border-primary/50 transition-all rounded-[16px] p-2.5 shadow-sm">
         <button className="w-[34px] h-[34px] rounded-lg text-muted-foreground hover:bg-muted/50 flex items-center justify-center transition-colors shrink-0">
           <Paperclip className="w-5 h-5" />
         </button>
@@ -218,7 +263,7 @@ export default function AssistantPage() {
             }
           }}
           placeholder="Ask Citationly anything..."
-          className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-sm text-foreground outline-none max-h-[120px] min-h-[24px]"
+          className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-[14px] text-foreground outline-none max-h-[120px] min-h-[24px]"
           rows={1}
           style={{ height: "auto" }}
         />
@@ -228,7 +273,7 @@ export default function AssistantPage() {
         <button
           onClick={() => handleSend(input)}
           disabled={!input.trim() || isLoading}
-          className="w-[38px] h-[38px] rounded-[11px] bg-primary text-primary-foreground flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shrink-0 shadow-sm shadow-primary/20"
+          className="w-[38px] h-[38px] rounded-[11px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shrink-0 shadow-sm shadow-primary/20"
         >
           <ArrowUp className="w-5 h-5" />
         </button>
@@ -247,320 +292,272 @@ export default function AssistantPage() {
     </div>
   );
 
-  if (messages.length > 0) {
-    return (
-      <div className="flex h-[calc(100vh-6rem)] w-full max-w-7xl mx-auto bg-background overflow-hidden -mx-4 sm:mx-auto border-t border-border/50">
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0 border-r border-border/50">
-          <div
-            ref={chatScrollRef}
-            className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 no-scrollbar"
-          >
-            {messages.map((msg, i) => (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                key={i}
-                className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
-              >
-                {msg.role === "assistant" ? (
-                  <div className="w-8 h-8 rounded-[9px] bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm mt-1">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-[9px] bg-slate-800 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-1">
-                    SC
-                  </div>
-                )}
-
-                <div
-                  className={`p-3.5 rounded-[14px] text-sm leading-relaxed border shadow-sm ${
-                    msg.role === "user"
-                      ? "bg-slate-800 border-slate-800 text-white"
-                      : "bg-card border-border/50 text-foreground"
-                  }`}
-                >
-                  {msg.role === "user" ? (
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                  ) : (
-                    <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
-                      <ReactMarkdown
-                        components={{
-                          code({
-                            node,
-                            inline,
-                            className,
-                            children,
-                            ...props
-                          }: any) {
-                            const match = /language-(\w+)/.exec(
-                              className || "",
-                            );
-                            if (!inline && match && match[1] === "chart") {
-                              try {
-                                const data = JSON.parse(String(children));
-                                return (
-                                  <div className="h-56 w-full my-3 p-4 rounded-xl border bg-background">
-                                    <ResponsiveContainer
-                                      width="100%"
-                                      height="100%"
-                                    >
-                                      <BarChart data={data}>
-                                        <XAxis
-                                          dataKey="name"
-                                          stroke="#888888"
-                                          fontSize={12}
-                                          tickLine={false}
-                                          axisLine={false}
-                                        />
-                                        <YAxis
-                                          stroke="#888888"
-                                          fontSize={12}
-                                          tickLine={false}
-                                          axisLine={false}
-                                        />
-                                        <Tooltip
-                                          cursor={{ fill: "rgba(0,0,0,0.05)" }}
-                                          contentStyle={{ borderRadius: "8px" }}
-                                        />
-                                        <Bar
-                                          dataKey="value"
-                                          fill="hsl(var(--primary))"
-                                          radius={[4, 4, 0, 0]}
-                                        />
-                                      </BarChart>
-                                    </ResponsiveContainer>
-                                  </div>
-                                );
-                              } catch (e) {
-                                return null;
-                              }
-                            }
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                style={vscDarkPlus as any}
-                                language={match[1]}
-                                PreTag="div"
-                                className="rounded-xl my-2 text-[12px] border w-full"
-                              >
-                                {String(children).replace(/\n$/, "")}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code
-                                className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono"
-                                {...props}
-                              >
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3 max-w-[85%]"
-              >
-                <div className="w-8 h-8 rounded-[9px] bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm mt-1">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div className="p-4 rounded-[14px] bg-card border border-border/50 shadow-sm flex items-center gap-1.5 h-[52px]">
-                  <motion.div
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 1.2, delay: 0 }}
-                    className="w-1.5 h-1.5 rounded-full bg-primary"
-                  />
-                  <motion.div
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 }}
-                    className="w-1.5 h-1.5 rounded-full bg-primary"
-                  />
-                  <motion.div
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 1.2, delay: 0.4 }}
-                    className="w-1.5 h-1.5 rounded-full bg-primary"
-                  />
-                </div>
-              </motion.div>
-            )}
+  return (
+    <div className="flex flex-col h-[calc(100vh-6rem)] w-full max-w-[1400px] mx-auto bg-muted/20 border border-border/50 rounded-xl overflow-hidden shadow-sm">
+      
+      {/* Hub Bar */}
+      <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border/50 shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-[10px] bg-primary/10 text-primary flex items-center justify-center">
+            <Sparkles className="w-5 h-5" />
           </div>
-          <div className="p-3 md:p-5 bg-background border-t border-border/50">
-            {renderComposer()}
+          <div>
+            <h2 className="text-[15px] font-bold text-foreground leading-tight">Citationly Assistant</h2>
+            <p className="text-[13px] text-muted-foreground">Ask anything — or inspect the real answers AI gives about you</p>
           </div>
         </div>
-
-        {/* Right Rail */}
-        <div className="hidden lg:flex flex-col w-[260px] shrink-0 bg-background overflow-y-auto no-scrollbar">
-          <div className="p-4">
-            <button
-              onClick={() => setMessages([])}
-              className="w-full py-2 rounded-xl border-2 border-dashed border-primary/30 text-primary text-[12px] font-semibold hover:bg-primary/5 hover:border-primary/50 transition-colors flex items-center justify-center gap-2"
-            >
-              <Plus className="w-3.5 h-3.5" /> New chat
-            </button>
-          </div>
-
-          <div className="px-4 pb-3">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2.5 flex items-center gap-1.5">
-              <History className="w-3 h-3" /> Recent
-            </div>
-            <div className="space-y-0.5">
-              {ASST_RECENT.map((r, i) => {
-                const Icon = r.ic;
-                return (
-                  <div
-                    key={i}
-                    className="flex gap-2.5 p-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors group"
-                  >
-                    <div
-                      className={`w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 ${r.bg} ${r.c} border border-transparent group-hover:border-border/50`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[11.5px] font-semibold text-foreground leading-tight truncate">
-                        {r.t}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">
-                        {r.time}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="px-4 pb-4">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2.5 flex items-center gap-1.5 mt-2">
-              <Bot className="w-3 h-3" /> Quick agents
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              {ASST_AGENTS.map((a, i) => {
-                const Icon = a.ic;
-                return (
-                  <div
-                    key={i}
-                    onClick={() => handleSend(`Launch the ${a.n} agent`)}
-                    className="flex flex-col items-center gap-1 p-2 rounded-xl border border-border/50 hover:border-primary/50 hover:shadow-sm hover:shadow-primary/5 cursor-pointer transition-all bg-card"
-                  >
-                    <div
-                      className={`w-7 h-7 rounded-[7px] flex items-center justify-center ${a.bg} ${a.c}`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="text-[9.5px] font-semibold text-muted-foreground">
-                      {a.n}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        
+        <div className="flex items-center p-1 bg-muted/30 border border-border/50 rounded-[11px]">
+          <button 
+            onClick={() => setMode("ask")}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "ask" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <MessageSquare className="w-4 h-4" /> Ask
+          </button>
+          <button 
+            onClick={() => setMode("inspect")}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "inspect" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Search className="w-4 h-4" /> Inspect
+          </button>
         </div>
       </div>
-    );
-  }
 
-  // Initial Empty Hero State
-  return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] w-full items-center justify-between px-4 overflow-hidden bg-background">
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col items-center justify-start w-full max-w-[700px] flex-1 min-h-0 pt-3 sm:pt-5 pb-4"
-      >
-        {/* Removed Floating Orb */}
-
-        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground text-center mb-1">
-          Hey Sarah{" "}
-          <motion.span
-            animate={{ y: [0, -3, 0] }}
-            transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-            className="inline-block"
+      {messages.length === 0 ? (
+        // Hero Empty State
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
+          <motion.div 
+            animate={{ y: [0, -7, 0] }}
+            transition={{ repeat: Infinity, duration: 3.6, ease: "easeInOut" }}
+            className="w-[78px] h-[78px] rounded-[22px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shadow-lg shadow-primary/30 mb-6"
           >
-            👋
-          </motion.span>
-          , let's win the <span className="text-primary">AI search game</span>
-        </h1>
-        <p className="text-[13px] text-muted-foreground text-center mb-4 max-w-[500px]">
-          Ask me anything about your visibility, or fire off one of these — each
-          tied to real pipeline impact.
-        </p>
+            <motion.div
+              animate={{ rotate: [0, 8, 0], scale: [1, 1.12, 1] }}
+              transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
+            >
+              <Sparkles className="w-10 h-10" />
+            </motion.div>
+          </motion.div>
+          
+          <h1 className="text-[30px] font-extrabold tracking-tight text-foreground mb-2">
+            Hey there <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="inline-block">👋</motion.span>, let's win the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#A855F7] to-primary">AI search game</span>
+          </h1>
+          <p className="text-[15px] text-muted-foreground max-w-[520px] mb-8">
+            Ask me anything about your visibility, or fire off one of these — each tied to real pipeline impact.
+          </p>
 
-        {/* Action Chips */}
-        <div className="flex flex-wrap justify-center gap-1.5 mb-5 w-full">
-          {ASST_CHIPS.map((c, i) => {
-            const Icon = c.ic;
-            return (
-              <motion.button
-                key={i}
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: i * 0.05 + 0.1, duration: 0.4 }}
-                onClick={() => handleSend(c.t)}
-                className="flex items-center gap-1.5 bg-card border border-border/80 hover:border-primary hover:shadow-sm hover:shadow-primary/10 rounded-2xl px-3 py-1.5 text-[11.5px] font-semibold text-foreground transition-all hover:-translate-y-0.5 group"
-              >
-                <Icon className={`w-3.5 h-3.5 ${c.c}`} />
-                {c.t}
-                {c.tag && (
-                  <span
-                    className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded-[5px] ml-0.5 ${c.warn ? "bg-red-50 text-red-600 dark:bg-red-950/40" : "bg-green-50 text-green-700 dark:bg-green-950/40"}`}
-                  >
-                    {c.tag}
-                  </span>
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        {/* Quick Launch Agents Grid */}
-        <div className="w-full mb-0">
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2.5 text-center">
-            Or launch an agent
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {ASST_AGENTS.map((a, i) => {
-              const Icon = a.ic;
+          <div className="flex flex-wrap gap-2.5 justify-center max-w-[680px]">
+            {ASST_CHIPS.map((chip, idx) => {
+              const Icon = chip.icon;
               return (
                 <motion.button
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 + 0.3, duration: 0.4 }}
-                  onClick={() => handleSend(`Launch the ${a.n} agent`)}
-                  className="flex flex-col items-center gap-1.5 bg-card border border-border/80 hover:border-primary hover:shadow-sm hover:shadow-primary/10 rounded-[10px] p-2 transition-all hover:-translate-y-0.5"
+                  key={idx}
+                  initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: idx * 0.06, duration: 0.45 }}
+                  onClick={() => handleSend(chip.text)}
+                  className="flex items-center gap-2 bg-background border border-border/80 rounded-[13px] px-4 py-2.5 text-[13px] font-semibold text-foreground hover:-translate-y-1 hover:scale-[1.03] hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all"
                 >
-                  <div
-                    className={`w-7 h-7 rounded-[7px] flex items-center justify-center ${a.bg} ${a.c} border`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="text-[10px] font-semibold text-foreground text-center leading-tight">
-                    {a.n} agent
-                  </div>
+                  <Icon className={`w-[17px] h-[17px] ${chip.colorClass}`} />
+                  {chip.text}
+                  {chip.tag && (
+                    <span className={`text-[11px] px-2 py-0.5 rounded-md ${chip.warn ? "bg-red-100 text-red-700 dark:bg-red-900/30" : "bg-green-100 text-green-700 dark:bg-green-900/30"}`}>
+                      {chip.tag}
+                    </span>
+                  )}
                 </motion.button>
               );
             })}
           </div>
-        </div>
-      </motion.div>
 
-      {/* Composer at the bottom of the screen */}
-      <div className="w-full max-w-[700px] shrink-0 pb-2">
-        {renderComposer()}
-      </div>
+          <div className="mt-10 w-full max-w-[680px]">
+            <div className="text-[12px] uppercase tracking-widest text-muted-foreground font-bold mb-4">Or launch an agent</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {ASST_AGENTS.map((agent, idx) => {
+                const Icon = agent.icon;
+                return (
+                  <motion.button
+                    key={idx}
+                    initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: (idx * 0.04) + 0.2, duration: 0.45 }}
+                    onClick={() => handleSend(`Launch the ${agent.name} agent`)}
+                    className="bg-background border border-border/80 rounded-[13px] p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-500/10 transition-all"
+                  >
+                    <div className={`w-10 h-10 rounded-[11px] flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11.5px] font-semibold text-foreground">{agent.name} agent</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="w-full max-w-[680px] mt-10">
+            {renderComposer()}
+          </div>
+        </div>
+      ) : (
+        // Active Chat Split Layout
+        <div className="flex-1 flex overflow-hidden">
+          {/* Chat Column */}
+          <div className="flex-1 flex flex-col min-w-0 border-r border-border/50 bg-background">
+            <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+              {messages.map((msg, i) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  key={i}
+                  className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
+                >
+                  {msg.role === "assistant" ? (
+                    <div className="w-[32px] h-[32px] rounded-[9px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                      <Sparkles className="w-[16px] h-[16px]" />
+                    </div>
+                  ) : (
+                    <div className="w-[32px] h-[32px] rounded-[9px] bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 text-[12px] font-bold mt-1">
+                      ME
+                    </div>
+                  )}
+
+                  <div
+                    className={`p-3.5 rounded-[14px] text-[14px] leading-[1.55] border shadow-sm ${
+                      msg.role === "user"
+                        ? "bg-slate-800 border-slate-800 text-white dark:bg-slate-700 dark:border-slate-700"
+                        : "bg-background border-border text-foreground"
+                    }`}
+                  >
+                    {msg.role === "user" ? (
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                    ) : (
+                      <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }: any) {
+                              const match = /language-(\w+)/.exec(className || "");
+                              if (!inline && match && match[1] === "chart") {
+                                try {
+                                  const data = JSON.parse(String(children));
+                                  return (
+                                    <div className="h-56 w-full my-3 p-4 rounded-xl border bg-background">
+                                      <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={data}>
+                                          <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                                          <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                                          <Tooltip cursor={{ fill: "rgba(0,0,0,0.05)" }} contentStyle={{ borderRadius: "8px" }} />
+                                          <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                      </ResponsiveContainer>
+                                    </div>
+                                  );
+                                } catch (e) {
+                                  return null;
+                                }
+                              }
+                              return !inline && match ? (
+                                <SyntaxHighlighter style={vscDarkPlus as any} language={match[1]} PreTag="div" className="rounded-xl my-2 text-[12px] border w-full">
+                                  {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                              ) : (
+                                <code className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono" {...props}>{children}</code>
+                              );
+                            }
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+
+              {isThinking && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3 max-w-[85%]">
+                  <div className="w-[32px] h-[32px] rounded-[9px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                    <Sparkles className="w-[16px] h-[16px]" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {thinkingStatuses.map((s, idx) => (
+                      <motion.div key={idx} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] text-muted-foreground flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse" />
+                        {s}
+                      </motion.div>
+                    ))}
+                    <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/20 rounded-[14px] w-fit border border-border/50">
+                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" />
+                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.2s" }} />
+                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="p-4 bg-background border-t border-border/50">
+              {renderComposer()}
+            </div>
+          </div>
+
+          {/* Right Rail */}
+          <div className="w-[280px] bg-muted/10 hidden lg:flex flex-col overflow-y-auto">
+            <div className="p-4 pt-5 pb-2 border-b border-border/30">
+              <button 
+                onClick={() => setMessages([])}
+                className="w-full py-2.5 px-4 border-2 border-dashed border-primary/30 text-primary font-semibold text-[13px] rounded-[11px] flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors"
+              >
+                <Plus className="w-4 h-4" /> New chat
+              </button>
+            </div>
+            
+            <div className="p-4 pb-2">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold mb-3">
+                <History className="w-3.5 h-3.5" /> Recent
+              </div>
+              <div className="flex flex-col gap-1">
+                {ASST_RECENT.map((r, idx) => {
+                  const Icon = r.icon;
+                  return (
+                    <button key={idx} className="flex items-center gap-3 p-2.5 rounded-[11px] hover:bg-muted/50 transition-colors text-left">
+                      <div className={`w-[30px] h-[30px] shrink-0 rounded-lg flex items-center justify-center ${r.bgClass} ${r.colorClass}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[12.5px] font-semibold text-foreground truncate">{r.text}</div>
+                        <div className="text-[11px] text-muted-foreground">{r.time}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="p-4 pt-2">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold mb-3">
+                <Bot className="w-3.5 h-3.5" /> Quick agents
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {ASST_AGENTS.map((agent, idx) => {
+                  const Icon = agent.icon;
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => handleSend(`Launch the ${agent.name} agent`)}
+                      className="flex flex-col items-center gap-1.5 p-3 bg-background border border-border/50 rounded-[11px] hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm transition-all"
+                    >
+                      <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}>
+                        <Icon className="w-[15px] h-[15px]" />
+                      </div>
+                      <span className="text-[10.5px] font-semibold text-muted-foreground">{agent.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

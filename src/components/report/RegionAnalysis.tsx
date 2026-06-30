@@ -29,28 +29,28 @@ export default function RegionAnalysis({ data }: { data: FullReportData }) {
             <tbody className="divide-y divide-slate-100">
               {sortedRegions.map((r, i) => (
                 <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-slate-900">{r.regionName}</td>
+                  <td className="px-6 py-4 font-medium text-slate-900">{r.region}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div 
-                          className={`h-full ${r.visibilityScore >= 70 ? 'bg-emerald-500' : r.visibilityScore >= 40 ? 'bg-amber-500' : 'bg-slate-300'}`} 
-                          style={{ width: `${r.visibilityScore}%` }} 
+                          className={`h-full ${(r.visibility || 0) >= 70 ? 'bg-emerald-500' : (r.visibility || 0) >= 40 ? 'bg-amber-500' : 'bg-slate-300'}`} 
+                          style={{ width: `${r.visibility || 0}%` }} 
                         />
                       </div>
-                      <span className="text-slate-600 font-medium">{r.visibilityScore}</span>
+                      <span className="text-slate-600 font-medium">{r.visibility || 0}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{r.averageRank.toFixed(1)}</td>
-                  <td className="px-6 py-4 text-slate-600">{r.localLeader}</td>
+                  <td className="px-6 py-4 text-slate-600">{r.ranking || '-'}</td>
+                  <td className="px-6 py-4 text-slate-600">{r.competitorLeader || 'Unknown'}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium ${
-                      r.opportunityLevel.toLowerCase() === 'high' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20' : 
-                      r.opportunityLevel.toLowerCase() === 'medium' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20' : 
+                      (r.reason || '').toLowerCase().includes('high') ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20' : 
+                      (r.reason || '').toLowerCase().includes('medium') ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20' : 
                       'bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-500/20'
                     }`}>
-                      {r.opportunityLevel.toLowerCase() === 'high' && <TrendingUp className="w-3 h-3" />}
-                      {r.opportunityLevel}
+                      {(r.reason || '').toLowerCase().includes('high') && <TrendingUp className="w-3 h-3" />}
+                      {r.reason || 'Low'}
                     </span>
                   </td>
                 </tr>

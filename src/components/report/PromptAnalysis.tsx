@@ -33,12 +33,12 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
               {sortedPrompts.map((p, i) => (
                 <tr key={i} className="hover:bg-blue-50/30 transition-colors">
                   <td className="px-6 py-4">
-                    <p className="font-medium text-slate-900 mb-1">{p.promptText}</p>
-                    <p className="text-xs text-slate-500">{p.primaryTopic}</p>
+                    <p className="font-medium text-slate-900 mb-1">{p.queryString}</p>
+                    <p className="text-xs text-slate-500">{p.topic}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
-                      {p.intentCategory}
+                      {p.intent}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -53,11 +53,11 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`font-medium ${p.estimatedVisibility >= 70 ? 'text-emerald-600' : p.estimatedVisibility >= 40 ? 'text-amber-600' : 'text-rose-600'}`}>
-                      {p.estimatedVisibility}%
+                    <span className={`font-medium ${(p.visibilityScore || 0) >= 70 ? 'text-emerald-600' : (p.visibilityScore || 0) >= 40 ? 'text-amber-600' : 'text-rose-600'}`}>
+                      {p.visibilityScore || 0}%
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{p.targetPersona}</td>
+                  <td className="px-6 py-4 text-slate-600">{p.persona}</td>
                 </tr>
               ))}
             </tbody>

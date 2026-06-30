@@ -27,11 +27,7 @@ function DashboardHeader() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const userName = user
-    ? "name" in user
-      ? user.name
-      : user.displayName
-    : "Guest";
+  const userName = user ? ("name" in user ? user.name : user.displayName || user.email) || "Guest" : "Guest";
   const userAvatar = user
     ? "avatar" in user
       ? user.avatar

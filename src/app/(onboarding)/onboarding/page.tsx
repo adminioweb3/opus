@@ -213,7 +213,7 @@ export default function JourneyOnboardingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <Label>Business Name</Label>
+                  <Label>Organization Name</Label>
                   <Input className="mt-2" placeholder="Acme Corp" value={businessName} onChange={e => updateOnboardingData({ businessName: e.target.value })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">

@@ -47,6 +47,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useOrganizationStore } from "@/lib/stores/organization-store";
+import { syncUserToBackend } from "@/lib/api/authApi";
 import { hasPermission } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -597,9 +598,29 @@ function CollapsibleMenu({
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const { user } = useAuthStore();
-  const { orgName, orgDomain, plan } = useOrganizationStore();
+  const { user, token } = useAuthStore();
+  const { orgName, orgDomain, plan, updateOrg } = useOrganizationStore();
   const role = user?.role ?? "viewer";
+
+  useEffect(() => {
+    if (token) {
+      syncUserToBackend().then(res => {
+        if (res.organizationName || res.websiteDomain) {
+          updateOrg({
+            orgId: res.organizationId,
+            orgName: res.organizationName || "Company",
+            orgDomain: res.websiteDomain || "company.com"
+          });
+        }
+        // Also update the other store if it exists
+        import('@/lib/stores/organizationStore').then(({ useOrganizationStore: camelStore }) => {
+          if (res.organizationId) {
+            camelStore.getState().setOrganizationId(res.organizationId);
+          }
+        }).catch(() => {});
+      }).catch(err => console.error("Sync failed", err));
+    }
+  }, [token, updateOrg]);
 
   return (
     <Sidebar>

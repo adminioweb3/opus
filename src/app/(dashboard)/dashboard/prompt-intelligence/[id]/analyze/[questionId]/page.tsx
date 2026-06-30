@@ -13,8 +13,8 @@ export default function PromptAnalysisWorkspace() {
   
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [data, setData] = useState(null);
-  const [timeline, setTimeline] = useState([]);
+  const [data, setData] = useState<any>(null);
+  const [timeline, setTimeline] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function PromptAnalysisWorkspace() {
     }
   };
 
-  const fetchResults = async (analysisId) => {
+  const fetchResults = async (analysisId: string) => {
     try {
       const res = await fetch(`http://localhost:5100/api/PromptIntelligence/analyses/${analysisId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -70,7 +70,8 @@ export default function PromptAnalysisWorkspace() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      const reader = response.body.getReader();
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response body");
       const decoder = new TextDecoder();
 
       while (true) {
@@ -215,7 +216,7 @@ export default function PromptAnalysisWorkspace() {
         >
           {/* Executive Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 relative overflow-hidden shadow-md text-white border border-blue-800">
+            <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 relative overflow-hidden shadow-md text-white border border-blue-800">
               <div className="absolute top-0 right-0 p-4 opacity-20"><BarChart2 size={80} /></div>
               <p className="text-blue-100 font-medium mb-2">Visibility Score</p>
               <h3 className="text-5xl font-bold mb-2">{data.Visibility?.overallVisibilityScore ?? 0}<span className="text-xl text-blue-200 font-normal">/100</span></h3>
@@ -247,8 +248,8 @@ export default function PromptAnalysisWorkspace() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Raw AI Intelligence</h2>
               
               <div className="space-y-6">
-                {data.Responses?.map((resp) => {
-                  const isMentioned = data.Mentions?.some(m => m.platform === resp.platform && m.isBrand);
+                {data.Responses?.map((resp: any) => {
+                  const isMentioned = data.Mentions?.some((m: any) => m.platform === resp.platform && m.isBrand);
                   return (
                     <div key={resp.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                       <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -277,7 +278,7 @@ export default function PromptAnalysisWorkspace() {
                   <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Zap size={18} className="text-amber-500"/> Action Plan</h3>
                 </div>
                 <div className="p-6 space-y-4">
-                  {data.Recommendations?.map((rec) => (
+                  {data.Recommendations?.map((rec: any) => (
                     <div key={rec.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all">
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs font-bold uppercase tracking-wider text-blue-600">{rec.category}</span>
@@ -301,7 +302,7 @@ export default function PromptAnalysisWorkspace() {
                   <h3 className="font-bold text-lg text-gray-900">Competitor Radar</h3>
                 </div>
                 <div className="p-6 space-y-5">
-                  {data.CompetitorComparisons?.map((comp) => (
+                  {data.CompetitorComparisons?.map((comp: any) => (
                     <div key={comp.id}>
                       <div className="flex justify-between text-sm mb-2 font-medium">
                         <span className="text-gray-900">{comp.competitorName}</span>

@@ -11,9 +11,9 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { useRouter } from "next/navigation";
 
 export default function PromptsDashboard() {
-  const [topics, setTopics] = useState([]);
-  const [expandedTopics, setExpandedTopics] = useState({});
-  const [topicQuestions, setTopicQuestions] = useState({});
+  const [topics, setTopics] = useState<any[]>([]);
+  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+  const [topicQuestions, setTopicQuestions] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTopicName, setNewTopicName] = useState("");
@@ -45,7 +45,7 @@ export default function PromptsDashboard() {
     }
   };
 
-  const fetchQuestionsForTopic = async (topicId) => {
+  const fetchQuestionsForTopic = async (topicId: string) => {
     try {
       const res = await fetch(`http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -59,7 +59,7 @@ export default function PromptsDashboard() {
     }
   };
 
-  const createTopic = async (e) => {
+  const createTopic = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTopicName) return;
     try {
@@ -82,20 +82,20 @@ export default function PromptsDashboard() {
     }
   };
 
-  const toggleExpand = (topicId) => {
+  const toggleExpand = (topicId: string) => {
     setExpandedTopics(prev => ({ ...prev, [topicId]: !prev[topicId] }));
   };
 
-  const getTopicAggregates = (topicId) => {
+  const getTopicAggregates = (topicId: string) => {
     const questions = topicQuestions[topicId] || [];
     if (questions.length === 0) return { score: "-", sov: "-", pos: "-", rank: "-" };
 
     const withVis = questions.filter(q => q.visibility);
     if (withVis.length === 0) return { score: "-", sov: "-", pos: "-", rank: "-" };
 
-    const avgScore = withVis.reduce((acc, q) => acc + (q.visibility.overallVisibilityScore || 0), 0) / withVis.length;
-    const avgSov = withVis.reduce((acc, q) => acc + (q.visibility.shareOfVoice || 0), 0) / withVis.length;
-    const avgPos = withVis.reduce((acc, q) => acc + (q.visibility.averagePosition || 0), 0) / withVis.length;
+    const avgScore = withVis.reduce((acc, q: any) => acc + (q.visibility.overallVisibilityScore || 0), 0) / withVis.length;
+    const avgSov = withVis.reduce((acc, q: any) => acc + (q.visibility.shareOfVoice || 0), 0) / withVis.length;
+    const avgPos = withVis.reduce((acc, q: any) => acc + (q.visibility.averagePosition || 0), 0) / withVis.length;
 
     return {
       score: `${avgScore.toFixed(1)}%`,
@@ -105,7 +105,7 @@ export default function PromptsDashboard() {
     };
   };
 
-  const totalPrompts = Object.values(topicQuestions).reduce((acc, qList) => acc + qList.length, 0);
+  const totalPrompts = Object.values(topicQuestions).reduce((acc: number, qList: any) => acc + qList.length, 0);
 
   return (
     <div className="p-8 max-w-7xl mx-auto text-gray-900">
@@ -195,7 +195,7 @@ export default function PromptsDashboard() {
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
-            {topics.map(topic => {
+            {topics.map((topic: any) => {
               const isExpanded = expandedTopics[topic.id];
               const questions = topicQuestions[topic.id] || [];
               const aggs = getTopicAggregates(topic.id);
@@ -240,7 +240,7 @@ export default function PromptsDashboard() {
                           <div className="p-4 pl-12 text-sm text-gray-500">No prompts found for this topic.</div>
                         ) : (
                           <div className="divide-y divide-gray-200">
-                            {questions.map(q => {
+                            {questions.map((q: any) => {
                               const vis = q.visibility;
                               return (
                                 <div key={q.question.id} className="grid grid-cols-12 gap-4 p-4 pl-12 items-center hover:bg-gray-100 transition-colors">

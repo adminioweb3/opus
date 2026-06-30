@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Play, AlertCircle, CheckCircle, Clock, Sparkles, BarChart2, Shield, Search, Zap } from "lucide-react";
+import { ArrowLeft, Play, AlertCircle, CheckCircle, Sparkles, BarChart2, Shield, Search, Zap } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -13,23 +13,36 @@ export default function PromptAnalysisWorkspace() {
   
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [data, setData] = useState<any>(null);
-  const [timeline, setTimeline] = useState<any[]>([]);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
+  const [timeline, setTimeline] = useState<Record<string, unknown>[]>([]);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    fetchInitialData();
-  }, [questionId, token]);
+    const fetchResults = async (analysisId: string) => {
+      try {
+        const res = await fetch(`http://localhost:5100/api/PromptIntelligence/analyses/${analysisId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const analysisData = await res.json();
+          setData(analysisData);
+        }
+      } catch (error) {
+        console.error("Error fetching results:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchInitialData = async () => {
-    if (!token) return;
+    const fetchInitialData = async () => {
+      if (!token) return;
     try {
       const res = await fetch(`http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const questions = await res.json();
-        const currentQ = questions.find(q => q.question.id === questionId);
+        const currentQ = questions.find((q: Record<string, unknown>) => (q.question as Record<string, unknown>).id === questionId);
         
         if (currentQ?.latestAnalysis?.status === "Completed") {
           await fetchResults(currentQ.latestAnalysis.id);
@@ -41,7 +54,10 @@ export default function PromptAnalysisWorkspace() {
       console.error("Error fetching question data:", error);
       setLoading(false);
     }
-  };
+    };
+    
+    fetchInitialData();
+  }, [questionId, token, topicId]);
 
   const fetchResults = async (analysisId: string) => {
     try {
@@ -134,7 +150,7 @@ export default function PromptAnalysisWorkspace() {
               )}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-2 text-gray-900">
-              "Which software is best for B2B sales in 2026?"
+              &quot;Which software is best for B2B sales in 2026?&quot;
             </h1>
             <p className="text-gray-500 flex items-center gap-2 font-medium">
               <Shield size={16} className="text-blue-500" /> Tracked against 7 major AI platforms
@@ -184,7 +200,7 @@ export default function PromptAnalysisWorkspace() {
                   className={`flex items-center gap-3 font-medium ${item.error ? 'text-rose-500' : i === timeline.length - 1 ? 'text-gray-900' : 'text-gray-400'}`}
                 >
                   {item.error ? <AlertCircle size={16} /> : i === timeline.length - 1 ? <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div> : <CheckCircle size={16} className="text-emerald-500" />}
-                  <span>{item.step}</span>
+                  <span>{item.step as string}</span>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -204,7 +220,7 @@ export default function PromptAnalysisWorkspace() {
             <Search size={40} className="text-blue-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">No Data Yet</h2>
-          <p className="text-gray-500 max-w-lg mx-auto text-lg">Click the "Run Analysis" button above to query all AI models and generate your visibility report.</p>
+          <p className="text-gray-500 max-w-lg mx-auto text-lg">Click the &quot;Run Analysis&quot; button above to query all AI models and generate your visibility report.</p>
         </div>
       )}
 
@@ -219,26 +235,26 @@ export default function PromptAnalysisWorkspace() {
             <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 relative overflow-hidden shadow-md text-white border border-blue-800">
               <div className="absolute top-0 right-0 p-4 opacity-20"><BarChart2 size={80} /></div>
               <p className="text-blue-100 font-medium mb-2">Visibility Score</p>
-              <h3 className="text-5xl font-bold mb-2">{data.Visibility?.overallVisibilityScore ?? 0}<span className="text-xl text-blue-200 font-normal">/100</span></h3>
+              <h3 className="text-5xl font-bold mb-2">{(data.Visibility as Record<string, unknown>)?.overallVisibilityScore as number ?? 0}<span className="text-xl text-blue-200 font-normal">/100</span></h3>
               <p className="text-sm text-blue-100 flex items-center gap-1 font-medium"><Sparkles size={14} className="text-yellow-300"/> Exceptional presence</p>
             </div>
             
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <p className="text-gray-500 font-medium mb-2">Share of Voice</p>
-              <h3 className="text-4xl font-bold text-gray-900 mb-2">{data.Visibility?.shareOfVoice ?? 0}%</h3>
-              <p className="text-sm text-gray-500 font-medium">vs {data.Visibility?.competitorCount ?? 0} Competitors</p>
+              <h3 className="text-4xl font-bold text-gray-900 mb-2">{(data.Visibility as Record<string, unknown>)?.shareOfVoice as number ?? 0}%</h3>
+              <p className="text-sm text-gray-500 font-medium">vs {(data.Visibility as Record<string, unknown>)?.competitorCount as number ?? 0} Competitors</p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <p className="text-gray-500 font-medium mb-2">Avg Position</p>
-              <h3 className="text-4xl font-bold text-gray-900 mb-2">{data.Visibility?.averagePosition ?? 0}<span className="text-lg text-gray-400 font-normal">th %ile</span></h3>
+              <h3 className="text-4xl font-bold text-gray-900 mb-2">{(data.Visibility as Record<string, unknown>)?.averagePosition as number ?? 0}<span className="text-lg text-gray-400 font-normal">th %ile</span></h3>
               <p className="text-sm text-gray-500 font-medium">Lower is earlier in response</p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <p className="text-gray-500 font-medium mb-2">Platform Mentions</p>
-              <h3 className="text-4xl font-bold text-gray-900 mb-2">{data.Visibility?.mentionFrequency ?? 0}%</h3>
-              <p className="text-sm text-gray-500 font-medium">Mentioned in {(data.Visibility?.mentionFrequency ?? 0) / 100 * 7}/7 platforms</p>
+              <h3 className="text-4xl font-bold text-gray-900 mb-2">{(data.Visibility as Record<string, unknown>)?.mentionFrequency as number ?? 0}%</h3>
+              <p className="text-sm text-gray-500 font-medium">Mentioned in {((data.Visibility as Record<string, unknown>)?.mentionFrequency as number ?? 0) / 100 * 7}/7 platforms</p>
             </div>
           </div>
 
@@ -248,21 +264,21 @@ export default function PromptAnalysisWorkspace() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Raw AI Intelligence</h2>
               
               <div className="space-y-6">
-                {data.Responses?.map((resp: any) => {
-                  const isMentioned = data.Mentions?.some((m: any) => m.platform === resp.platform && m.isBrand);
+                {(data.Responses as Record<string, unknown>[])?.map((resp: Record<string, unknown>) => {
+                  const isMentioned = (data.Mentions as Record<string, unknown>[])?.some((m: Record<string, unknown>) => m.platform === resp.platform && m.isBrand);
                   return (
-                    <div key={resp.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div key={resp.id as string} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                       <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                         <div className="flex items-center gap-3">
                           <div className={`w-3 h-3 rounded-full ${isMentioned ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
-                          <h3 className="font-semibold text-lg text-gray-900">{resp.platform}</h3>
+                          <h3 className="font-semibold text-lg text-gray-900">{resp.platform as string}</h3>
                         </div>
                         <span className={`text-sm font-semibold px-3 py-1 rounded-full border ${isMentioned ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
                           {isMentioned ? 'Mentioned' : 'Not Mentioned'}
                         </span>
                       </div>
                       <div className="p-6 text-gray-600 leading-relaxed text-sm max-h-60 overflow-y-auto">
-                        {resp.responseText}
+                        {resp.responseText as string}
                       </div>
                     </div>
                   );
@@ -278,18 +294,18 @@ export default function PromptAnalysisWorkspace() {
                   <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Zap size={18} className="text-amber-500"/> Action Plan</h3>
                 </div>
                 <div className="p-6 space-y-4">
-                  {data.Recommendations?.map((rec: any) => (
-                    <div key={rec.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all">
+                  {(data.Recommendations as Record<string, unknown>[])?.map((rec: Record<string, unknown>) => (
+                    <div key={rec.id as string} className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-blue-600">{rec.category}</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-blue-600">{rec.category as string}</span>
                         <span className={`text-xs font-bold px-2 py-1 rounded-md ${rec.priority === 'High' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'}`}>
-                          {rec.priority} Priority
+                          {rec.priority as string} Priority
                         </span>
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">{rec.title}</h4>
-                      <p className="text-sm text-gray-500 mb-3 leading-relaxed">{rec.description}</p>
+                      <h4 className="font-semibold text-gray-900 mb-2">{rec.title as string}</h4>
+                      <p className="text-sm text-gray-500 mb-3 leading-relaxed">{rec.description as string}</p>
                       <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 w-fit px-2.5 py-1 rounded-md">
-                        +{rec.estimatedVisibilityGain}% Est. Gain
+                        +{rec.estimatedVisibilityGain as string}% Est. Gain
                       </div>
                     </div>
                   ))}
@@ -302,11 +318,11 @@ export default function PromptAnalysisWorkspace() {
                   <h3 className="font-bold text-lg text-gray-900">Competitor Radar</h3>
                 </div>
                 <div className="p-6 space-y-5">
-                  {data.CompetitorComparisons?.map((comp: any) => (
-                    <div key={comp.id}>
+                  {(data.CompetitorComparisons as Record<string, unknown>[])?.map((comp: Record<string, unknown>) => (
+                    <div key={comp.id as string}>
                       <div className="flex justify-between text-sm mb-2 font-medium">
-                        <span className="text-gray-900">{comp.competitorName}</span>
-                        <span className="text-gray-500">Vis: {comp.visibilityScore}%</span>
+                        <span className="text-gray-900">{comp.competitorName as string}</span>
+                        <span className="text-gray-500">Vis: {comp.visibilityScore as number}%</span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-2">
                         <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${comp.visibilityScore}%` }}></div>

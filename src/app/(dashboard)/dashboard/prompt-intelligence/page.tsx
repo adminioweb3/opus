@@ -3,61 +3,60 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Search, Plus, ChevronDown, ChevronRight, Download, Filter, 
-  Columns, AlertTriangle, ArrowUpRight, CheckCircle, Clock 
+  Search, ChevronDown, ChevronRight, Download, Filter, 
+  Columns, AlertTriangle, ArrowUpRight 
 } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { useRouter } from "next/navigation";
 
 export default function PromptsDashboard() {
-  const [topics, setTopics] = useState<any[]>([]);
+  const [topics, setTopics] = useState<Record<string, unknown>[]>([]);
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
-  const [topicQuestions, setTopicQuestions] = useState<Record<string, any[]>>({});
+  const [topicQuestions, setTopicQuestions] = useState<Record<string, Record<string, unknown>[]>>({});
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTopicName, setNewTopicName] = useState("");
   const [newTopicDesc, setNewTopicDesc] = useState("");
   
   const token = useAuthStore((state) => state.token);
-  const router = useRouter();
-
   useEffect(() => {
+    const fetchQuestionsForTopic = async (topicId: string) => {
+      try {
+        const res = await fetch(`http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTopicQuestions(prev => ({ ...prev, [topicId]: data }));
+        }
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+      }
+    };
+
+    const fetchTopics = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch("http://localhost:5100/api/PromptIntelligence/topics", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTopics(data);
+          
+          data.forEach((topic: Record<string, unknown>) => fetchQuestionsForTopic(topic.id as string));
+        }
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTopics();
   }, [token]);
 
-  const fetchTopics = async () => {
-    if (!token) return;
-    try {
-      const res = await fetch("http://localhost:5100/api/PromptIntelligence/topics", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setTopics(data);
-        
-        data.forEach(topic => fetchQuestionsForTopic(topic.id));
-      }
-    } catch (error) {
-      console.error("Error fetching topics:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchQuestionsForTopic = async (topicId: string) => {
-    try {
-      const res = await fetch(`http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setTopicQuestions(prev => ({ ...prev, [topicId]: data }));
-      }
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-    }
-  };
 
   const createTopic = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +74,8 @@ export default function PromptsDashboard() {
         setIsModalOpen(false);
         setNewTopicName("");
         setNewTopicDesc("");
-        fetchTopics();
+        // A simple reload is easiest to fetch topics without complex dependency injection
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error creating topic:", error);
@@ -93,9 +93,9 @@ export default function PromptsDashboard() {
     const withVis = questions.filter(q => q.visibility);
     if (withVis.length === 0) return { score: "-", sov: "-", pos: "-", rank: "-" };
 
-    const avgScore = withVis.reduce((acc, q: any) => acc + (q.visibility.overallVisibilityScore || 0), 0) / withVis.length;
-    const avgSov = withVis.reduce((acc, q: any) => acc + (q.visibility.shareOfVoice || 0), 0) / withVis.length;
-    const avgPos = withVis.reduce((acc, q: any) => acc + (q.visibility.averagePosition || 0), 0) / withVis.length;
+    const avgScore = withVis.reduce((acc, q: Record<string, unknown>) => acc + (((q.visibility as Record<string, unknown>).overallVisibilityScore as number) || 0), 0) / withVis.length;
+    const avgSov = withVis.reduce((acc, q: Record<string, unknown>) => acc + (((q.visibility as Record<string, unknown>).shareOfVoice as number) || 0), 0) / withVis.length;
+    const avgPos = withVis.reduce((acc, q: Record<string, unknown>) => acc + (((q.visibility as Record<string, unknown>).averagePosition as number) || 0), 0) / withVis.length;
 
     return {
       score: `${avgScore.toFixed(1)}%`,
@@ -105,7 +105,7 @@ export default function PromptsDashboard() {
     };
   };
 
-  const totalPrompts = Object.values(topicQuestions).reduce((acc: number, qList: any) => acc + qList.length, 0);
+  const totalPrompts = Object.values(topicQuestions).reduce((acc: number, qList: Record<string, unknown>[]) => acc + qList.length, 0);
 
   return (
     <div className="p-8 max-w-7xl mx-auto text-gray-900">
@@ -195,27 +195,28 @@ export default function PromptsDashboard() {
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
-            {topics.map((topic: any) => {
-              const isExpanded = expandedTopics[topic.id];
-              const questions = topicQuestions[topic.id] || [];
-              const aggs = getTopicAggregates(topic.id);
+            {topics.map((topic: Record<string, unknown>) => {
+              const topicId = topic.id as string;
+              const isExpanded = expandedTopics[topicId];
+              const questions = topicQuestions[topicId] || [];
+              const aggs = getTopicAggregates(topicId);
 
               return (
-                <div key={topic.id} className="flex flex-col">
+                <div key={topicId} className="flex flex-col">
                   {/* Topic Row */}
                   <div className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50 transition-colors group">
                     <div className="col-span-5 flex items-center gap-3">
-                      <button onClick={() => toggleExpand(topic.id)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                      <button onClick={() => toggleExpand(topicId)} className="text-gray-400 hover:text-gray-900 transition-colors">
                         {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                       </button>
                       <div>
-                        <Link href={`/dashboard/prompt-intelligence/${topic.id}`} className="font-semibold text-gray-900 hover:text-blue-600 transition-colors block">
-                          {topic.name}
+                        <Link href={`/dashboard/prompt-intelligence/${topicId}`} className="font-semibold text-gray-900 hover:text-blue-600 transition-colors block">
+                          {topic.name as string}
                         </Link>
                         <p className="text-xs text-gray-500 mt-0.5">{questions.length} prompts</p>
                       </div>
                       <Link 
-                        href={`/dashboard/prompt-intelligence/${topic.id}`}
+                        href={`/dashboard/prompt-intelligence/${topicId}`}
                         className="ml-auto opacity-0 group-hover:opacity-100 bg-white hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-md flex items-center gap-1 transition-all shadow-sm"
                       >
                         Analyze <ArrowUpRight size={12} />
@@ -240,29 +241,30 @@ export default function PromptsDashboard() {
                           <div className="p-4 pl-12 text-sm text-gray-500">No prompts found for this topic.</div>
                         ) : (
                           <div className="divide-y divide-gray-200">
-                            {questions.map((q: any) => {
-                              const vis = q.visibility;
+                            {questions.map((q: Record<string, unknown>) => {
+                              const vis = q.visibility as Record<string, unknown>;
+                              const qObj = q.question as Record<string, unknown>;
                               return (
-                                <div key={q.question.id} className="grid grid-cols-12 gap-4 p-4 pl-12 items-center hover:bg-gray-100 transition-colors">
+                                <div key={qObj.id as string} className="grid grid-cols-12 gap-4 p-4 pl-12 items-center hover:bg-gray-100 transition-colors">
                                   <div className="col-span-5 pr-4">
                                     <Link 
-                                      href={`/dashboard/prompt-intelligence/${topic.id}/analyze/${q.question.id}`}
+                                      href={`/dashboard/prompt-intelligence/${topicId}/analyze/${qObj.id}`}
                                       className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                                     >
-                                      {q.question.promptText}
+                                      {qObj.promptText as string}
                                     </Link>
                                   </div>
                                   <div className="col-span-1 text-sm text-gray-600">
-                                    {vis ? `#${Math.max(1, Math.round(5 - (vis.overallVisibilityScore / 25)))}` : "-"}
+                                    {vis ? `#${Math.max(1, Math.round(5 - ((vis.overallVisibilityScore as number) / 25)))}` : "-"}
                                   </div>
                                   <div className="col-span-2 text-sm text-gray-600">
-                                    {vis ? `${vis.overallVisibilityScore.toFixed(1)}%` : "-"}
+                                    {vis ? `${(vis.overallVisibilityScore as number).toFixed(1)}%` : "-"}
                                   </div>
                                   <div className="col-span-2 text-sm text-gray-600">
-                                    {vis ? `${vis.shareOfVoice.toFixed(1)}%` : "-"}
+                                    {vis ? `${(vis.shareOfVoice as number).toFixed(1)}%` : "-"}
                                   </div>
                                   <div className="col-span-2 text-sm text-gray-600">
-                                    {vis ? vis.averagePosition.toFixed(1) : "-"}
+                                    {vis ? (vis.averagePosition as number).toFixed(1) : "-"}
                                   </div>
                                 </div>
                               );

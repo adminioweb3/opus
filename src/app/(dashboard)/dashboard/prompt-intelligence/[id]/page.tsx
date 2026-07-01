@@ -17,7 +17,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 export default function TopicDetails() {
   const { id: topicId } = useParams();
   const router = useRouter();
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newQuestionText, setNewQuestionText] = useState("");
@@ -48,7 +48,7 @@ export default function TopicDetails() {
     }
   };
 
-  const createQuestion = async (e) => {
+  const createQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newQuestionText) return;
     try {
@@ -77,67 +77,67 @@ export default function TopicDetails() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto text-white">
+    <div className="space-y-6 text-foreground">
       <Link
         href="/dashboard/prompt-intelligence"
-        className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors w-fit"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-fit text-sm font-medium"
       >
         <ArrowLeft size={16} />
         Back to Topics
       </Link>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Topic Prompts</h1>
-          <p className="text-gray-400">
+          <h1 className="text-2xl font-bold text-foreground mb-1">Topic Prompts</h1>
+          <p className="text-muted-foreground text-sm">
             Manage and analyze specific prompts within this topic.
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           Add Prompt
         </button>
       </div>
 
-      <div className="bg-[#111318] border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="p-12 flex justify-center">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : questions.length === 0 ? (
           <div className="p-16 text-center">
-            <h3 className="text-xl font-semibold mb-2">No Prompts Found</h3>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+            <h3 className="text-lg font-semibold mb-2">No Prompts Found</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm">
               Add a prompt that your users might ask an AI (e.g. "What is the
               best CRM in 2026?").
             </p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >
               Add Prompt
             </button>
           </div>
         ) : (
-          <table className="w-full text-left">
+          <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-800 bg-[#0a0a0c]">
-                <th className="px-6 py-4 font-medium text-gray-400">Prompt</th>
-                <th className="px-6 py-4 font-medium text-gray-400 text-center">
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 font-medium text-muted-foreground">Prompt</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground text-center">
                   Last Run
                 </th>
-                <th className="px-6 py-4 font-medium text-gray-400 text-center">
+                <th className="px-4 py-3 font-medium text-muted-foreground text-center">
                   Visibility
                 </th>
-                <th className="px-6 py-4 font-medium text-gray-400 text-right">
+                <th className="px-4 py-3 font-medium text-muted-foreground text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800">
+            <tbody className="divide-y divide-border">
               {questions.map((q) => {
                 const isCompleted = q.latestAnalysis?.status === "Completed";
                 const visibility = q.visibility?.overallVisibilityScore ?? "-";
@@ -145,11 +145,11 @@ export default function TopicDetails() {
                 return (
                   <tr
                     key={q.question.id}
-                    className="hover:bg-[#1a1c23] transition-colors group"
+                    className="hover:bg-muted/50 transition-colors group"
                   >
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-3">
                       <p
-                        className="font-medium text-white group-hover:text-blue-400 transition-colors cursor-pointer"
+                        className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer"
                         onClick={() =>
                           router.push(
                             `/dashboard/prompt-intelligence/${topicId}/analyze/${q.question.id}`,
@@ -159,7 +159,7 @@ export default function TopicDetails() {
                         "{q.question.promptText}"
                       </p>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-3 text-center">
                       {q.latestAnalysis ? (
                         <div className="flex items-center justify-center gap-2">
                           {isCompleted ? (
@@ -170,17 +170,17 @@ export default function TopicDetails() {
                           ) : (
                             <Clock size={14} className="text-amber-500" />
                           )}
-                          <span className="text-sm text-gray-300">
+                          <span className="text-sm text-muted-foreground">
                             {new Date(
                               q.latestAnalysis.runAt,
                             ).toLocaleDateString()}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-500">Never</span>
+                        <span className="text-sm text-muted-foreground">Never</span>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-3 text-center">
                       {isCompleted ? (
                         <span
                           className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-sm font-medium ${
@@ -194,13 +194,13 @@ export default function TopicDetails() {
                           {visibility}%
                         </span>
                       ) : (
-                        <span className="text-gray-600">-</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-4 py-3 text-right">
                       <Link
                         href={`/dashboard/prompt-intelligence/${topicId}/analyze/${q.question.id}`}
-                        className="inline-flex items-center gap-2 bg-white/5 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                        className="inline-flex items-center gap-1.5 bg-muted hover:bg-primary hover:text-primary-foreground text-foreground px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm border border-border"
                       >
                         <Play size={14} />
                         Analyze
@@ -215,24 +215,24 @@ export default function TopicDetails() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#111318] border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            className="bg-card border border-border rounded-xl w-full max-w-md overflow-hidden shadow-lg"
           >
-            <div className="p-6 border-b border-gray-800 flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Add New Prompt</h2>
+            <div className="p-5 border-b border-border flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-foreground">Add New Prompt</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 &times;
               </button>
             </div>
-            <form onSubmit={createQuestion} className="p-6">
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+            <form onSubmit={createQuestion} className="p-5">
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-foreground mb-1.5">
                   Prompt Text
                 </label>
                 <textarea
@@ -240,21 +240,21 @@ export default function TopicDetails() {
                   onChange={(e) => setNewQuestionText(e.target.value)}
                   placeholder="e.g. Which software is best for B2B sales?"
                   rows={3}
-                  className="w-full bg-[#0a0a0c] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
+                  className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none shadow-sm"
                   required
                 />
               </div>
-              <div className="flex gap-3 justify-end">
+              <div className="flex gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-lg font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                  className="px-4 py-2 rounded-md font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-medium transition-colors text-sm shadow-sm"
                 >
                   Add Prompt
                 </button>

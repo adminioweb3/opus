@@ -2,6 +2,7 @@
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/layouts/DashboardSidebar";
+import { Logo } from "@/components/ui/logo";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { CommandPalette } from "@/components/features/CommandPalette";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -112,28 +113,34 @@ function DashboardHeader() {
           <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 z-50">
             <div className="px-4 py-3 border-b border-border flex flex-col gap-2">
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-6 h-6 rounded bg-white flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm border border-border">
-                  {useOrganizationStore.getState().orgDomain ? (
-                    <img 
-                      src={`https://www.google.com/s2/favicons?domain=${useOrganizationStore.getState().orgDomain}&sz=128`} 
-                      alt="Logo"
-                      className="w-full h-full object-contain p-0.5"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                  ) : null}
-                  <span className={`${useOrganizationStore.getState().orgDomain ? 'hidden' : ''}`}>
-                    {orgName ? orgName.charAt(0) : "O"}
-                  </span>
-                </div>
-                <div
-                  className="text-sm font-semibold truncate"
-                  title={orgName || "CITATIONLY"}
-                >
-                  {orgName || "CITATIONLY"}
-                </div>
+                {(!orgName || orgName === "CITATIONLY") && !useOrganizationStore.getState().orgDomain ? (
+                  <Logo className="flex-1 overflow-hidden" iconClassName="w-6 h-6" textClassName="text-sm font-semibold truncate" />
+                ) : (
+                  <>
+                    <div className="w-6 h-6 rounded bg-white flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm border border-border shrink-0">
+                      {useOrganizationStore.getState().orgDomain ? (
+                        <img 
+                          src={`https://www.google.com/s2/favicons?domain=${useOrganizationStore.getState().orgDomain}&sz=128`} 
+                          alt="Logo"
+                          className="w-full h-full object-contain p-0.5"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <span className={`${useOrganizationStore.getState().orgDomain ? 'hidden' : ''}`}>
+                        {orgName ? orgName.charAt(0) : "C"}
+                      </span>
+                    </div>
+                    <div
+                      className="text-sm font-semibold truncate"
+                      title={orgName || "CITATIONLY"}
+                    >
+                      {orgName || "CITATIONLY"}
+                    </div>
+                  </>
+                )}
               </div>
               <div>
                 <div className="text-sm font-medium">{userName}</div>

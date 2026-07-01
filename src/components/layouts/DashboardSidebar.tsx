@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   BarChart3,
   Settings,
-  LayoutDashboard,
   BrainCircuit,
   Search,
   MessageSquare,
@@ -25,14 +24,8 @@ import {
   ShieldCheck,
   Ghost,
   Terminal,
-  Library,
-  Briefcase,
-  BarChart2,
   Rocket,
   Globe,
-  Map,
-  HeartHandshake,
-  Store,
   Plug,
   Key,
   CreditCard,
@@ -42,6 +35,7 @@ import {
   GitBranch,
   ChevronRight,
   Folder,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,6 +60,7 @@ import {
   SidebarMenuSubButton,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/ui/logo";
 
 const menuCategories = [
   {
@@ -102,49 +97,48 @@ const menuCategories = [
     ],
   },
   {
-    title: "Operating System",
-    icon: LayoutDashboard,
+    title: "Visibility intelligence",
+    icon: Eye,
     items: [
       {
-        title: "AI Copilot",
-        url: "/dashboard/copilot",
-        icon: MessageSquare,
+        title: "Visibility radar",
+        url: "/dashboard/visibility-radar",
         permission: "dashboard.view",
       },
       {
-        title: "AI Agents",
-        url: "/dashboard/agents",
-        icon: Bot,
+        title: "Citation intelligence",
+        url: "/dashboard/citation-intelligence",
         permission: "dashboard.view",
       },
       {
-        title: "Workspace",
-        url: "/dashboard/workspace",
-        icon: LayoutDashboard,
+        title: "Brand pulse",
+        url: "/dashboard/brand-pulse",
         permission: "dashboard.view",
       },
       {
-        title: "Campaign Builder",
-        url: "/dashboard/campaigns",
-        icon: Rocket,
+        title: "Competitor watch",
+        url: "/dashboard/competitor-watch",
+        permission: "dashboard.view",
+      },
+    ],
+  },
+  {
+    title: "GEO engine",
+    icon: Globe,
+    items: [
+      {
+        title: "GEO dashboard",
+        url: "/dashboard/overview",
         permission: "dashboard.view",
       },
       {
-        title: "AI Strategy",
-        url: "/dashboard/strategy",
-        icon: Map,
+        title: "GEO optimizer",
+        url: "/dashboard/geo-optimizer",
         permission: "dashboard.view",
       },
       {
-        title: "Customer Success",
-        url: "/dashboard/customer-success",
-        icon: HeartHandshake,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Marketplace",
-        url: "/dashboard/marketplace",
-        icon: Store,
+        title: "Answer simulator",
+        url: "/dashboard/answer-simulator",
         permission: "dashboard.view",
       },
     ],
@@ -153,12 +147,6 @@ const menuCategories = [
     title: "Core Intelligence",
     icon: BarChart3,
     items: [
-      {
-        title: "Overview",
-        url: "/dashboard/overview",
-        icon: BarChart3,
-        permission: "dashboard.view",
-      },
       {
         title: "Visibility",
         url: "/dashboard/visibility",
@@ -487,36 +475,61 @@ const menuCategories = [
   },
 ];
 
+type MenuItem = {
+  title: string;
+  url: string;
+  icon?: React.ElementType;
+  permission?: string;
+};
+
+type MenuCategory = {
+  title: string;
+  icon: React.ElementType;
+  url?: string;
+  permission?: string;
+  items?: MenuItem[];
+};
+
 function CollapsibleMenu({
   category,
   pathname,
   role,
 }: {
-  category: any;
+  category: MenuCategory;
   pathname: string;
   role: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   // Filter items by permission
-  const visibleItems = category.items ? category.items.filter(
-    (item: any) => !item.permission || hasPermission(role, item.permission),
-  ) : [];
+  const visibleItems = category.items
+    ? category.items.filter(
+        (item: MenuItem) => !item.permission || hasPermission(role, item.permission),
+      )
+    : [];
 
   const hasActive = category.url
     ? pathname.startsWith(category.url)
-    : visibleItems.some((item: any) => {
+    : visibleItems.some((item: MenuItem) => {
         if (item.url === "/dashboard/overview")
-          return pathname === "/dashboard" || pathname === "/dashboard/overview";
+          return (
+            pathname === "/dashboard" || pathname === "/dashboard/overview"
+          );
         return pathname.startsWith(item.url);
       });
 
+  const [isOpen, setIsOpen] = useState(hasActive);
+
   useEffect(() => {
-    if (hasActive) setIsOpen(true);
+    if (hasActive) {
+      setIsOpen(true);
+    }
   }, [hasActive]);
 
   // Check permission for direct link
-  if (category.url && category.permission && !hasPermission(role, category.permission)) {
+  if (
+    category.url &&
+    category.permission &&
+    !hasPermission(role, category.permission)
+  ) {
     return null;
   }
 
@@ -572,18 +585,20 @@ function CollapsibleMenu({
                   isActive={isActive}
                   className={cn(
                     "transition-all py-2",
-                    isActive 
-                      ? "bg-primary/10 border border-primary/20 text-primary font-medium shadow-sm" 
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent"
+                    isActive
+                      ? "bg-primary/10 border border-primary/20 text-primary font-medium shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent",
                   )}
                 >
                   {item.icon ? (
                     <item.icon className="w-3.5 h-3.5" />
                   ) : (
-                    <div className={cn(
-                      "w-1.5 h-1.5 rounded-full mr-0.5 shrink-0 transition-colors",
-                      isActive ? "bg-primary" : "bg-muted-foreground/60"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full mr-0.5 shrink-0 transition-colors",
+                        isActive ? "bg-primary" : "bg-muted-foreground/60",
+                      )}
+                    />
                   )}
                   <span>{item.title}</span>
                 </SidebarMenuSubButton>
@@ -599,60 +614,40 @@ function CollapsibleMenu({
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { user, token } = useAuthStore();
-  const { orgName, orgDomain, plan, updateOrg } = useOrganizationStore();
-  const role = user?.role ?? "viewer";
+  const { orgName, plan, updateOrg } = useOrganizationStore();
+  const role = (user as { role?: string })?.role ?? "viewer";
 
   useEffect(() => {
     if (token) {
-      syncUserToBackend().then(res => {
-        if (res.organizationName || res.websiteDomain) {
-          updateOrg({
-            orgId: res.organizationId,
-            orgName: res.organizationName || "Company",
-            orgDomain: res.websiteDomain || "company.com"
-          });
-        }
-        // Also update the other store if it exists
-        import('@/lib/stores/organizationStore').then(({ useOrganizationStore: camelStore }) => {
-          if (res.organizationId) {
-            camelStore.getState().setOrganizationId(res.organizationId);
+      syncUserToBackend()
+        .then((res) => {
+          if (res.organizationName || res.websiteDomain) {
+            updateOrg({
+              orgName: res.organizationName || "Company",
+              orgDomain: res.websiteDomain || "company.com",
+            });
           }
-        }).catch(() => {});
-      }).catch(err => console.error("Sync failed", err));
+          // Also update the other store if it exists
+          import("@/lib/stores/organizationStore")
+            .then(({ useOrganizationStore: camelStore }) => {
+              if (res.organizationId) {
+                camelStore.getState().setOrganizationId(res.organizationId);
+              }
+            })
+            .catch(() => {});
+        })
+        .catch((err) => console.error("Sync failed", err));
     }
   }, [token, updateOrg]);
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm overflow-hidden border border-border">
-            {orgDomain ? (
-              <img 
-                src={`https://www.google.com/s2/favicons?domain=${orgDomain}&sz=128`} 
-                alt={`${orgName || "Company"} logo`}
-                className="w-full h-full object-contain p-1"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-            ) : null}
-            <span className={`font-bold text-primary text-xl leading-none uppercase ${orgDomain ? 'hidden' : ''}`}>
-              {orgName ? orgName.charAt(0) : "O"}
-            </span>
-          </div>
-          <div className="flex flex-col overflow-hidden">
-            <span
-              className="font-bold text-lg tracking-tight text-foreground leading-tight truncate"
-              title={orgName || "CITATIONLY"}
-            >
-              {orgName || "CITATIONLY"}
-            </span>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-              {plan} plan
-            </span>
-          </div>
+        <Link href="/dashboard" className="flex flex-col items-start gap-1">
+          <Logo className="overflow-hidden mix-blend-multiply" iconClassName="h-10 w-auto object-contain -ml-1" />
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium pl-1">
+            {plan} plan
+          </span>
         </Link>
       </SidebarHeader>
 
@@ -680,11 +675,15 @@ export function DashboardSidebar() {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm overflow-hidden shrink-0">
             {(() => {
-              const avatar = user ? ("avatar" in user ? user.avatar : user.photoURL) : null;
-              const name = user ? ("name" in user ? user.name : user.displayName || user.email) : "Guest";
+              const avatar = user
+                ? "avatar" in user
+                  ? user.avatar
+                  : user.photoURL
+                : null;
               return (
                 <>
                   {avatar && avatar.startsWith("http") ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={avatar}
                       alt="Avatar"
@@ -701,7 +700,11 @@ export function DashboardSidebar() {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-medium truncate">
-              {user ? ("name" in user ? user.name : user.displayName || user.email) : "Guest"}
+              {user
+                ? "name" in user
+                  ? user.name
+                  : user.displayName || user.email
+                : "Guest"}
             </span>
             <span className="text-xs text-muted-foreground truncate">
               {orgName}

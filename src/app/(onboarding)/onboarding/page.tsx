@@ -41,7 +41,7 @@ export default function JourneyOnboardingPage() {
             organizationId: organizationId,
             url: formattedUrl,
             scrapeType: "Website",
-            maxPages: 5
+            maxPages: 15
           })
           
           let currentStatus = result.status;
@@ -160,23 +160,25 @@ export default function JourneyOnboardingPage() {
 
           {isScraping ? (
             <div className="flex flex-col items-center justify-center space-y-8 py-16 animate-in fade-in zoom-in-95 duration-500">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Globe className="w-8 h-8 text-primary animate-pulse" />
-                </div>
-              </div>
+
               <div className="text-center space-y-3">
                 <h3 className="text-3xl font-bold tracking-tight">Scanning Your Website</h3>
                 <p className="text-muted-foreground text-lg">We are analyzing your pages to understand your business entity...</p>
               </div>
-              <div className="w-full max-w-md bg-muted rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-primary h-full transition-all duration-500 ease-out"
-                  style={{ width: `${scrapeProgress}%` }}
-                />
+              <style>{`
+                @keyframes indeterminate-slide {
+                  0% { transform: translateX(-100%); }
+                  100% { transform: translateX(300%); }
+                }
+                .animate-indeterminate {
+                  animation: indeterminate-slide 1.5s infinite linear;
+                }
+              `}</style>
+              <div className="w-full max-w-md bg-muted rounded-full h-3 overflow-hidden relative">
+                <div className="absolute top-0 bottom-0 left-0 w-full bg-primary/10" />
+                <div className="absolute top-0 bottom-0 left-0 w-1/3 bg-primary rounded-full animate-indeterminate" />
               </div>
-              <p className="text-sm text-muted-foreground font-medium tracking-wide">{scrapeProgress}% Complete</p>
+              <p className="text-sm text-muted-foreground font-medium tracking-wide animate-pulse">Analyzing Main Pages...</p>
             </div>
           ) : (
             <>

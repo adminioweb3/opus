@@ -326,19 +326,7 @@ export default function AssistantPage() {
       {messages.length === 0 ? (
         // Hero Empty State
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-          <motion.div 
-            animate={{ y: [0, -7, 0] }}
-            transition={{ repeat: Infinity, duration: 3.6, ease: "easeInOut" }}
-            className="w-[78px] h-[78px] rounded-[22px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shadow-lg shadow-primary/30 mb-6"
-          >
-            <motion.div
-              animate={{ rotate: [0, 8, 0], scale: [1, 1.12, 1] }}
-              transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
-            >
-              <Sparkles className="w-10 h-10" />
-            </motion.div>
-          </motion.div>
-          
+
           <h1 className="text-[30px] font-extrabold tracking-tight text-foreground mb-2">
             Hey there <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="inline-block">👋</motion.span>, let's win the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#A855F7] to-primary">AI search game</span>
           </h1>
@@ -370,29 +358,6 @@ export default function AssistantPage() {
             })}
           </div>
 
-          <div className="mt-10 w-full max-w-[680px]">
-            <div className="text-[12px] uppercase tracking-widest text-muted-foreground font-bold mb-4">Or launch an agent</div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {ASST_AGENTS.map((agent, idx) => {
-                const Icon = agent.icon;
-                return (
-                  <motion.button
-                    key={idx}
-                    initial={{ opacity: 0, y: 8, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ delay: (idx * 0.04) + 0.2, duration: 0.45 }}
-                    onClick={() => handleSend(`Launch the ${agent.name} agent`)}
-                    className="bg-background border border-border/80 rounded-[13px] p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-500/10 transition-all"
-                  >
-                    <div className={`w-10 h-10 rounded-[11px] flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-[11.5px] font-semibold text-foreground">{agent.name} agent</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
 
           <div className="w-full max-w-[680px] mt-10">
             {renderComposer()}

@@ -13,13 +13,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!isLoading) {
       if (!isAuthenticated) {
         router.push("/login")
-      } else if (user?.role !== "superadmin") {
+      } else if ((user as { role?: string })?.role !== "superadmin") {
         router.push("/dashboard")
       }
     }
   }, [isAuthenticated, isLoading, user, router])
 
-  if (isLoading || !isAuthenticated || user?.role !== "superadmin") {
+  if (isLoading || !isAuthenticated || (user as { role?: string })?.role !== "superadmin") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />

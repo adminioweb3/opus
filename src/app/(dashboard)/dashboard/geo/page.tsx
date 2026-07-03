@@ -66,8 +66,8 @@ function GeoDashboardContent() {
   }, [orgId])
 
   // Map Data
-  const visibilityScore = reportData?.visibilitySummary?.overallGlobalVisibility || 0
-  const citationScore = reportData?.citationSummary?.trustScore || 0
+  const visibilityScore = reportData?.visibilitySummary?.overallVisibilityScore || 0
+  const citationScore = reportData?.citationSummary?.averageAuthorityScore || 0
   
   // Try to parse competitors for SOV
   let topCompetitors: any[] = []
@@ -100,7 +100,7 @@ function GeoDashboardContent() {
     { lab: 'Hallucination Risk', v: 8, ic: AlertTriangle, c: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', chg: '-2%', dir: 'down' },
     { lab: 'SEO Health', v: 91, ic: Globe, c: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-950/30', chg: '+0.5%', dir: 'up' },
     { lab: 'AEO Readiness', v: 68, ic: Search, c: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', chg: '+8.4%', dir: 'up' },
-    { lab: 'GEO Readiness', v: reportData?.recommendationSummary?.averageImpactScore || DEFAULT_SCORES[7].v, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
+    { lab: 'GEO Readiness', v: parseInt(reportData?.recommendationSummary?.estimatedOverallImpact || "0") || DEFAULT_SCORES[7].v, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
   ]
 
   const TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
@@ -108,7 +108,7 @@ function GeoDashboardContent() {
     score: Math.round(Math.max(0, (visibilityScore || 50) - 30 + i + (Math.random() * 5)))
   }));
 
-  const brandName = reportData?.websiteProfile?.businessName || 'Your Brand'
+  const brandName = reportData?.websiteProfile?.websiteUrl || 'Your Brand'
   
   const colors = ['hsl(var(--primary))', '#2563EB', '#7C3AED', '#16A34A', '#CBD5E1']
   const SOV_DATA = topCompetitors.length > 0 ? [
@@ -193,7 +193,7 @@ function GeoDashboardContent() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         
         {/* Trend Area Chart (approx 3 columns) */}
-        <Card className="lg:col-span-3 flex flex-col h-[340px]">
+        <Card className="lg:col-span-3 flex flex-col h-85">
           <div className="p-4 border-b">
             <h3 className="font-semibold text-[15px]">AI visibility trend</h3>
             <p className="text-[12.5px] text-muted-foreground mt-0.5">Aggregate visibility score over the selected timeframe.</p>
@@ -222,13 +222,13 @@ function GeoDashboardContent() {
         </Card>
 
         {/* Share of Voice Doughnut Chart (approx 2 columns) */}
-        <Card className="lg:col-span-2 flex flex-col h-[340px]">
+        <Card className="lg:col-span-2 flex flex-col h-85">
           <div className="p-4 border-b">
             <h3 className="font-semibold text-[15px]">Share of voice</h3>
             <p className="text-[12.5px] text-muted-foreground mt-0.5">Brand visibility vs top competitors.</p>
           </div>
           <div className="flex-1 flex flex-row items-center justify-center p-4 min-h-0">
-            <div className="w-[180px] h-[180px] shrink-0 relative">
+            <div className="w-45 h-45 shrink-0 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -253,7 +253,7 @@ function GeoDashboardContent() {
               </ResponsiveContainer>
             </div>
             
-            <div className="flex flex-col justify-center pl-6 flex-1 max-w-[200px]">
+            <div className="flex flex-col justify-center pl-6 flex-1 max-w-50">
               {SOV_DATA.map((item, i) => (
                 <div key={i} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
                   <div className="flex items-center gap-2.5">

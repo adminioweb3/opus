@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -35,8 +35,8 @@ export default function SettingsPage() {
   const canManageKeys = usePermission("apikeys.manage")
 
   // Profile state
-  const [profileName, setProfileName] = useState(user?.name ?? "")
-  const [profileTitle, setProfileTitle] = useState(user?.title ?? "")
+  const [profileName, setProfileName] = useState((user as any)?.name || (user as any)?.displayName || "")
+  const [profileTitle, setProfileTitle] = useState((user as any)?.title ?? "")
 
   // Org state
   const [editOrgName, setEditOrgName] = useState(orgName)
@@ -172,8 +172,8 @@ export default function SettingsPage() {
             <CardHeader><CardTitle>Two-Factor Authentication</CardTitle><CardDescription>Add an extra layer of security to your account.</CardDescription></CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div><Badge variant={user?.twoFactorEnabled ? "default" : "secondary"}>{user?.twoFactorEnabled ? "Enabled" : "Disabled"}</Badge></div>
-                <Button variant="outline">{user?.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}</Button>
+                <div><Badge variant={(user as any)?.twoFactorEnabled ? "default" : "secondary"}>{(user as any)?.twoFactorEnabled ? "Enabled" : "Disabled"}</Badge></div>
+                <Button variant="outline">{(user as any)?.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}</Button>
               </div>
             </CardContent>
           </Card>

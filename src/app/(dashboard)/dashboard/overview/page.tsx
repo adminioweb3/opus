@@ -69,8 +69,8 @@ function DashboardOverviewContent() {
     }
   }
 
-  const visibilityScore = reportData?.visibilitySummary?.overallGlobalVisibility || 0
-  const citationScore = reportData?.citationSummary?.trustScore || 0
+  const visibilityScore = reportData?.visibilitySummary?.overallVisibilityScore || 0
+  const citationScore = reportData?.citationSummary?.averageAuthorityScore || 0
   let topCompetitors: any[] = []
   let competitorsScore = 0
   if (reportData?.competitors) {
@@ -107,7 +107,7 @@ function DashboardOverviewContent() {
       citations: Math.round(Math.max(0, (visibilityScore || 50) - 30 + i + (Math.random() * 5)))
     })),
     shareOfVoice: topCompetitors.length > 0 ? [
-      { name: reportData?.websiteProfile?.businessName || 'Your Brand', value: 40, color: 'hsl(var(--primary))' },
+      { name: reportData?.websiteProfile?.websiteUrl || 'Your Brand', value: 40, color: 'hsl(var(--primary))' },
       ...topCompetitors.map((c, i) => ({ name: c.name, value: Math.max(10, 30 - (i*5)), color: ['#2563EB', '#7C3AED', '#16A34A', '#CBD5E1'][i] })),
       { name: 'Others', value: 10, color: '#94A3B8' }
     ] : []

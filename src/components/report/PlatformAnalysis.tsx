@@ -17,7 +17,7 @@ export default function PlatformAnalysis({ data }: { data: FullReportData }) {
   }
 
   const chartData = platforms.map(p => ({
-    subject: (p.platform || p.platformName || '').replace('AI Overview', 'AIO').replace('Microsoft ', '').substring(0, 10),
+    subject: (p.platform || '').replace('AI Overview', 'AIO').replace('Microsoft ', '').substring(0, 10),
     A: p.visibilityScore,
     fullMark: 100,
   }))
@@ -31,7 +31,7 @@ export default function PlatformAnalysis({ data }: { data: FullReportData }) {
       <div className="grid lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-1 bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] flex flex-col justify-center">
           <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6 text-center">Engine Balance</h3>
-          <div className="h-[250px] w-full">
+          <div className="h-62.5 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
                 <PolarGrid stroke="#f1f5f9" />
@@ -48,7 +48,7 @@ export default function PlatformAnalysis({ data }: { data: FullReportData }) {
           {platforms.slice(0, 6).map((p, i) => (
             <div key={i} className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm flex flex-col">
               <div className="flex justify-between items-start mb-3">
-                <span className="font-semibold text-slate-900">{p.platform || p.platformName}</span>
+                <span className="font-semibold text-slate-900">{p.platform}</span>
                 <span className={`text-sm font-bold ${p.visibilityScore >= 70 ? 'text-emerald-500' : p.visibilityScore >= 40 ? 'text-amber-500' : 'text-rose-500'}`}>
                   {p.visibilityScore}/100
                 </span>

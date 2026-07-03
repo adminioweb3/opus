@@ -14,7 +14,7 @@ export function PermissionGate({ permission, children, fallback = null }: Permis
   
   if (!user) return <>{fallback}</>
   
-  if (!hasPermission(user.role, permission)) {
+  if (!hasPermission((user as any).role, permission)) {
     return <>{fallback}</>
   }
 
@@ -25,5 +25,5 @@ export function PermissionGate({ permission, children, fallback = null }: Permis
 export function usePermission(permission: string): boolean {
   const { user } = useAuthStore()
   if (!user) return false
-  return hasPermission(user.role, permission)
+  return hasPermission((user as any).role, permission)
 }

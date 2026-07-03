@@ -36,7 +36,7 @@ const PLANS = [
   }
 ]
 
-import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { useOrganizationStore } from "@/lib/stores/organization-store"
 
 export default function PaywallCheckoutPage() {
   const router = useRouter()

@@ -17,6 +17,7 @@ interface AIJourneyStore {
   services: string
   products: string
   keywords: string
+  competitors: string[]
   
   // State
   currentState: JourneyState
@@ -45,6 +46,7 @@ const initialState = {
   services: "",
   products: "",
   keywords: "",
+  competitors: ["Competitor A", "Competitor B"],
   currentState: "not_started" as JourneyState,
   hasSubscribed: false,
   analysisResult: null as OnboardingAnalysisResult | null,

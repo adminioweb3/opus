@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "./dashboard-views.css";
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -56,6 +55,30 @@
   --color-deep-slate: #1E293B;
   --shadow-card: 0 2px 8px rgba(30, 41, 59, 0.07);
   --shadow-card-hover: 0 4px 12px rgba(30, 41, 59, 0.12);
+
+  /* Citationly Colors mapping */
+  --color-c-orange: var(--c-orange);
+  --color-c-orange-dark: var(--c-orange-dark);
+  --color-c-orange-soft: var(--c-orange-soft);
+  --color-c-orange-mid: var(--c-orange-mid);
+  --color-c-teal: var(--c-teal);
+  --color-c-ink: var(--c-ink);
+  --color-c-muted: var(--c-muted);
+  --color-c-faint: var(--c-faint);
+  --color-c-line: var(--c-line);
+  --color-c-bg: var(--c-bg);
+  --color-c-white: var(--c-white);
+  --color-c-green: var(--c-green);
+  --color-c-green-soft: var(--c-green-soft);
+  --color-c-green-ink: var(--c-green-ink);
+  --color-c-red: var(--c-red);
+  --color-c-red-soft: var(--c-red-soft);
+  --color-c-amber: var(--c-amber);
+  --color-c-amber-soft: var(--c-amber-soft);
+  --color-c-blue: var(--c-blue);
+  --color-c-blue-soft: var(--c-blue-soft);
+  --color-c-purple: var(--c-purple);
+  --color-c-purple-soft: var(--c-purple-soft);
 }
 
 :root {
@@ -92,6 +115,30 @@
   --sidebar-accent-foreground: #0F172A;
   --sidebar-border: #E2E8F0;
   --sidebar-ring: #000068;
+
+  /* Citationly Theme Additions */
+  --c-orange: #6366F1;
+  --c-orange-dark: #4F46E5;
+  --c-orange-soft: #EEF0FE;
+  --c-orange-mid: #A855F7;
+  --c-teal: #14B8A6;
+  --c-ink: #0E1530;
+  --c-muted: #5B6B88;
+  --c-faint: #9AA6BD;
+  --c-line: #E7EAF3;
+  --c-bg: #F3F5FB;
+  --c-white: #FFFFFF;
+  --c-green: #10B981;
+  --c-green-soft: #E7FBF2;
+  --c-green-ink: #0E9E6E;
+  --c-red: #EF4444;
+  --c-red-soft: #FEF1F1;
+  --c-amber: #D97706;
+  --c-amber-soft: #FEF3E2;
+  --c-blue: #2563EB;
+  --c-blue-soft: #EAF1FE;
+  --c-purple: #7C3AED;
+  --c-purple-soft: #F3EEFF;
 }
 
 .dark {

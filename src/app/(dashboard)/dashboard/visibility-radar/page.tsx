@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Eye, TrendingUp, Sparkles, Activity, Plus } from "lucide-react";
+import { TrendingUp, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function VisibilityRadarPage() {
@@ -18,21 +18,23 @@ export default function VisibilityRadarPage() {
   }, []);
 
   return (
-    <div className="flex-1 space-y-6 p-8 bg-background text-foreground">
+    <div className="flex-1 p-8 text-slate-900 bg-[#f8fafc] min-h-screen">
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Visibility radar</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <h1 className="text-[28px] font-space-grotesk font-bold tracking-tight text-slate-900">
+            Visibility radar
+          </h1>
+          <p className="text-[14px] text-slate-500 mt-1">
             Track where Citationly shows up across every AI platform, and how strong each signal is
           </p>
         </div>
-        <div className="flex items-center gap-4 text-xs font-medium">
-          <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        <div className="flex items-center gap-4 text-[11px] font-semibold tracking-[0.04em]">
+          <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-[12px] font-bold">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
             LIVE MONITORING
           </div>
-          <div className="text-muted-foreground uppercase tracking-wider">Updated 00:12 ago</div>
+          <div className="text-slate-400 uppercase">Updated 00:12 ago</div>
         </div>
       </div>
 
@@ -41,91 +43,130 @@ export default function VisibilityRadarPage() {
         {["All platforms", "Strong", "Developing", "Weak"].map((filter, i) => (
           <button
             key={i}
-            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
+            className={`px-4 py-1.5 text-[13.5px] font-semibold rounded-[20px] transition-colors ${
               i === 0
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-slate-900 text-white"
+                : "bg-transparent text-slate-600 hover:bg-slate-100"
             }`}
           >
             {filter}
           </button>
         ))}
         <div className="flex-1" />
-        <button className="px-4 py-1.5 text-sm font-medium bg-muted text-muted-foreground rounded-full hover:bg-muted/80">
-          Last 30 days ▾
+        <button className="px-4 py-1.5 text-[13.5px] font-semibold bg-transparent text-slate-600 rounded-[20px] hover:bg-slate-100 flex items-center gap-1">
+          Last 30 days <ChevronDown className="w-4 h-4" />
         </button>
       </div>
 
       {/* RADAR HERO */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="col-span-2 relative bg-card border border-border rounded-xl overflow-hidden shadow-sm h-115 flex items-center justify-center p-6">
-          <svg viewBox="0 0 820 460" className="w-full h-full" preserveAspectRatio="none">
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+        <div className="relative bg-white border border-slate-200 rounded-[14px] overflow-hidden shadow-sm h-115 flex items-center justify-center p-6">
+          <div className="absolute w-full h-full flex items-center justify-center">
             {/* nested rectangular rings */}
-            <rect x="35" y="35" width="750" height="390" rx="10" fill="none" stroke="currentColor" className="text-border" strokeWidth="1" />
-            <rect x="129" y="84" width="562" height="292" rx="8" fill="none" stroke="currentColor" className="text-border" strokeWidth="1" />
-            <rect x="223" y="133" width="374" height="194" rx="6" fill="none" stroke="currentColor" className="text-border" strokeWidth="1" />
-            <rect x="317" y="182" width="186" height="96" rx="4" fill="none" stroke="currentColor" className="text-border" strokeWidth="1" />
+            <div className="absolute w-187.5 h-97.5 border border-slate-200 rounded-[10px]"></div>
+            <div className="absolute w-140.5 h-73 border border-slate-200 rounded-[8px]"></div>
+            <div className="absolute w-93.5 h-48.5 border border-slate-200 rounded-[6px]"></div>
+            <div className="absolute w-46.5 h-24 border border-slate-200 rounded-lg"></div>
             
-            <text x="410" y="30" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">100%</text>
-            <text x="410" y="79" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">75%</text>
-            <text x="410" y="128" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">50%</text>
-            <text x="410" y="177" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">25%</text>
+            {/* axes labels */}
+            <div className="absolute top-5 text-[9px] text-slate-400 font-mono">100%</div>
+            <div className="absolute top-17.25 text-[9px] text-slate-400 font-mono">75%</div>
+            <div className="absolute top-29.5 text-[9px] text-slate-400 font-mono">50%</div>
+            <div className="absolute top-41.75 text-[9px] text-slate-400 font-mono">25%</div>
 
-            <g style={{ transformOrigin: "410px 230px", transform: `rotate(${rotation}deg)` }}>
-              <path d="M410,230 L410,35 L785,35 Z" fill="url(#sweepGrad)" opacity="0.5" />
-            </g>
-            <defs>
-              <radialGradient id="sweepGrad">
-                <stop offset="0%" stopColor="#4F46E5" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#4F46E5" stopOpacity="0" />
-              </radialGradient>
-            </defs>
+            {/* center hub */}
+            <div className="absolute w-17.5 h-15 bg-white border-2 border-indigo-600 rounded-[8px] flex flex-col items-center justify-center z-10">
+              <div className="text-[10px] font-bold tracking-[0.5px]">CITATIONLY</div>
+              <div className="text-[9px] text-slate-400 font-mono">87.4 avg</div>
+            </div>
 
-            <rect x="375" y="200" width="70" height="60" rx="8" fill="currentColor" className="text-card" stroke="#4F46E5" strokeWidth="2" />
-            <text x="410" y="226" textAnchor="middle" fill="currentColor" className="text-foreground text-[10px] font-semibold tracking-wider font-sans">CITATIONLY</text>
-            <text x="410" y="240" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">87.4 avg</text>
+            {/* sweep animation */}
+            <div
+              className="absolute w-187.5 h-97.5 rounded-[10px] z-1 mix-blend-multiply opacity-50 pointer-events-none"
+              style={{
+                background: "conic-gradient(from 0deg, transparent 70%, rgba(79,70,229,0.1) 95%, rgba(79,70,229,0.4) 100%)",
+                transform: `rotate(${rotation}deg)`,
+                clipPath: "polygon(50% 50%, 100% 50%, 100% 0, 50% 0)"
+              }}
+            ></div>
 
-            <g><circle cx="410" cy="50" r="10" fill="#10B981" /><text x="410" y="32" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">ChatGPT</text><text x="410" y="68" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">91%</text></g>
-            <g><circle cx="755" cy="120" r="9" fill="#10B981" /><text x="755" y="102" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">Claude</text><text x="755" y="138" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">88%</text></g>
-            <g><circle cx="755" cy="340" r="7" fill="#06B6D4" /><text x="755" y="322" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">Gemini</text><text x="755" y="358" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">76%</text></g>
-            <g><circle cx="410" cy="410" r="6" fill="#F59E0B" /><text x="410" y="392" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">Perplexity</text><text x="410" y="428" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">58%</text></g>
-            <g><circle cx="65" cy="340" r="6" fill="#F59E0B" /><text x="65" y="322" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">Copilot</text><text x="65" y="358" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">61%</text></g>
-            <g><circle cx="65" cy="120" r="5" fill="#EF4444" /><text x="65" y="102" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">Grok</text><text x="65" y="138" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">34%</text></g>
-            <g><circle cx="260" cy="64" r="5" fill="#EF4444" /><text x="260" y="46" textAnchor="middle" fill="currentColor" className="text-foreground text-[11px] font-medium font-sans">DeepSeek</text><text x="260" y="82" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px] font-mono">29%</text></g>
-          </svg>
+            {/* nodes (manual positioning for demo) */}
+            <div className="absolute top-8.75 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-5 h-5 rounded-full bg-emerald-500 border-[3px] border-white shadow-[0_0_10px_rgba(16,185,129,0.2)]"></div>
+              <div className="text-[11px] font-semibold">ChatGPT</div>
+              <div className="text-[9px] text-slate-400 font-mono">91%</div>
+            </div>
+            
+            <div className="absolute top-26.25 left-[80%] -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-4.5 h-4.5 rounded-full bg-emerald-500 border-[3px] border-white shadow-[0_0_10px_rgba(16,185,129,0.2)]"></div>
+              <div className="text-[11px] font-semibold">Claude</div>
+              <div className="text-[9px] text-slate-400 font-mono">88%</div>
+            </div>
+
+            <div className="absolute top-81.25 left-[80%] -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-3.5 h-3.5 rounded-full bg-indigo-500 border-[3px] border-white shadow-[0_0_10px_rgba(79,70,229,0.2)]"></div>
+              <div className="text-[11px] font-semibold">Gemini</div>
+              <div className="text-[9px] text-slate-400 font-mono">76%</div>
+            </div>
+
+            <div className="absolute top-98.75 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-3 h-3 rounded-full bg-amber-500 border-[3px] border-white shadow-[0_0_10px_rgba(245,158,11,0.2)]"></div>
+              <div className="text-[11px] font-semibold">Perplexity</div>
+              <div className="text-[9px] text-slate-400 font-mono">58%</div>
+            </div>
+
+            <div className="absolute top-81.25 left-[20%] -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-3 h-3 rounded-full bg-amber-500 border-[3px] border-white shadow-[0_0_10px_rgba(245,158,11,0.2)]"></div>
+              <div className="text-[11px] font-semibold">Copilot</div>
+              <div className="text-[9px] text-slate-400 font-mono">61%</div>
+            </div>
+
+            <div className="absolute top-26.25 left-[20%] -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-[3px] border-white shadow-[0_0_10px_rgba(239,68,68,0.2)]"></div>
+              <div className="text-[11px] font-semibold">Grok</div>
+              <div className="text-[9px] text-slate-400 font-mono">34%</div>
+            </div>
+            
+            <div className="absolute top-12.5 left-[35%] -translate-x-1/2 flex flex-col items-center gap-1 z-20">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-[3px] border-white shadow-[0_0_10px_rgba(239,68,68,0.2)]"></div>
+              <div className="text-[11px] font-semibold">DeepSeek</div>
+              <div className="text-[9px] text-slate-400 font-mono">29%</div>
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="bg-card border border-border p-6 rounded-xl shadow-sm text-center">
-            <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold mb-2">Composite visibility score</div>
-            <div className="text-5xl font-bold font-sans text-foreground mb-4">87.4<span className="text-xl text-muted-foreground font-normal ml-1">/100</span></div>
-            <div className="text-emerald-500 font-medium flex items-center justify-center gap-1">
+          <div className="bg-white border border-slate-200 p-8 rounded-[14px] shadow-sm text-center">
+            <div className="text-[11.5px] text-slate-400 uppercase tracking-[0.04em] font-semibold mb-2">COMPOSITE VISIBILITY SCORE</div>
+            <div className="font-space-grotesk text-[64px] font-bold leading-none mb-4">
+              87.4<span className="text-[24px] text-slate-400 font-normal ml-1">/100</span>
+            </div>
+            <div className="text-emerald-500 font-semibold flex items-center justify-center gap-1 text-[14px]">
               <TrendingUp className="w-4 h-4" /> 3.2 pts vs last 30 days
             </div>
           </div>
           
-          <div className="bg-card border border-border p-6 rounded-xl shadow-sm flex-1">
-            <h3 className="font-medium text-sm mb-4 uppercase tracking-wider text-muted-foreground">Status Legend</h3>
-            <div className="space-y-4">
+          <div className="bg-white border border-slate-200 p-8 rounded-[14px] shadow-sm flex-1">
+            <h3 className="mb-6 text-[14px] uppercase tracking-[0.5px] text-slate-500 font-semibold">Status Legend</h3>
+            <div className="flex flex-col gap-4">
               {[
                 { label: "Strong (80%+)", color: "bg-emerald-500", count: 2 },
-                { label: "Solid (65–79%)", color: "bg-cyan-500", count: 1 },
+                { label: "Solid (65–79%)", color: "bg-indigo-500", count: 1 },
                 { label: "Developing (45–64%)", color: "bg-amber-500", count: 2 },
-                { label: "Weak (under 45%)", color: "bg-rose-500", count: 2 },
+                { label: "Weak (under 45%)", color: "bg-red-500", count: 2 },
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${item.color}`} />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className="font-semibold text-[14px]">{item.label}</span>
                   </div>
-                  <span className="text-sm font-mono text-muted-foreground">{item.count}</span>
+                  <span className="text-[14px] font-mono text-slate-400 font-medium">{item.count}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

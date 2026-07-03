@@ -42,7 +42,7 @@ import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useOrganizationStore } from "@/lib/stores/organization-store";
 import { syncUserToBackend } from "@/lib/api/authApi";
-import { hasPermission } from "@/lib/utils";
+import { hasPermission, type UserRole } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 import {
@@ -497,7 +497,7 @@ function CollapsibleMenu({
 }: {
   category: MenuCategory;
   pathname: string;
-  role: string;
+  role: UserRole;
 }) {
   // Filter items by permission
   const visibleItems = category.items
@@ -615,7 +615,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const { user, token } = useAuthStore();
   const { orgName, plan, updateOrg } = useOrganizationStore();
-  const role = (user as { role?: string })?.role ?? "viewer";
+  const role = ((user as { role?: string })?.role as UserRole) ?? "viewer";
 
   useEffect(() => {
     if (token) {

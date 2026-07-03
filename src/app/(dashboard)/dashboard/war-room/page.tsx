@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
@@ -12,9 +11,11 @@ import {
   Target,
   FileText,
   ChevronDown,
+  ChevronRight,
   AlertTriangle,
   Loader2,
   Play,
+  Sparkles,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
@@ -246,42 +247,28 @@ function WarRoomContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-350 mx-auto pb-8 relative">
+    <div className="space-y-8 max-w-350 mx-auto pb-8 relative font-sans text-slate-900">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-7">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+          <h1 className="text-[26px] font-semibold tracking-[0.2px] font-space-grotesk">
             Executive war room
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          </h1>
+          <p className="text-[13.5px] text-slate-500 mt-1">
             Real-time command center for AI visibility operations
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={startAnalysis}
-            disabled={isAnalyzing}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            {isAnalyzing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Play className="w-4 h-4 fill-current" />
-            )}
-            Analyze Website
-          </button>
-
-          <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-900 font-bold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />{" "}
-            Live monitoring
+        <div className="flex flex-wrap items-center gap-3.5">
+          <div className="flex items-center gap-1.5 text-[12px] text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full font-semibold font-mono tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-[pulse_1.8s_infinite] shadow-[0_0_0_0_rgba(16,185,129,0.7)]" /> LIVE MONITORING
           </div>
           {snapshot && (
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Updated {new Date(snapshot.createdAt).toLocaleTimeString()}
+            <div className="text-[12px] text-slate-400 font-mono uppercase">
+              UPDATED {new Date(snapshot.createdAt).toLocaleTimeString()}
             </div>
           )}
-          <div className="text-sm font-semibold flex items-center gap-1 cursor-pointer hover:text-primary transition-colors">
-            {domainName} <ChevronDown className="w-4 h-4" />
+          <div className="text-[13px] bg-white border border-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-2 cursor-pointer">
+            {domainName} <ChevronDown className="w-2.5 h-2.5 text-slate-400" />
           </div>
         </div>
       </div>
@@ -308,559 +295,328 @@ function WarRoomContent() {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-8"
           >
             <motion.div variants={item}>
-              <Card className="hover:-translate-y-1 hover:shadow-lg transition-all duration-250 cursor-pointer overflow-hidden group border-border">
-                <CardContent className="p-5 flex flex-col justify-between h-full relative">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                      <Globe className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 px-2.5 py-1 rounded-md">
-                      Excellent
-                    </span>
+              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
+                <div className="flex justify-between items-start mb-3.5">
+                  <div className="w-8.5 h-8.5 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-base">
+                    ◎
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Visibility health
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-3xl font-black">
-                        {visibilityScore.toFixed(1)}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  <span className="text-[10.5px] font-semibold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
+                    Excellent
+                  </span>
+                </div>
+                <div className="text-[12.5px] text-slate-500 mb-1.5">
+                  Visibility health
+                </div>
+                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                  {visibilityScore.toFixed(1)}
+                </div>
+                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
+                  ▲ 3.2 pts vs last week
+                </div>
+              </div>
             </motion.div>
 
             <motion.div variants={item}>
-              <Card className="hover:-translate-y-1 hover:shadow-lg transition-all duration-250 cursor-pointer overflow-hidden group border-border">
-                <CardContent className="p-5 flex flex-col justify-between h-full relative">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                      <DollarSign className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-500 px-2.5 py-1 rounded-md">
-                      Growing
-                    </span>
+              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
+                <div className="flex justify-between items-start mb-3.5">
+                  <div className="w-8.5 h-8.5 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-base">
+                    $
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Revenue impact
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-3xl font-black">
-                        {revenueImpact}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  <span className="text-[10.5px] font-semibold bg-indigo-500/10 text-indigo-600 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
+                    Growing
+                  </span>
+                </div>
+                <div className="text-[12.5px] text-slate-500 mb-1.5">
+                  Revenue impact
+                </div>
+                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                  {revenueImpact}
+                </div>
+                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
+                  ▲ 11% attributed to AI traffic
+                </div>
+              </div>
             </motion.div>
 
             <motion.div variants={item}>
-              <Card className="hover:-translate-y-1 hover:shadow-lg transition-all duration-250 cursor-pointer overflow-hidden group border-border">
-                <CardContent className="p-5 flex flex-col justify-between h-full relative">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center">
-                      <Activity className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-500 px-2.5 py-1 rounded-md">
-                      Stable
-                    </span>
+              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
+                <div className="flex justify-between items-start mb-3.5">
+                  <div className="w-8.5 h-8.5 rounded-md bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-base">
+                    ❖
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Citation health
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-3xl font-black">
-                        {citationHealth.toFixed(0)}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  <span className="text-[10.5px] font-semibold bg-cyan-500/10 text-cyan-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
+                    Stable
+                  </span>
+                </div>
+                <div className="text-[12.5px] text-slate-500 mb-1.5">
+                  Citation health
+                </div>
+                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                  {citationHealth.toFixed(0)}
+                </div>
+                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-slate-500">
+                  — 0.4% vs last week
+                </div>
+              </div>
             </motion.div>
 
             <motion.div variants={item}>
-              <Card className="hover:-translate-y-1 hover:shadow-lg transition-all duration-250 cursor-pointer overflow-hidden group border-border">
-                <CardContent className="p-5 flex flex-col justify-between h-full relative">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
-                      <ShieldAlert className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-md">
-                      Watch
-                    </span>
+              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
+                <div className="flex justify-between items-start mb-3.5">
+                  <div className="w-8.5 h-8.5 rounded-md bg-amber-500/10 text-amber-500 flex items-center justify-center text-base">
+                    ▲
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Competitor risk
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-3xl font-black">
-                        {competitorRisk}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  <span className="text-[10.5px] font-semibold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
+                    Watch
+                  </span>
+                </div>
+                <div className="text-[12.5px] text-slate-500 mb-1.5">
+                  Competitor risk
+                </div>
+                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                  {competitorRisk}
+                </div>
+                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-amber-500">
+                  ▲ 2 new threats this week
+                </div>
+              </div>
             </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6">
-            {/* SECTION 2: BRAND VISIBILITY MAP (RADAR) */}
-            <Card className="flex flex-col border-border shadow-sm overflow-hidden">
-              <div className="p-5 pb-0 flex justify-between items-center">
-                <h3 className="font-bold text-lg">Brand visibility map</h3>
-                <span className="text-xs text-muted-foreground">
-                  {platforms.length} platforms scanned
-                </span>
+          {/* SECTION 2: AI VISIBILITY */}
+          <div className="mb-8">
+            <div className="flex items-baseline justify-between mb-3.5">
+              <h2 className="font-space-grotesk text-[15px] font-semibold tracking-[0.3px] uppercase text-slate-500">
+                AI visibility
+              </h2>
+              <span className="text-[12px] text-slate-400 font-mono">
+                7 platforms scanned
+              </span>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 flex flex-wrap gap-x-6 gap-y-4 items-center">
+              <div className="text-center pr-6 border-r border-slate-100">
+                <div className="font-space-grotesk text-[34px] font-semibold leading-none">
+                  {visibilityScore.toFixed(1)}
+                </div>
+                <div className="text-[11px] text-slate-400 font-mono mt-1">
+                  /100 composite
+                </div>
+                <div className="text-[11.5px] text-emerald-500 font-semibold mt-1.5">
+                  ▲ 3.2 pts
+                </div>
               </div>
-              <CardContent className="p-5 grow flex items-center justify-center flex-col sm:flex-row gap-8">
-                <div className="relative w-full max-w-105 aspect-square shrink-0">
-                  <svg
-                    viewBox="0 0 420 420"
-                    className="w-full h-full drop-shadow-sm"
-                  >
-                    <circle
-                      cx="210"
-                      cy="210"
-                      r="180"
-                      fill="none"
-                      className="stroke-border"
-                      strokeWidth="1"
-                    />
-                    <circle
-                      cx="210"
-                      cy="210"
-                      r="135"
-                      fill="none"
-                      className="stroke-border"
-                      strokeWidth="1"
-                    />
-                    <circle
-                      cx="210"
-                      cy="210"
-                      r="90"
-                      fill="none"
-                      className="stroke-border"
-                      strokeWidth="1"
-                    />
-                    <circle
-                      cx="210"
-                      cy="210"
-                      r="45"
-                      fill="none"
-                      className="stroke-border"
-                      strokeWidth="1"
-                    />
-
-                    <g
-                      style={{ transformOrigin: "210px 210px" }}
-                      className="animate-[spin_8s_linear_infinite]"
-                    >
-                      <path
-                        d="M210,210 L210,30 A180,180 0 0,1 330,75 Z"
-                        fill="url(#sweepGrad)"
-                        opacity="0.3"
-                      />
-                    </g>
-                    <defs>
-                      <radialGradient id="sweepGrad">
-                        <stop
-                          offset="0%"
-                          stopColor="hsl(var(--primary))"
-                          stopOpacity="0.8"
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="hsl(var(--primary))"
-                          stopOpacity="0"
-                        />
-                      </radialGradient>
-                    </defs>
-
-                    <circle
-                      cx="210"
-                      cy="210"
-                      r="34"
-                      className="fill-card stroke-primary"
-                      strokeWidth="3"
-                    />
-                    <text
-                      x="210"
-                      y="206"
-                      textAnchor="middle"
-                      className="fill-foreground font-bold text-[11px] uppercase tracking-wider"
-                    >
-                      {domainName.toUpperCase()}
-                    </text>
-                    <text
-                      x="210"
-                      y="222"
-                      textAnchor="middle"
-                      className="fill-muted-foreground font-semibold text-[10px]"
-                    >
-                      {visibilityScore.toFixed(1)}
-                    </text>
-
-                    {radarNodes.map((node, i) => (
-                      <g key={i}>
-                        <circle
-                          cx={node.cx}
-                          cy={node.cy}
-                          r={node.score > 70 ? 11 : node.score > 45 ? 9 : 7}
-                          className={node.fillClass}
-                        />
-                        <text
-                          x={node.cx}
-                          y={node.cy - 18}
-                          textAnchor="middle"
-                          className="fill-foreground font-bold text-xs"
-                          style={{
-                            paintOrder: "stroke",
-                            stroke: "hsl(var(--card))",
-                            strokeWidth: "4px",
-                            strokeLinecap: "round",
-                            strokeLinejoin: "round",
-                          }}
-                        >
-                          {node.platform}
-                        </text>
-                        <text
-                          x={node.cx}
-                          y={node.cy + 22}
-                          textAnchor="middle"
-                          className="fill-muted-foreground font-semibold text-[11px]"
-                          style={{
-                            paintOrder: "stroke",
-                            stroke: "hsl(var(--card))",
-                            strokeWidth: "4px",
-                            strokeLinecap: "round",
-                            strokeLinejoin: "round",
-                          }}
-                        >
-                          {node.score}%
-                        </text>
-                      </g>
-                    ))}
-                  </svg>
+              <div className="flex-1 min-w-60 grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="text-[12.5px] font-medium flex-1">Strong (80%+)</span>
+                  <span className="font-mono text-[12px] text-slate-500">2</span>
                 </div>
-                <div className="flex flex-col gap-3">
-                  <div className="flex justify-between items-center gap-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                      <span className="text-sm font-semibold">
-                        Strong (80%+)
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-muted-foreground">
-                      {platforms.filter((p) => p.score >= 80).length} platforms
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center gap-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
-                      <span className="text-sm font-semibold">
-                        Solid (65–79%)
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-muted-foreground">
-                      {
-                        platforms.filter((p) => p.score >= 65 && p.score < 80)
-                          .length
-                      }{" "}
-                      platform
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center gap-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-                      <span className="text-sm font-semibold">
-                        Developing (45–64%)
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-muted-foreground">
-                      {
-                        platforms.filter((p) => p.score >= 45 && p.score < 65)
-                          .length
-                      }{" "}
-                      platforms
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center gap-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-destructive"></div>
-                      <span className="text-sm font-semibold">
-                        Weak (under 45%)
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-muted-foreground">
-                      {platforms.filter((p) => p.score < 45).length} platforms
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="text-[12.5px] font-medium flex-1">Solid (65–79%)</span>
+                  <span className="font-mono text-[12px] text-slate-500">1</span>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* SECTION 3: AI VISIBILITY COVERAGE */}
-            <Card className="flex flex-col border-border shadow-sm">
-              <div className="p-5 pb-0 flex justify-between items-center">
-                <h3 className="font-bold text-lg">AI visibility coverage</h3>
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span className="text-[12.5px] font-medium flex-1">Developing (45–64%)</span>
+                  <span className="font-mono text-[12px] text-slate-500">2</span>
+                </div>
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <span className="text-[12.5px] font-medium flex-1">Weak (under 45%)</span>
+                  <span className="font-mono text-[12px] text-slate-500">2</span>
+                </div>
               </div>
-              <CardContent className="p-5 pt-4">
-                <div className="grid grid-cols-2 gap-3">
-                  {platforms.slice(0, 4).map((p, i) => (
-                    <div
-                      key={i}
-                      className="border border-border rounded-xl p-3 flex flex-col gap-2 hover:-translate-y-0.5 hover:shadow-md transition-all cursor-default bg-card"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-4 h-4 rounded"
-                            style={{ backgroundColor: p.bg }}
-                          ></div>
-                          <span className="font-bold text-sm">
-                            {p.platform}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-black">{p.score}%</div>
-                        <div className="text-xs text-muted-foreground">
-                          {p.citations} citations
-                        </div>
-                        <div
-                          className={
-                            "text-xs font-bold mt-1 " +
-                            (p.change?.includes("-")
-                              ? "text-destructive"
-                              : "text-emerald-500")
-                          }
-                        >
-                          {p.change}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              <button
+                onClick={() => {}}
+                className="self-center bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50"
+              >
+                View platform breakdown <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-border shadow-sm">
-              <div className="p-5 pb-3">
-                <h3 className="font-bold text-lg">Executive alerts</h3>
+          {/* SECTION 4 + 5: CITATION + AGENT SUMMARIES */}
+          <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-4 mb-8">
+            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5">
+              <h3 className="font-space-grotesk text-[13.5px] font-semibold uppercase tracking-[0.3px] text-slate-500 mb-3.5">Citation activity</h3>
+              <div className="flex gap-5.5 flex-wrap mb-3.5">
+                <div>
+                  <div className="font-space-grotesk text-[24px] font-semibold leading-none">1,284</div>
+                  <div className="text-[11.5px] text-slate-500 mt-1">citations today</div>
+                </div>
+                <div>
+                  <div className="font-space-grotesk text-[24px] font-semibold leading-none">7</div>
+                  <div className="text-[11.5px] text-slate-500 mt-1">models active</div>
+                </div>
               </div>
-              <CardContent className="p-5 pt-0 flex flex-col gap-5 mt-2">
-                {executiveAlerts.map((rec, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-4 border-l-2 border-destructive pl-4 relative"
-                  >
-                    <div className="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-card flex items-center justify-center">
-                      <div className="w-6 h-6 rounded-full bg-destructive/10 text-destructive flex items-center justify-center">
-                        <AlertTriangle className="w-3 h-3" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-sm">{rec.title}</h4>
-                      <p className="text-xs font-bold text-destructive mt-1">
-                        Est. impact: {rec.estimatedImpact}
-                      </p>
-                      <p className="text-[11px] font-medium text-muted-foreground mt-1.5">
-                        {rec.description}
-                      </p>
-                    </div>
-                    <button className="text-[11px] font-bold border border-border rounded px-3 py-1.5 hover:bg-muted transition-colors shrink-0">
-                      Resolve
-                    </button>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="border-border shadow-sm flex flex-col">
-              <div className="p-5 pb-3 flex justify-between items-center">
-                <h3 className="font-bold text-lg">Recommended actions</h3>
+              <div className="text-[12.5px] text-slate-400 mb-3.5">Latest: <b className="text-slate-900 font-semibold">ChatGPT</b> cited FAQ — &quot;AI visibility metrics&quot; at 10:35.</div>
+              <button className="bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50">
+                Open Citation Intelligence <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5">
+              <h3 className="font-space-grotesk text-[13.5px] font-semibold uppercase tracking-[0.3px] text-slate-500 mb-3.5">Agent operations</h3>
+              <div className="flex gap-5.5 flex-wrap mb-3.5">
+                <div>
+                  <div className="font-space-grotesk text-[24px] font-semibold leading-none">3</div>
+                  <div className="text-[11.5px] text-slate-500 mt-1">running</div>
+                </div>
+                <div>
+                  <div className="font-space-grotesk text-[24px] font-semibold leading-none">1</div>
+                  <div className="text-[11.5px] text-slate-500 mt-1">completed</div>
+                </div>
+                <div>
+                  <div className="font-space-grotesk text-[24px] font-semibold leading-none">1</div>
+                  <div className="text-[11.5px] text-slate-500 mt-1">idle</div>
+                </div>
               </div>
-              <CardContent className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
-                {recommendedActions.map((rec, i) => (
-                  <div
-                    key={i}
-                    className="border border-border rounded-xl p-4 hover:border-amber-500/30 hover:shadow-sm transition-all bg-card flex flex-col justify-between"
-                  >
-                    <div>
-                      <span className="text-[10px] font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full">
-                        {rec.priority}
-                      </span>
-                      <h4 className="font-bold text-sm mt-3 mb-3 leading-snug">
-                        {rec.title}
-                      </h4>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted-foreground">
-                          Impact{" "}
-                          <b className="text-foreground ml-1">
-                            {rec.estimatedImpact}
-                          </b>
-                        </span>
-                      </div>
-                    </div>
-                    <button className="w-full mt-4 text-xs font-bold border border-border bg-card py-1.5 rounded-lg hover:bg-muted transition-colors">
-                      Start task
-                    </button>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+              <div className="text-[12.5px] text-slate-400 mb-3.5">Content, Citation, Authority, Technical and Revenue agents are configured for this workspace.</div>
+              <button className="bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50">
+                Open Citationly agents <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="border-border shadow-sm">
-              <div className="p-5 pb-3">
-                <h3 className="font-bold text-lg">Opportunity pipeline</h3>
-              </div>
-              <CardContent className="p-5 pt-0">
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-card rounded-xl hover:-translate-y-1 hover:shadow-md transition-all cursor-default">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2">
-                      <DollarSign className="w-4 h-4" />
-                    </div>
-                    <div className="font-black text-xl">
-                      {opportunityPipeline.revenue}
-                    </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
-                      Revenue
-                    </div>
+          {/* SECTION 6: EXECUTIVE ALERTS */}
+          <div className="mb-8">
+            <div className="flex items-baseline justify-between mb-3.5">
+              <h2 className="font-space-grotesk text-[15px] font-semibold tracking-[0.3px] uppercase text-slate-500">
+                Executive alerts
+              </h2>
+              <span className="text-[12px] text-slate-400 font-mono">
+                {executiveAlerts.length} active
+              </span>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {executiveAlerts.map((rec, i) => (
+                <div key={i} className="grid grid-cols-[4px_auto_1fr_auto] gap-3.5 items-stretch bg-white border border-slate-200 rounded-xl p-3.5">
+                  <div className={`rounded ${i === 1 ? 'bg-amber-500' : 'bg-red-500'}`}></div>
+                  <div className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center text-[14px] self-start ${i === 1 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
+                    {i === 1 ? '▲' : '!'}
                   </div>
-                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-card rounded-xl hover:-translate-y-1 hover:shadow-md transition-all cursor-default">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-500 flex items-center justify-center mb-2">
-                      <Rocket className="w-4 h-4" />
-                    </div>
-                    <div className="font-black text-xl">
-                      {opportunityPipeline.traffic}
-                    </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
-                      Traffic
-                    </div>
+                  <div className="flex flex-col gap-0.75">
+                    <div className="text-[13.5px] font-semibold">{rec.title}</div>
+                    <div className="text-[12px] text-slate-500">Est. impact: {rec.estimatedImpact}</div>
+                    <div className="text-[11.5px] text-slate-400 italic">Suggested: {rec.description}</div>
                   </div>
-                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-card rounded-xl hover:-translate-y-1 hover:shadow-md transition-all cursor-default">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-2">
-                      <FileText className="w-4 h-4" />
-                    </div>
-                    <div className="font-black text-xl">
-                      {opportunityPipeline.citations}
-                    </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
-                      Citation
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-card rounded-xl hover:-translate-y-1 hover:shadow-md transition-all cursor-default">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center mb-2">
-                      <Target className="w-4 h-4" />
-                    </div>
-                    <div className="font-black text-xl">
-                      {opportunityPipeline.authority}
-                    </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
-                      Authority
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-card rounded-xl hover:-translate-y-1 hover:shadow-md transition-all cursor-default">
-                    <div className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center mb-2">
-                      <Globe className="w-4 h-4" />
-                    </div>
-                    <div className="font-black text-xl">
-                      {opportunityPipeline.coverage}
-                    </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
-                      AI coverage
-                    </div>
-                  </div>
+                  <button className="self-center bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit hover:bg-slate-50">
+                    Resolve
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </div>
 
-            <Card className="border-border shadow-sm flex flex-col">
-              <div className="p-5 pb-3">
-                <h3 className="font-bold text-lg">Competitor snapshot</h3>
+          {/* SECTION 7: RECOMMENDED ACTIONS */}
+          <div className="mb-8">
+            <div className="flex items-baseline justify-between mb-3.5">
+              <h2 className="font-space-grotesk text-[15px] font-semibold tracking-[0.3px] uppercase text-slate-500">
+                Recommended actions
+              </h2>
+              <span className="text-[12px] text-slate-400 font-mono">
+                AI-generated
+              </span>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-[14px] font-semibold">{recommendedActions.length} AI-recommended actions ready</div>
+                <div className="text-[12.5px] text-slate-500 mt-1">Top priority: Improve Gemini citation coverage · +14% impact</div>
               </div>
-              <CardContent className="p-5 pt-0">
-                <div className="w-full overflow-x-auto border border-border rounded-xl">
-                  <table className="w-full text-sm text-left">
-                    <thead className="text-[11px] text-muted-foreground bg-muted/40 uppercase tracking-wider border-b border-border">
-                      <tr>
-                        <th className="px-4 py-3 font-bold rounded-tl-xl">
-                          Brand
-                        </th>
-                        <th className="px-4 py-3 font-bold">Visibility</th>
-                        <th className="px-4 py-3 font-bold text-right">
-                          Share
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      <tr className="hover:bg-muted/20 transition-colors bg-card">
-                        <td className="px-4 py-3 font-bold flex items-center gap-2 whitespace-nowrap">
-                          {domainName}{" "}
-                          <span className="bg-primary/10 text-primary text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider border border-primary/20">
-                            You
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 min-w-30">
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-                              <div
-                                className="bg-primary h-full"
-                                style={{ width: visibilityScore + "%" }}
-                              ></div>
-                            </div>
-                            <span className="font-bold text-xs w-8">
-                              {visibilityScore.toFixed(0)}%
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-right font-semibold">
-                          41%
-                        </td>
-                      </tr>
-                      {topCompetitors.map((comp, i) => (
-                        <tr
-                          key={i}
-                          className="hover:bg-muted/20 transition-colors bg-card"
-                        >
-                          <td className="px-4 py-3 font-bold whitespace-nowrap text-muted-foreground">
-                            {comp.name}
-                          </td>
-                          <td className="px-4 py-3 min-w-30">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-                                <div
-                                  className="bg-muted-foreground h-full"
-                                  style={{ width: comp.visibility + "%" }}
-                                ></div>
-                              </div>
-                              <span className="font-bold text-xs text-muted-foreground w-8">
-                                {comp.visibility}%
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-right font-semibold text-muted-foreground">
-                            {comp.share}%
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+              <button className="bg-indigo-600 text-white border-none text-[12.5px] font-semibold px-3.5 py-2 rounded-lg w-auto hover:bg-indigo-700 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4" /> Review with Assistant
+              </button>
+            </div>
+          </div>
+
+          {/* SECTION 8: OPPORTUNITY PIPELINE */}
+          <div className="mb-8">
+            <div className="flex items-baseline justify-between mb-3.5">
+              <h2 className="font-space-grotesk text-[15px] font-semibold tracking-[0.3px] uppercase text-slate-500">
+                Opportunity pipeline
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+                <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-[16px]">$</div>
+                <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.revenue}</div>
+                <div className="text-[11.5px] text-slate-500 mt-1">Revenue</div>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+                <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-[16px]">↗</div>
+                <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.traffic}</div>
+                <div className="text-[11.5px] text-slate-500 mt-1">Traffic</div>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+                <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-[16px]">❝</div>
+                <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.citations}</div>
+                <div className="text-[11.5px] text-slate-500 mt-1">Citation</div>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+                <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-amber-500/10 text-amber-500 flex items-center justify-center text-[16px]">◆</div>
+                <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.authority}</div>
+                <div className="text-[11.5px] text-slate-500 mt-1">Authority</div>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+                <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-red-500/10 text-red-500 flex items-center justify-center text-[16px]">▣</div>
+                <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.coverage}</div>
+                <div className="text-[11.5px] text-slate-500 mt-1">AI coverage</div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 9: COMPETITOR SNAPSHOT */}
+          <div className="mb-8">
+            <div className="flex items-baseline justify-between mb-3.5">
+              <h2 className="font-space-grotesk text-[15px] font-semibold tracking-[0.3px] uppercase text-slate-500">
+                Competitor snapshot
+              </h2>
+              <span className="text-[12px] text-slate-400 font-mono">
+                Share of voice
+              </span>
+            </div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Brand</th>
+                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Visibility</th>
+                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="p-3 text-[13px] border-b border-slate-100">
+                    <div className="font-semibold flex items-center gap-2">
+                      {domainName} <span className="text-[10px] bg-indigo-50 text-indigo-600 px-1.75 py-0.5 rounded-[10px] font-semibold">You</span>
+                    </div>
+                  </td>
+                  <td className="p-3 text-[13px] border-b border-slate-100">
+                    <div className="h-1.25 rounded bg-slate-200 w-22.5 overflow-hidden inline-block align-middle mr-2">
+                      <div className="h-full rounded bg-indigo-600" style={{ width: `${visibilityScore}%` }}></div>
+                    </div> 
+                    {visibilityScore.toFixed(1)}
+                  </td>
+                  <td className="p-3 text-[13px] border-b border-slate-100">41%</td>
+                </tr>
+                {topCompetitors.map((comp, i) => (
+                  <tr key={i}>
+                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">
+                      <div className="font-semibold flex items-center gap-2">{comp.name}</div>
+                    </td>
+                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">
+                      <div className="h-1.25 rounded bg-slate-200 w-22.5 overflow-hidden inline-block align-middle mr-2">
+                        <div className="h-full rounded bg-slate-400" style={{ width: `${comp.visibility}%` }}></div>
+                      </div> 
+                      {comp.visibility.toFixed(1)}
+                    </td>
+                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">{comp.share}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </>
       )}

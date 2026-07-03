@@ -249,8 +249,8 @@ export default function AssistantPage() {
 
   const renderComposer = () => (
     <div className="w-full">
-      <div className="flex items-end gap-2.5 bg-background border-2 border-border focus-within:border-primary/50 transition-all rounded-[16px] p-2.5 shadow-sm">
-        <button className="w-[34px] h-[34px] rounded-lg text-muted-foreground hover:bg-muted/50 flex items-center justify-center transition-colors shrink-0">
+      <div className="flex items-end gap-2.5 bg-white border border-slate-200 focus-within:border-indigo-600 transition-all rounded-[24px] px-3 py-2 shadow-sm">
+        <button className="w-8.5 h-8.5 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center transition-colors shrink-0">
           <Paperclip className="w-5 h-5" />
         </button>
         <textarea
@@ -263,17 +263,17 @@ export default function AssistantPage() {
             }
           }}
           placeholder="Ask Citationly anything..."
-          className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-[14px] text-foreground outline-none max-h-[120px] min-h-[24px]"
+          className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-[14.5px] text-slate-900 outline-none max-h-30 min-h-6"
           rows={1}
           style={{ height: "auto" }}
         />
-        <button className="w-[34px] h-[34px] rounded-lg text-muted-foreground hover:bg-muted/50 flex items-center justify-center transition-colors shrink-0">
+        <button className="w-8.5 h-8.5 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center transition-colors shrink-0">
           <Mic className="w-5 h-5" />
         </button>
         <button
           onClick={() => handleSend(input)}
           disabled={!input.trim() || isLoading}
-          className="w-[38px] h-[38px] rounded-[11px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shrink-0 shadow-sm shadow-primary/20"
+          className="w-9.5 h-9.5 rounded-full bg-indigo-600 text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shrink-0 shadow-sm shadow-indigo-600/20"
         >
           <ArrowUp className="w-5 h-5" />
         </button>
@@ -293,30 +293,30 @@ export default function AssistantPage() {
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] w-full max-w-[1400px] mx-auto bg-muted/20 border border-border/50 rounded-xl overflow-hidden shadow-sm">
+    <div className="flex flex-col h-[calc(100vh-6rem)] w-full max-w-350 mx-auto bg-white border border-slate-200 rounded-[14px] overflow-hidden shadow-sm">
       
       {/* Hub Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border/50 shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] border-b border-slate-200 shrink-0">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-[10px] bg-primary/10 text-primary flex items-center justify-center">
+          <div className="w-10 h-10 rounded-[10px] bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-[15px] font-bold text-foreground leading-tight">Citationly Assistant</h2>
-            <p className="text-[13px] text-muted-foreground">Ask anything — or inspect the real answers AI gives about you</p>
+            <h2 className="text-[15px] font-bold text-slate-900 leading-tight font-space-grotesk">Citationly Assistant</h2>
+            <p className="text-[13px] text-slate-500">Ask anything — or inspect the real answers AI gives about you</p>
           </div>
         </div>
         
-        <div className="flex items-center p-1 bg-muted/30 border border-border/50 rounded-[11px]">
+        <div className="flex items-center p-1 bg-slate-100 border border-slate-200 rounded-[11px]">
           <button 
             onClick={() => setMode("ask")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "ask" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "ask" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
           >
             <MessageSquare className="w-4 h-4" /> Ask
           </button>
           <button 
             onClick={() => setMode("inspect")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "inspect" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "inspect" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
           >
             <Search className="w-4 h-4" /> Inspect
           </button>
@@ -327,14 +327,14 @@ export default function AssistantPage() {
         // Hero Empty State
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
 
-          <h1 className="text-[30px] font-extrabold tracking-tight text-foreground mb-2">
-            Hey there <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="inline-block">👋</motion.span>, let's win the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#A855F7] to-primary">AI search game</span>
+          <h1 className="text-[30px] font-space-grotesk font-extrabold tracking-tight text-slate-900 mb-2">
+            Hey there <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="inline-block">👋</motion.span>, let's win the <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-[#A855F7]">AI search game</span>
           </h1>
-          <p className="text-[15px] text-muted-foreground max-w-[520px] mb-8">
+          <p className="text-[15px] text-slate-500 max-w-130 mb-8">
             Ask me anything about your visibility, or fire off one of these — each tied to real pipeline impact.
           </p>
 
-          <div className="flex flex-wrap gap-2.5 justify-center max-w-[680px]">
+          <div className="flex flex-wrap gap-2.5 justify-center max-w-170">
             {ASST_CHIPS.map((chip, idx) => {
               const Icon = chip.icon;
               return (
@@ -344,12 +344,12 @@ export default function AssistantPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: idx * 0.06, duration: 0.45 }}
                   onClick={() => handleSend(chip.text)}
-                  className="flex items-center gap-2 bg-background border border-border/80 rounded-[13px] px-4 py-2.5 text-[13px] font-semibold text-foreground hover:-translate-y-1 hover:scale-[1.03] hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all"
+                  className="flex items-center gap-2 bg-white border border-slate-200 rounded-[13px] px-4 py-2.5 text-[13px] font-semibold text-slate-700 hover:-translate-y-1 hover:scale-[1.03] hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-600/10 transition-all"
                 >
-                  <Icon className={`w-[17px] h-[17px] ${chip.colorClass}`} />
+                  <Icon className={`w-4.25 h-4.25 ${chip.colorClass}`} />
                   {chip.text}
                   {chip.tag && (
-                    <span className={`text-[11px] px-2 py-0.5 rounded-md ${chip.warn ? "bg-red-100 text-red-700 dark:bg-red-900/30" : "bg-green-100 text-green-700 dark:bg-green-900/30"}`}>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-[6px] ${chip.warn ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
                       {chip.tag}
                     </span>
                   )}
@@ -359,7 +359,7 @@ export default function AssistantPage() {
           </div>
 
 
-          <div className="w-full max-w-[680px] mt-10">
+          <div className="w-full max-w-170 mt-10">
             {renderComposer()}
           </div>
         </div>
@@ -367,7 +367,7 @@ export default function AssistantPage() {
         // Active Chat Split Layout
         <div className="flex-1 flex overflow-hidden">
           {/* Chat Column */}
-          <div className="flex-1 flex flex-col min-w-0 border-r border-border/50 bg-background">
+          <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200 bg-white">
             <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
               {messages.map((msg, i) => (
                 <motion.div
@@ -377,26 +377,26 @@ export default function AssistantPage() {
                   className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="w-[32px] h-[32px] rounded-[9px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
-                      <Sparkles className="w-[16px] h-[16px]" />
+                    <div className="w-8 h-8 rounded-[9px] bg-linear-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                      <Sparkles className="w-4 h-4" />
                     </div>
                   ) : (
-                    <div className="w-[32px] h-[32px] rounded-[9px] bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 text-[12px] font-bold mt-1">
+                    <div className="w-8 h-8 rounded-[9px] bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 text-[12px] font-bold mt-1">
                       ME
                     </div>
                   )}
 
                   <div
-                    className={`p-3.5 rounded-[14px] text-[14px] leading-[1.55] border shadow-sm ${
+                    className={`p-5 text-[14.5px] leading-[1.6] shadow-[0_1px_3px_rgba(0,0,0,0.02)] ${
                       msg.role === "user"
-                        ? "bg-slate-800 border-slate-800 text-white dark:bg-slate-700 dark:border-slate-700"
-                        : "bg-background border-border text-foreground"
+                        ? "bg-indigo-600 text-white rounded-[20px_20px_0_20px]"
+                        : "bg-white border border-slate-200 text-slate-900 rounded-[0_20px_20px_20px]"
                     }`}
                   >
                     {msg.role === "user" ? (
                       <p className="whitespace-pre-wrap">{msg.content}</p>
                     ) : (
-                      <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
+                      <div className="prose prose-sm max-w-none overflow-x-auto text-slate-900 prose-p:leading-[1.6] prose-p:mb-[12px]">
                         <ReactMarkdown
                           components={{
                             code({ node, inline, className, children, ...props }: any) {
@@ -405,7 +405,7 @@ export default function AssistantPage() {
                                 try {
                                   const data = JSON.parse(String(children));
                                   return (
-                                    <div className="h-56 w-full my-3 p-4 rounded-xl border bg-background">
+                                    <div className="h-56 w-full my-3 p-4 rounded-[12px] border bg-white">
                                       <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={data}>
                                           <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
@@ -425,7 +425,7 @@ export default function AssistantPage() {
                                   {String(children).replace(/\n$/, "")}
                                 </SyntaxHighlighter>
                               ) : (
-                                <code className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono" {...props}>{children}</code>
+                                <code className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-800" {...props}>{children}</code>
                               );
                             }
                           }}
@@ -440,8 +440,8 @@ export default function AssistantPage() {
 
               {isThinking && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3 max-w-[85%]">
-                  <div className="w-[32px] h-[32px] rounded-[9px] bg-gradient-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
-                    <Sparkles className="w-[16px] h-[16px]" />
+                  <div className="w-8 h-8 rounded-[9px] bg-linear-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                    <Sparkles className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col gap-2">
                     {thinkingStatuses.map((s, idx) => (
@@ -451,9 +451,9 @@ export default function AssistantPage() {
                       </motion.div>
                     ))}
                     <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/20 rounded-[14px] w-fit border border-border/50">
-                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" />
-                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.2s" }} />
-                      <span className="w-[6px] h-[6px] rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.2s" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
                     </div>
                   </div>
                 </motion.div>
@@ -466,31 +466,31 @@ export default function AssistantPage() {
           </div>
 
           {/* Right Rail */}
-          <div className="w-[280px] bg-muted/10 hidden lg:flex flex-col overflow-y-auto">
-            <div className="p-4 pt-5 pb-2 border-b border-border/30">
+          <div className="w-70 bg-[#f8fafc] hidden lg:flex flex-col overflow-y-auto">
+            <div className="p-4 pt-5 pb-2 border-b border-slate-200">
               <button 
                 onClick={() => setMessages([])}
-                className="w-full py-2.5 px-4 border-2 border-dashed border-primary/30 text-primary font-semibold text-[13px] rounded-[11px] flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors"
+                className="w-full py-2.5 px-4 border-2 border-dashed border-indigo-200 text-indigo-600 font-semibold text-[13px] rounded-[11px] flex items-center justify-center gap-2 hover:bg-indigo-50 transition-colors"
               >
                 <Plus className="w-4 h-4" /> New chat
               </button>
             </div>
             
             <div className="p-4 pb-2">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold mb-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-slate-500 font-bold mb-3">
                 <History className="w-3.5 h-3.5" /> Recent
               </div>
               <div className="flex flex-col gap-1">
                 {ASST_RECENT.map((r, idx) => {
                   const Icon = r.icon;
                   return (
-                    <button key={idx} className="flex items-center gap-3 p-2.5 rounded-[11px] hover:bg-muted/50 transition-colors text-left">
-                      <div className={`w-[30px] h-[30px] shrink-0 rounded-lg flex items-center justify-center ${r.bgClass} ${r.colorClass}`}>
+                    <button key={idx} className="flex items-center gap-3 p-2.5 rounded-[11px] hover:bg-slate-200/50 transition-colors text-left">
+                      <div className={`w-7.5 h-7.5 shrink-0 rounded-lg flex items-center justify-center ${r.bgClass} ${r.colorClass}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[12.5px] font-semibold text-foreground truncate">{r.text}</div>
-                        <div className="text-[11px] text-muted-foreground">{r.time}</div>
+                        <div className="text-[12.5px] font-semibold text-slate-900 truncate">{r.text}</div>
+                        <div className="text-[11px] text-slate-500">{r.time}</div>
                       </div>
                     </button>
                   );
@@ -499,7 +499,7 @@ export default function AssistantPage() {
             </div>
 
             <div className="p-4 pt-2">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold mb-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-slate-500 font-bold mb-3">
                 <Bot className="w-3.5 h-3.5" /> Quick agents
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -509,12 +509,12 @@ export default function AssistantPage() {
                     <button 
                       key={idx}
                       onClick={() => handleSend(`Launch the ${agent.name} agent`)}
-                      className="flex flex-col items-center gap-1.5 p-3 bg-background border border-border/50 rounded-[11px] hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm transition-all"
+                      className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-[11px] hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-sm transition-all"
                     >
-                      <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}>
-                        <Icon className="w-[15px] h-[15px]" />
+                      <div className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}>
+                        <Icon className="w-3.75 h-3.75" />
                       </div>
-                      <span className="text-[10.5px] font-semibold text-muted-foreground">{agent.name}</span>
+                      <span className="text-[10.5px] font-semibold text-slate-500">{agent.name}</span>
                     </button>
                   );
                 })}

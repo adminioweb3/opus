@@ -18,46 +18,74 @@ export default function PromptAnalysisWorkspace() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const fetchResults = async (analysisId: string) => {
-      try {
-        const res = await fetch(`https://api.citationly.ai/PromptIntelligence/analyses/${analysisId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const analysisData = await res.json();
-          setData(analysisData);
-        }
-      } catch (error) {
-        console.error("Error fetching results:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchInitialData = async () => {
-      if (!token) return;
+  const fetchResults = async (analysisId: string) => {
     try {
-      const res = await fetch(`https://api.citationly.ai/PromptIntelligence/topics/${topicId}/questions`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await fetch(
+        `https://api.citationly.ai/api/PromptIntelligence/analyses/${analysisId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        const analysisData = await res.json();
+        setData(analysisData);
+      }
+    } catch (error) {
+      console.error("Error fetching results:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInitialData = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://api.citationly.ai/api/PromptIntelligence/topics/${topicId}/questions`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (res.ok) {
         const questions = await res.json();
-        const currentQ = questions.find((q: Record<string, unknown>) => (q.question as Record<string, unknown>).id === questionId);
-        
-        if (currentQ?.latestAnalysis?.status === "Completed") {
-          await fetchResults(currentQ.latestAnalysis.id);
+
+        const currentQ = questions.find(
+          (q: Record<string, unknown>) =>
+            (q.question as Record<string, unknown>).id === questionId
+        );
+
+        if (
+          currentQ &&
+          (currentQ.latestAnalysis as Record<string, unknown>)?.status ===
+            "Completed"
+        ) {
+          await fetchResults(
+            (currentQ.latestAnalysis as Record<string, unknown>).id as string
+          );
         } else {
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching question data:", error);
       setLoading(false);
     }
-    };
-    
-    fetchInitialData();
-  }, [questionId, token, topicId]);
+  };
+
+  fetchInitialData();
+}, [questionId, token, topicId]);
 
   const fetchResults = async (analysisId: string) => {
     try {

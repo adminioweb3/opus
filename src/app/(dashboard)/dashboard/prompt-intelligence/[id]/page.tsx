@@ -32,7 +32,7 @@ export default function TopicDetails() {
     if (!token) return;
     try {
       const res = await fetch(
-        `https://api.citationly.ai/PromptIntelligence/topics/${topicId}/questions`,
+        `https://api.citationly.ai/api/PromptIntelligence/topics/${topicId}/questions`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -53,7 +53,7 @@ export default function TopicDetails() {
     if (!newQuestionText) return;
     try {
       const res = await fetch(
-        "https://api.citationly.ai/PromptIntelligence/questions",
+        "https://api.citationly.ai/api/PromptIntelligence/questions",
         {
           method: "POST",
           headers: {
@@ -88,7 +88,9 @@ export default function TopicDetails() {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Topic Prompts</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-1">
+            Topic Prompts
+          </h1>
           <p className="text-muted-foreground text-sm">
             Manage and analyze specific prompts within this topic.
           </p>
@@ -125,7 +127,9 @@ export default function TopicDetails() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 font-medium text-muted-foreground">Prompt</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground">
+                  Prompt
+                </th>
                 <th className="px-4 py-3 font-medium text-muted-foreground text-center">
                   Last Run
                 </th>
@@ -177,7 +181,9 @@ export default function TopicDetails() {
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm text-muted-foreground">Never</span>
+                        <span className="text-sm text-muted-foreground">
+                          Never
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -222,7 +228,9 @@ export default function TopicDetails() {
             className="bg-card border border-border rounded-xl w-full max-w-md overflow-hidden shadow-lg"
           >
             <div className="p-5 border-b border-border flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-foreground">Add New Prompt</h2>
+              <h2 className="text-lg font-semibold text-foreground">
+                Add New Prompt
+              </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-muted-foreground hover:text-foreground transition-colors"

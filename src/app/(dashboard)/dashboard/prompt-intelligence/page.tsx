@@ -22,7 +22,7 @@ export default function PromptsDashboard() {
   useEffect(() => {
     const fetchQuestionsForTopic = async (topicId: string) => {
       try {
-        const res = await fetch(`https://api.citationly.ai/PromptIntelligence/topics/${topicId}/questions`, {
+        const res = await fetch(`https://api.citationly.ai/api/PromptIntelligence/topics/${topicId}/questions`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -37,7 +37,7 @@ export default function PromptsDashboard() {
     const fetchTopics = async () => {
       if (!token) return;
       try {
-        const res = await fetch("https://api.citationly.ai/PromptIntelligence/topics", {
+        const res = await fetch("https://api.citationly.ai/api/PromptIntelligence/topics", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -62,7 +62,7 @@ export default function PromptsDashboard() {
     e.preventDefault();
     if (!newTopicName) return;
     try {
-      const res = await fetch("https://api.citationly.ai/PromptIntelligence/topics", {
+      const res = await fetch("https://api.citationly.ai/api/PromptIntelligence/topics", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

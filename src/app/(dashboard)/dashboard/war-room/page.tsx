@@ -112,7 +112,7 @@ function WarRoomContent() {
     // Fallback website ID if needed
     const websiteId = reportData?.websiteProfile?.id || "";
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5100"}/api/Analysis/stream${websiteId ? `?websiteId=${websiteId}` : ""}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8088"}/api/Analysis/stream${websiteId ? `?websiteId=${websiteId}` : ""}`;
 
     try {
       const response = await fetch(url, {

@@ -32,7 +32,7 @@ export default function TopicDetails() {
     if (!token) return;
     try {
       const res = await fetch(
-        `http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`,
+        `https://api.citationly.ai/PromptIntelligence/topics/${topicId}/questions`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -53,7 +53,7 @@ export default function TopicDetails() {
     if (!newQuestionText) return;
     try {
       const res = await fetch(
-        "http://localhost:5100/api/PromptIntelligence/questions",
+        "https://api.citationly.ai/PromptIntelligence/questions",
         {
           method: "POST",
           headers: {

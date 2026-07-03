@@ -187,7 +187,7 @@ export default function AssistantPage() {
     setMode("ask");
 
     try {
-      const baseUrl = apiClient.defaults.baseURL || "http://localhost:5100/api";
+      const baseUrl = apiClient.defaults.baseURL || "https://api.citationly.ai";
       const token = useAuthStore.getState().token;
       
       const response = await fetch(baseUrl + "/assistant/chat", {

@@ -20,7 +20,7 @@ export default function PromptAnalysisWorkspace() {
   useEffect(() => {
     const fetchResults = async (analysisId: string) => {
       try {
-        const res = await fetch(`http://localhost:5100/api/PromptIntelligence/analyses/${analysisId}`, {
+        const res = await fetch(`https://api.citationly.ai/PromptIntelligence/analyses/${analysisId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -37,7 +37,7 @@ export default function PromptAnalysisWorkspace() {
     const fetchInitialData = async () => {
       if (!token) return;
     try {
-      const res = await fetch(`http://localhost:5100/api/PromptIntelligence/topics/${topicId}/questions`, {
+      const res = await fetch(`https://api.citationly.ai/PromptIntelligence/topics/${topicId}/questions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -61,7 +61,7 @@ export default function PromptAnalysisWorkspace() {
 
   const fetchResults = async (analysisId: string) => {
     try {
-      const res = await fetch(`http://localhost:5100/api/PromptIntelligence/analyses/${analysisId}`, {
+      const res = await fetch(`https://api.citationly.ai/PromptIntelligence/analyses/${analysisId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -82,7 +82,7 @@ export default function PromptAnalysisWorkspace() {
     setData(null);
 
     try {
-      const response = await fetch(`http://localhost:5100/api/PromptIntelligence/analyze/stream/${questionId}`, {
+      const response = await fetch(`https://api.citationly.ai/PromptIntelligence/analyze/stream/${questionId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

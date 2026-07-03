@@ -6,8 +6,9 @@ export default function RegionAnalysis({ data }: { data: FullReportData }) {
   if (regions.length === 0) return null
 
   // Sort by visibility score
-  const sortedRegions = [...regions].sort((a, b) => b.visibilityScore - a.visibilityScore).slice(0, 8)
+//  const sortedRegions = [...regions].sort((a, b) => b.visibilityScore - a.visibilityScore).slice(0, 8)
 
+const sortedRegions = [...regions].sort((a, b) => b.visibility - a.visibility)
   return (
     <section>
       <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">

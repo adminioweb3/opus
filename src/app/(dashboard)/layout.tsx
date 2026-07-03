@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { useOrganizationStore } from "@/lib/stores/organization-store";
 import { useNotificationStore } from "@/lib/stores/notification-store";
 import { useUIStore } from "@/lib/stores/ui-store";
+import "../dashboard-views.css";
 import {
   Bell,
   Search,

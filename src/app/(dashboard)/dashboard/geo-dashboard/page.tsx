@@ -1,0 +1,30 @@
+"use client";
+
+import { useEffect } from "react";
+
+export default function GeoDashboardPage() {
+  useEffect(() => {
+    // @ts-ignore
+    if (typeof window === "undefined" || !window.Chart) return;
+
+    // @ts-ignore
+    ['geoTrend','geoSov'].forEach(function(id){ var c=window.Chart.getChart(id); if(c) c.destroy(); });
+    var days=Array.from({length:30},function(_,i){return i+1;});
+    var data=[120,138,150,142,128,160,148,135,158,152,140,165,158,148,170,162,155,175,168,160,178,172,165,182,176,170,185,178,172,188];
+    // @ts-ignore
+    new window.Chart(document.getElementById('geoTrend'),{type:'line',
+      data:{labels:days, datasets:[{data:data, borderColor:'#6366F1', backgroundColor:'rgba(99,102,241,0.10)', fill:true, tension:0.4, pointRadius:0, borderWidth:2.5}]},
+      // @ts-ignore
+      options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{title:function(c){return 'Day '+c[0].label;}, label:function(c){return 'Score: '+c.parsed.y;}}}}, scales:{x:{ticks:{color:'#94A3B8',font:{size:10},maxTicksLimit:8},grid:{display:false}}, y:{min:0,max:220,ticks:{stepSize:50,color:'#94A3B8',font:{size:11}},grid:{color:'rgba(148,163,184,0.15)'}}}}});
+    var sov=[{n:'Acme Corp',v:38.4,c:'#6366F1'},{n:'Profound',v:22.1,c:'#2563EB'},{n:'BrightEdge',v:15.7,c:'#7C3AED'},{n:'Semrush',v:12.3,c:'#16A34A'},{n:'Others',v:11.5,c:'#CBD5E1'}];
+    // @ts-ignore
+    new window.Chart(document.getElementById('geoSov'),{type:'doughnut',
+      data:{labels:sov.map(function(s){return s.n;}), datasets:[{data:sov.map(function(s){return s.v;}), backgroundColor:sov.map(function(s){return s.c;}), borderWidth:2, borderColor:'#fff'}]},
+      // @ts-ignore
+      options:{responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed+'%';}}}}}});
+    const sovList = document.getElementById('geoSovList');
+    if (sovList) sovList.innerHTML=sov.map(function(s){return '<div class="sov-row"><span class="sov-dot" style="background:'+s.c+';"></span><span class="sov-name">'+s.n+'</span><span class="sov-val">'+s.v+'%</span></div>';}).join('');
+  }, []);
+
+  return <div dangerouslySetInnerHTML={{ __html: '<div class="content"><div class="view"><div class="page-head"><div><h1>Executive GEO dashboard</h1><p>Real-time insights into your Generative Engine Optimization performance</p></div><div class="head-tools"><div class="seg"><button>7D</button><button class="on">30D</button><button>90D</button><button>1Y</button></div><button class="export"><i class="ti ti-download"></i>Export</button></div></div><div class="grid"><div class="scard" style="animation-delay:0ms"><div class="top"><span class="lab">AI Visibility Score</span><i class="ti ti-eye ic" style="color:#6366F1;"></i></div><div class="val">78<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+5.2% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:55ms"><div class="top"><span class="lab">Citation Score</span><i class="ti ti-quote ic" style="color:#16A34A;"></i></div><div class="val">82<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+3.1% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:110ms"><div class="top"><span class="lab">Sentiment Score</span><i class="ti ti-mood-smile ic" style="color:#2563EB;"></i></div><div class="val">65<small>/100</small></div><div class="chg down"><i class="ti ti-trending-down"></i>-1.2% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:165ms"><div class="top"><span class="lab">Competitor Score</span><i class="ti ti-swords ic" style="color:#7C3AED;"></i></div><div class="val">71<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+2.5% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:220ms"><div class="top"><span class="lab">Hallucination Risk</span><i class="ti ti-alert-triangle ic" style="color:#B45309;"></i></div><div class="val">12<small>/100</small></div><div class="chg down"><i class="ti ti-trending-down"></i>-2% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:275ms"><div class="top"><span class="lab">SEO Health</span><i class="ti ti-world ic" style="color:#0EA5E9;"></i></div><div class="val">91<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+0.5% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:330ms"><div class="top"><span class="lab">AEO Readiness</span><i class="ti ti-search ic" style="color:#DB2777;"></i></div><div class="val">68<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+8.4% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div><div class="scard" style="animation-delay:385ms"><div class="top"><span class="lab">GEO Readiness</span><i class="ti ti-target ic" style="color:#16A34A;"></i></div><div class="val">74<small>/100</small></div><div class="chg up"><i class="ti ti-trending-up"></i>+4.1% <span style="color:var(--faint); font-weight:500;">vs last period</span></div></div></div><div class="lower"><div class="card"><div class="card-head col"><div class="t">AI visibility trend</div><div class="s">Aggregate visibility score over the selected timeframe.</div></div><div class="geo-chart"><canvas id="geoTrend" role="img" aria-label="AI visibility trend">Trend.</canvas></div></div><div class="card"><div class="card-head col"><div class="t">Share of voice</div><div class="s">Brand visibility vs top competitors.</div></div><div class="sov-wrap"><div class="donut-box"><canvas id="geoSov" role="img" aria-label="Share of voice">SOV.</canvas></div><div class="sov-list" id="geoSovList"></div></div></div></div></div></div>' }} />;
+}

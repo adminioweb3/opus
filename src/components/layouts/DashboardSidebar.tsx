@@ -123,12 +123,44 @@ const menuCategories = [
     ],
   },
   {
+    title: "Content studio",
+    icon: FileEdit,
+    items: [
+      {
+        title: "Content generator",
+        url: "/dashboard/content-generator",
+        permission: "dashboard.view",
+      },
+      {
+        title: "Content optimizer",
+        url: "/dashboard/content-optimizer",
+        permission: "dashboard.view",
+      },
+      {
+        title: "Publishing center",
+        url: "/dashboard/publishing-center",
+        permission: "dashboard.view",
+      },
+    ],
+  },
+  {
+    title: "Opportunity engine",
+    icon: Target,
+    items: [
+      {
+        title: "Opportunity finder",
+        url: "/dashboard/opportunity-finder",
+        permission: "dashboard.view",
+      },
+    ],
+  },
+  {
     title: "GEO engine",
     icon: Globe,
     items: [
       {
         title: "GEO dashboard",
-        url: "/dashboard/overview",
+        url: "/dashboard/geo-dashboard",
         permission: "dashboard.view",
       },
       {
@@ -143,294 +175,7 @@ const menuCategories = [
       },
     ],
   },
-  {
-    title: "Core Intelligence",
-    icon: BarChart3,
-    items: [
-      {
-        title: "Visibility",
-        url: "/dashboard/visibility",
-        icon: Activity,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Citations",
-        url: "/dashboard/citations",
-        icon: FileText,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Mentions",
-        url: "/dashboard/mentions",
-        icon: Bell,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Platforms",
-        url: "/dashboard/platforms",
-        icon: PieChart,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Competitors",
-        url: "/dashboard/competitors",
-        icon: Target,
-        permission: "competitors.view",
-      },
-      {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: PieChart,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Reports",
-        url: "/dashboard/reports",
-        icon: FileText,
-        permission: "reports.view",
-      },
-    ],
-  },
-  {
-    title: "GEO & Search Intel",
-    icon: Globe,
-    items: [
-      {
-        title: "Prompt Intel",
-        url: "/dashboard/prompt-intelligence",
-        icon: MessageSquare,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Opportunities",
-        url: "/dashboard/opportunities",
-        icon: Target,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Bot Analytics",
-        url: "/dashboard/bot-analytics",
-        icon: Bot,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Search Journey",
-        url: "/dashboard/search-journey",
-        icon: Search,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Regional Intel",
-        url: "/dashboard/regional-intelligence",
-        icon: Globe,
-        permission: "dashboard.view",
-      },
-    ],
-  },
-  {
-    title: "Content & Action",
-    icon: FileEdit,
-    items: [
-      {
-        title: "Action Center",
-        url: "/dashboard/actions",
-        icon: Zap,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Recommendations",
-        url: "/dashboard/recommendations",
-        icon: Lightbulb,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Content Center",
-        url: "/dashboard/content-center",
-        icon: FileEdit,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Content Inventory",
-        url: "/dashboard/content-inventory",
-        icon: FileText,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Content Review",
-        url: "/dashboard/content-review",
-        icon: FileEdit,
-        permission: "dashboard.view",
-      },
-      {
-        title: "CMS Publishing",
-        url: "/dashboard/cms-publishing",
-        icon: Zap,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Publishing Hub",
-        url: "/dashboard/publishing",
-        icon: Send,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Content Opps",
-        url: "/dashboard/content",
-        icon: FileText,
-        permission: "dashboard.view",
-      },
-    ],
-  },
-  {
-    title: "Deployment & Tech",
-    icon: Rocket,
-    items: [
-      {
-        title: "Website Manager",
-        url: "/dashboard/websites",
-        icon: Globe,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Deployment Center",
-        url: "/dashboard/deployments",
-        icon: Send,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Repositories",
-        url: "/dashboard/repositories",
-        icon: GitBranch,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Website Scanner",
-        url: "/dashboard/scanner",
-        icon: Search,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Website Scraper",
-        url: "/dashboard/scraper",
-        icon: Globe,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Automation",
-        url: "/dashboard/automation",
-        icon: Zap,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Deployment Agents",
-        url: "/dashboard/deployment-agents",
-        icon: Bot,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Revenue Attrib",
-        url: "/dashboard/revenue",
-        icon: DollarSign,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Real Time Alerts",
-        url: "/dashboard/alerts",
-        icon: Bell,
-        permission: "alerts.view",
-      },
-    ],
-  },
-  {
-    title: "Optimization",
-    icon: Wand2,
-    items: [
-      {
-        title: "AEO Optimizer",
-        url: "/dashboard/optimizer",
-        icon: Wand2,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Tasks & Recs",
-        url: "/dashboard/recommendations",
-        icon: Lightbulb,
-        permission: "dashboard.view",
-      },
-      {
-        title: "AI Simulator",
-        url: "/dashboard/simulator",
-        icon: Bot,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Gap Analysis",
-        url: "/dashboard/gaps",
-        icon: Target,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Prompt Strategy",
-        url: "/dashboard/prompt-intelligence",
-        icon: Sparkles,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Ranking Timeline",
-        url: "/dashboard/timeline",
-        icon: TrendingUp,
-        permission: "dashboard.view",
-      },
-    ],
-  },
-  {
-    title: "Advanced Moat",
-    icon: ShieldCheck,
-    items: [
-      {
-        title: "Shopping Visibility",
-        url: "/dashboard/shopping-visibility",
-        icon: ShoppingCart,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Voice Drift",
-        url: "/dashboard/voice-drift",
-        icon: Activity,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Source Authority",
-        url: "/dashboard/source-authority",
-        icon: ShieldCheck,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Shadow Mode",
-        url: "/dashboard/shadow-mode",
-        icon: Ghost,
-        permission: "dashboard.view",
-      },
-      {
-        title: "Answer Simulator",
-        url: "/dashboard/answer-simulator",
-        icon: Terminal,
-        permission: "dashboard.view",
-      },
-    ],
-  },
-  {
-    title: "AI Models & Enterprise",
-    icon: BrainCircuit,
-    items: [
-      {
-        title: "AI Performance Hub",
-        url: "/dashboard/ai-hub",
-        icon: BrainCircuit,
-        permission: "dashboard.view",
-      },
-    ],
-  },
+
   {
     title: "Organization",
     icon: Settings,

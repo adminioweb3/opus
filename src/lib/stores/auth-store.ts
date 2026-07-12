@@ -48,11 +48,10 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            import('@/lib/stores/organizationStore').then(({ useOrganizationStore }) => {
-              if (syncRes.organizationId) {
-                useOrganizationStore.getState().setOrganizationId(syncRes.organizationId)
-              }
-            })
+            if (syncRes.organizationId) {
+              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+              useOrganizationStore.getState().setSyncResult(syncRes)
+            }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
           }
@@ -84,11 +83,10 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            import('@/lib/stores/organizationStore').then(({ useOrganizationStore }) => {
-              if (syncRes.organizationId) {
-                useOrganizationStore.getState().setOrganizationId(syncRes.organizationId)
-              }
-            })
+            if (syncRes.organizationId) {
+              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+              useOrganizationStore.getState().setSyncResult(syncRes)
+            }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
           }
@@ -131,11 +129,10 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            import('@/lib/stores/organizationStore').then(({ useOrganizationStore }) => {
-              if (syncRes.organizationId) {
-                useOrganizationStore.getState().setOrganizationId(syncRes.organizationId)
-              }
-            })
+            if (syncRes.organizationId) {
+              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+              useOrganizationStore.getState().setSyncResult(syncRes)
+            }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
           }
@@ -194,11 +191,10 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            import('@/lib/stores/organizationStore').then(({ useOrganizationStore }) => {
-              if (syncRes.organizationId) {
-                useOrganizationStore.getState().setOrganizationId(syncRes.organizationId)
-              }
-            })
+            if (syncRes.organizationId) {
+              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+              useOrganizationStore.getState().setSyncResult(syncRes)
+            }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
           }

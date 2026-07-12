@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Blog | Citationly",
+  description:
+    "Insights on AI search and brand visibility — GEO strategy, AI search research, and product updates from the team measuring how AI engines discover, recommend, and cite brands.",
+}
+
 export default function BlogPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/blog</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

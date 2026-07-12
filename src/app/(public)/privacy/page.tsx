@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Citationly",
+  description:
+    "How Citationly collects, uses, and protects your data — including AI processing, subprocessors, retention, and your privacy rights.",
+}
+
 export default function PrivacyPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/privacy</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

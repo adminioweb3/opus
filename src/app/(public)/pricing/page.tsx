@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import Content from "./content"
+
+export const metadata: Metadata = {
+  title: "Pricing | Citationly",
+  description:
+    "Simple plans for AI visibility intelligence. Starter $99/mo, Professional $299/mo, Enterprise $999/mo — every plan starts with a 7-day free trial, no credit card required.",
+}
+
 export default function PricingPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/pricing</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

@@ -1,322 +1,390 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowUpRight, ArrowDownRight, Target, TrendingUp, Eye, ShieldAlert, Zap, Globe, Search, Download, Loader2 } from "lucide-react"
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from "recharts"
-import { useUIStore } from "@/lib/stores/ui-store"
-import { formatDate } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { runScan } from "@/lib/api/dashboardApi"
-import { getFullReport, FullReportData } from "@/lib/api/reportApi"
-import { useSearchParams } from "next/navigation"
-import { Suspense } from "react"
-import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useOrganizationStore } from "@/lib/stores/organizationStore";
+import {
+  getCommandCenter,
+  CommandCenterResponse,
+  CommandCenterKpi,
+  CommandCenterBreakdownCard,
+} from "@/lib/api/commandCenterApi";
 
-const DATE_RANGES = [
-  { label: "7D", value: "7d" as const },
-  { label: "30D", value: "30d" as const },
-  { label: "90D", value: "90d" as const },
-  { label: "1Y", value: "1y" as const },
-]
+/* ---------- cosmetic-only lookups (backend sends real values, not styling) ---------- */
+const KPI_STYLE = [
+  { ic: "ti-gauge", tint: "#7C3AED", desc: "Composite of visibility, citation, sentiment & competitive scores." },
+  { ic: "ti-eye", tint: "#6366F1", desc: "Real AI visibility score vs your previous scan." },
+  { ic: "ti-quote", tint: "#16A34A", desc: "Real citation score vs your previous scan." },
+  { ic: "ti-swords", tint: "#2563EB", desc: "Your real share of voice vs tracked competitors." },
+  { ic: "ti-list-check", tint: "#D97706", desc: "Open items aggregated from Citation, Competitor, Visibility & Brand Pulse." },
+  { ic: "ti-radar-2", tint: "#06B6D4", desc: "How many of your 5 weekly AI scans have run." },
+];
 
-export default function DashboardOverviewPage() {
+const BREAKDOWN_STYLE: Record<string, { ic: string; tint: string }> = {
+  "AI visibility": { ic: "ti-eye", tint: "#6366F1" },
+  "Citation": { ic: "ti-quote", tint: "#16A34A" },
+  "GEO": { ic: "ti-world", tint: "#7C3AED" },
+  "SEO": { ic: "ti-chart-arrows-vertical", tint: "#2563EB" },
+  "AEO": { ic: "ti-help-circle", tint: "#16A34A" },
+  "Messaging consistency": { ic: "ti-message-2", tint: "#D97706" },
+  "Citation authority": { ic: "ti-award", tint: "#DC2626" },
+  "Entity coverage": { ic: "ti-affiliate", tint: "#06B6D4" },
+};
+
+const SEVERITY_STYLE: Record<string, { bg: string; c: string }> = {
+  High: { bg: "var(--red-soft, #FEE2E2)", c: "var(--red, #DC2626)" },
+  Medium: { bg: "#FEF3E2", c: "#B45309" },
+  Good: { bg: "var(--green-soft, #DCFCE7)", c: "var(--green-ink, #16A34A)" },
+};
+
+const SOURCE_ICON: Record<string, string> = {
+  "Citation Intelligence": "ti-quote",
+  "Competitor Watch": "ti-swords",
+  "Brand Pulse": "ti-heart-pulse",
+  "Visibility Radar": "ti-radar-2",
+};
+
+const RANGES: Array<"7D" | "30D" | "90D"> = ["7D", "30D", "90D"];
+
+/* ---------- helpers ---------- */
+const soft = (hex: string) => {
+  const r = hex.replace(/^#/, "").match(/.{2}/g)?.map((h) => parseInt(h, 16)) || [0, 0, 0];
+  return `rgba(${r[0]},${r[1]},${r[2]},.13)`;
+};
+
+const pfTrendClass = (v: number) => (v > 0 ? "text-emerald-600" : v < 0 ? "text-red-600" : "text-muted-foreground");
+const pfArrow = (v: number) => (v > 0 ? "▲" : v < 0 ? "▼" : "—");
+
+function Sparkline({ points, color }: { points: number[]; color: string }) {
+  const w = 100, h = 28;
+  if (points.length < 2) return <div className="h-full w-full" />;
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const rng = max - min || 1;
+  const step = w / (points.length - 1);
+  const pts = points.map((v, i) => `${(i * step).toFixed(1)},${(h - 2 - ((v - min) / rng) * (h - 5)).toFixed(1)}`);
+
   return (
-    <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>}>
-      <DashboardOverviewContent />
-    </Suspense>
-  )
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
+      <polygon points={`0,${h} ${pts.join(" ")} ${w},${h}`} fill={color} opacity="0.10" />
+      <polyline points={pts.join(" ")} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={w.toFixed(1)} cy={(h - 2 - ((points[points.length - 1] - min) / rng) * (h - 5)).toFixed(1)} r="2.4" fill={color} />
+    </svg>
+  );
 }
 
-function DashboardOverviewContent() {
-  const { activeDateRange, setDateRange } = useUIStore()
-  const { organizationId } = useOrganizationStore()
-  const searchParams = useSearchParams()
-  const orgId = searchParams.get('orgId') || organizationId
-  
-  const [reportData, setReportData] = useState<FullReportData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isScanning, setIsScanning] = useState(false)
+/* ---------- PAGE ---------- */
+export default function CommandCenterPage() {
+  const { organizationId } = useOrganizationStore();
+  const [range, setRange] = useState<"7D" | "30D" | "90D">("30D");
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<CommandCenterResponse | null>(null);
 
-  const loadData = React.useCallback(async () => {
-    if (!orgId) return
+  const fetchData = useCallback(async () => {
+    if (!organizationId) return;
+    setIsLoading(true);
     try {
-      setIsLoading(true)
-      const data = await getFullReport(orgId)
-      setReportData(data)
-    } catch (error) {
-      console.error("Failed to load metrics", error)
+      const res = await getCommandCenter(organizationId, range);
+      setData(res);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load command center data");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [orgId])
+  }, [organizationId, range]);
 
   useEffect(() => {
-    loadData()
-  }, [loadData])
+    fetchData();
+  }, [fetchData]);
 
-  const handleRunScan = async () => {
-    if (!organizationId) return
-    setIsScanning(true)
-    try {
-      await runScan(organizationId)
-      await loadData()
-    } catch(err) {
-      console.error(err)
-    } finally {
-      setIsScanning(false)
-    }
-  }
+  const kpis = useMemo<(CommandCenterKpi & { ic: string; tint: string; desc: string })[]>(
+    () => (data?.kpis ?? []).map((k, i) => ({ ...k, ...(KPI_STYLE[i] ?? KPI_STYLE[0]) })),
+    [data],
+  );
 
-  const visibilityScore = reportData?.visibilitySummary?.overallVisibilityScore || 0
-  const citationScore = reportData?.citationSummary?.averageAuthorityScore || 0
-  let topCompetitors: any[] = []
-  let competitorsScore = 0
-  if (reportData?.competitors) {
-    const parsed = reportData.competitors.map((c: any) => {
-      try {
-        const p = JSON.parse(c.rawJson || '{}')
-        return {
-          name: c.name,
-          sov: p.estimatedTraffic?.monthlyVisitors || p.estimatedBrandAuthority?.score || c.similarityScore,
-          auth: p.estimatedBrandAuthority?.score || 0
-        }
-      } catch (e) {
-        return { name: c.name, sov: 0, auth: 0 }
-      }
-    })
-    const sorted = [...parsed].sort((a,b) => b.sov - a.sov)
-    topCompetitors = sorted.slice(0, 4)
-    if (parsed.length > 0) {
-      competitorsScore = Math.round(parsed.reduce((acc: number, c: any) => acc + c.auth, 0) / parsed.length)
-    }
-  }
+  const breakdown = useMemo<(CommandCenterBreakdownCard & { ic: string; tint: string })[]>(
+    () => (data?.breakdown ?? []).map((b) => ({ ...b, ...(BREAKDOWN_STYLE[b.name] ?? { ic: "ti-chart-bar", tint: "#64748B" }) })),
+    [data],
+  );
 
-  const execMetrics = reportData ? {
-    visibilityScore: visibilityScore,
-    visibilityChange: 5.2,
-    citationScore: citationScore,
-    citationChange: 3.1,
-    sentimentScore: 85,
-    sentimentChange: 1.2,
-    competitorScore: competitorsScore || 71,
-    competitorChange: 2.5,
-    trend: Array.from({ length: 30 }, (_, i) => ({
-      date: `Day ${i + 1}`,
-      citations: Math.round(Math.max(0, (visibilityScore || 50) - 30 + i + (Math.random() * 5)))
-    })),
-    shareOfVoice: topCompetitors.length > 0 ? [
-      { name: reportData?.websiteProfile?.websiteUrl || 'Your Brand', value: 40, color: 'hsl(var(--primary))' },
-      ...topCompetitors.map((c, i) => ({ name: c.name, value: Math.max(10, 30 - (i*5)), color: ['#2563EB', '#7C3AED', '#16A34A', '#CBD5E1'][i] })),
-      { name: 'Others', value: 10, color: '#94A3B8' }
-    ] : []
-  } : null
-
-  const metrics = reportData ? {
-    totalWebsites: 1,
-    totalPagesCrawled: 5,
-    totalRecommendations: reportData.recommendations?.length || 0,
-    highPriorityRecommendations: reportData.recommendations?.filter((r: any) => r.impactScore > 80).length || 0
-  } : null
-
-  const kpis = execMetrics ? [
-    { title: "AI Visibility Score", value: execMetrics.visibilityScore, change: execMetrics.visibilityChange, icon: Eye, color: "text-primary" },
-    { title: "Citation Score", value: execMetrics.citationScore, change: execMetrics.citationChange, icon: Target, color: "text-emerald-500" },
-    { title: "Sentiment Score", value: execMetrics.sentimentScore, change: execMetrics.sentimentChange, icon: TrendingUp, color: "text-blue-500" },
-    { title: "Competitor Score", value: execMetrics.competitorScore, change: execMetrics.competitorChange, icon: Zap, color: "text-violet-500" },
-  ] : []
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.05 } }
-  }
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+  if (!isLoading && data && !data.hasData) {
+    return (
+      <div className="p-6 md:p-8 max-w-[1400px] mx-auto flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md p-10 text-center">
+          <i className="ti ti-shield-exclamation text-4xl text-amber-500 block mb-4" />
+          <h2 className="text-lg font-bold mb-2">No data yet</h2>
+          <p className="text-sm text-muted-foreground">
+            Complete onboarding analysis for this organization first — Command Center populates
+            automatically from the real GEO, Competitor, Visibility, Citation and Brand Pulse scans once that's done.
+          </p>
+        </Card>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Executive GEO Dashboard</h2>
-          <p className="text-muted-foreground mt-1">
-            Real-time insights into your Generative Engine Optimization performance.
+    <div className="p-6 md:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">
+      {/* HERO */}
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Executive Intelligence · {data?.lastScanDate ? `scanned ${data.lastScanDate}` : "loading"}
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Command center</h1>
+          <p className="text-muted-foreground text-base max-w-2xl">
+            The real, AI-analyzed state of your visibility, GEO, citations, competitors and brand
+            perception — aggregated from every scan you're running, in one executive view.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="default" size="sm" onClick={handleRunScan} disabled={isScanning || !organizationId}>
-            {isScanning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />} 
-            Run Live Scan
-          </Button>
-          <div className="hidden items-center bg-muted rounded-lg p-1 md:flex">
-            {DATE_RANGES.map(range => (
-              <button
-                key={range.value}
-                onClick={() => setDateRange(range.value)}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  activeDateRange === range.value ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
+        <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => toast.info("Agents coming soon")}>
+              <i className="ti ti-robot mr-2" /> Agents
+            </Button>
+            <Button variant="outline" onClick={() => toast.info("Reports coming soon")}>
+              <i className="ti ti-file-analytics mr-2" /> Reports
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => toast.info("Export coming soon")}>
+              <i className="ti ti-download mr-2" /> Export
+            </Button>
+            <Button variant="secondary" onClick={() => toast.info("Share coming soon")}>
+              <i className="ti ti-share mr-2" /> Share
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-6 border-b border-border/50">
+        <div className="relative w-full md:max-w-md">
+          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input className="pl-9 h-10" placeholder="Search reports, action items, alerts..." autoComplete="off" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center rounded-md border p-1 bg-muted/20">
+            {RANGES.map((r) => (
+              <Button
+                key={r}
+                variant={range === r ? "secondary" : "ghost"}
+                size="sm"
+                className={`h-7 px-3 text-xs ${range === r ? "shadow-sm" : ""}`}
+                onClick={() => setRange(r)}
               >
-                {range.label}
-              </button>
+                {r}
+              </Button>
             ))}
           </div>
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" /> Export
-          </Button>
         </div>
       </div>
 
-      {/* Real-time DB Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Websites</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : metrics?.totalWebsites ?? 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pages Crawled</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : metrics?.totalPagesCrawled ?? 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI Recommendations</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : metrics?.totalRecommendations ?? 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">High Priority Action Items</CardTitle>
-            <ShieldAlert className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-500">{isLoading ? "..." : metrics?.highPriorityRecommendations ?? 0}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {isLoading ? (
-        <div className="py-20 flex justify-center items-center">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : !execMetrics?.trend || execMetrics.trend.length === 0 ? (
-        <div className="py-20 flex flex-col justify-center items-center text-center space-y-4">
-          <Globe className="w-12 h-12 text-muted-foreground/50" />
-          <div>
-            <h3 className="text-lg font-medium">No Scan Data Available</h3>
-            <p className="text-muted-foreground max-w-md mt-1">Connect a website and click &quot;Run Live Scan&quot; to generate your first longitudinal Generative Engine Optimization report.</p>
-          </div>
-          <Button onClick={handleRunScan} disabled={isScanning}>
-            {isScanning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Generate First Report"}
-          </Button>
+      {isLoading && !data ? (
+        <div className="py-24 flex flex-col items-center justify-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <p className="text-sm text-muted-foreground">Loading real command center data…</p>
         </div>
       ) : (
         <>
-          {/* KPI Cards */}
-          <motion.div variants={container} initial="hidden" animate="show" className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {kpis.map((kpi) => (
-              <motion.div key={kpi.title} variants={item}>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-medium text-muted-foreground">{kpi.title}</CardTitle>
-                    <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
+          {/* SECTION: KPIs */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <i className="ti ti-gauge text-muted-foreground" /> Executive KPIs
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {kpis.map((k, i) => (
+                <Card key={i} className="group hover:border-primary/40 transition-colors">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <div className="p-2.5 rounded-lg transition-transform group-hover:scale-105" style={{ backgroundColor: soft(k.tint), color: k.tint }}>
+                      <i className={`ti ${k.ic} text-lg`} />
+                    </div>
+                    <Badge variant={k.delta > 0 ? "default" : k.delta < 0 ? "destructive" : "secondary"} className={k.delta > 0 ? "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 border-emerald-200" : ""}>
+                      {pfArrow(k.delta)} {Math.abs(k.delta)}
+                    </Badge>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {kpi.value}/100
+                    <div className="text-sm font-medium text-muted-foreground mb-1">{k.label}</div>
+                    <div className="text-3xl font-bold tracking-tight mb-2">
+                      {k.val}{k.suffix && <span className="text-lg font-medium text-muted-foreground ml-1">{k.suffix}</span>}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      <span className={`font-medium inline-flex items-center ${
-                        kpi.change >= 0 ? "text-emerald-500" : "text-red-500"
-                      }`}>
-                        {kpi.change > 0 ? "+" : ""}{kpi.change}%
-                        {kpi.change >= 0 ? <ArrowUpRight className="w-3 h-3 ml-0.5" /> : <ArrowDownRight className="w-3 h-3 ml-0.5" />}
-                      </span>{" "}
-                      vs last period
-                    </p>
+                    <p className="text-xs text-muted-foreground mb-4 h-8">{k.desc}</p>
+                    {k.spark.length > 1 && (
+                      <div className="h-10 w-full opacity-80 group-hover:opacity-100 transition-opacity">
+                        <Sparkline points={k.spark} color={k.tint} />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </div>
+          </section>
 
-          <div className="grid gap-4 lg:grid-cols-7">
-            <Card className="lg:col-span-4">
-              <CardHeader>
-                <CardTitle>AI Visibility Trend</CardTitle>
-                <CardDescription>Aggregate visibility score over the selected timeframe.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={execMetrics.trend}>
-                      <defs>
-                        <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis dataKey="date" stroke="#888" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => { const d = new Date(v); return `${d.getMonth()+1}/${d.getDate()}` }} />
-                      <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
-                      <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} labelFormatter={(v) => formatDate(v)} />
-                      <Area type="monotone" dataKey="citations" stroke="var(--color-primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorVis)" name="Visibility" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Share of Voice</CardTitle>
-                <CardDescription>Brand visibility compared to top competitors.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-52 w-full flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={execMetrics.shareOfVoice} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value">
-                        {execMetrics.shareOfVoice.map((entry) => (
-                          <Cell key={entry.name} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)", fontSize: 12 }} formatter={(v: any) => `${v}%`} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-2 mt-4">
-                  {execMetrics.shareOfVoice.map(item => (
-                    <div key={item.name} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                        <span className="text-muted-foreground">{item.name}</span>
+          {/* SECTION: BREAKDOWN */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <i className="ti ti-layout-grid text-muted-foreground" /> Performance breakdown
+              </h2>
+              <span className="text-sm text-muted-foreground">Current vs previous scan</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {breakdown.map((b, i) => {
+                const g = b.cur - b.prev;
+                return (
+                  <Card key={i}>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2.5 rounded-lg shrink-0" style={{ backgroundColor: soft(b.tint), color: b.tint }}>
+                          <i className={`ti ${b.ic} text-lg`} />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[15px]">{b.name}</div>
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Performance</div>
+                        </div>
                       </div>
-                      <span className="font-medium">{item.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                      <div className="flex items-end justify-between mb-3">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-bold tracking-tighter">{b.cur}</span>
+                          <span className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground/40">{b.prev}</span>
+                        </div>
+                        <Badge variant="outline" className={g > 0 ? "text-emerald-700 border-emerald-200 bg-emerald-50" : g < 0 ? "text-red-700 border-red-200 bg-red-50" : ""}>
+                          {pfArrow(g)} {Math.abs(g)} pts
+                        </Badge>
+                      </div>
+                      <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mb-4">
+                        <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${b.cur}%`, backgroundColor: b.tint }} />
+                      </div>
+                      <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg flex gap-2">
+                        <i className="ti ti-bulb text-amber-500 shrink-0 mt-0.5 text-[15px]" />
+                        <span className="leading-relaxed">{b.insight}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* SECTION: ACTION ITEMS */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <i className="ti ti-list-check text-muted-foreground" /> Action items
+              </h2>
+              <span className="text-sm text-muted-foreground">Aggregated from all 4 feature scans</span>
+            </div>
+            <div className="space-y-3">
+              {(data?.actionItems ?? []).map((a, i) => {
+                const sev = SEVERITY_STYLE[a.severity] ?? SEVERITY_STYLE.Medium;
+                return (
+                  <Card key={i} className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => (window.location.href = a.link)}>
+                    <CardContent className="p-4 flex items-start gap-4">
+                      <div className="p-2.5 rounded-lg shrink-0 mt-0.5 bg-muted/50 text-muted-foreground">
+                        <i className={`ti ${SOURCE_ICON[a.source] ?? "ti-bulb"} text-lg`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start mb-1 gap-2">
+                          <div className="font-semibold text-[15px]">{a.title}</div>
+                          <Badge variant="outline" className="border-0 shrink-0 font-semibold" style={{ backgroundColor: sev.bg, color: sev.c }}>
+                            {a.severity}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">{a.detail}</div>
+                        <div className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">{a.source}</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {(data?.actionItems ?? []).length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">No open action items — everything's looking healthy.</p>
+              )}
+            </div>
+          </section>
+
+          {/* SECTION: ALERTS & INSIGHTS */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* ALERTS */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                  <i className="ti ti-bell-ringing text-muted-foreground" /> Alert center
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {(data?.alerts ?? []).map((al, i) => {
+                  const sev = SEVERITY_STYLE[al.severity] ?? SEVERITY_STYLE.Medium;
+                  return (
+                    <Card key={i}>
+                      <CardContent className="p-4 flex items-start gap-4">
+                        <div className="p-2.5 rounded-lg shrink-0 mt-0.5" style={{ backgroundColor: sev.bg, color: sev.c }}>
+                          <i className="ti ti-alert-triangle text-lg" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start mb-1 gap-2">
+                            <div className="font-semibold text-[15px] truncate pr-2">{al.title}</div>
+                            <Badge variant="outline" className="border-0 shrink-0 font-semibold" style={{ backgroundColor: sev.bg, color: sev.c }}>
+                              {al.severity}
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{al.message}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+                {(data?.alerts ?? []).length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">No alerts — nothing regressed since your last scan.</p>
+                )}
+              </div>
+            </section>
+
+            {/* INSIGHTS */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                  <i className="ti ti-bulb text-muted-foreground" /> Business insights
+                </h2>
+                <span className="text-sm text-muted-foreground">AI-generated</span>
+              </div>
+              <Card className="bg-gradient-to-br from-primary/5 via-primary/5 to-transparent border-primary/20 overflow-hidden h-fit">
+                <CardHeader className="pb-4 flex flex-row items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20 shadow-sm">
+                    <i className="ti ti-sparkles text-2xl" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Executive Summary</CardTitle>
+                    <CardDescription>Generated from your latest real scan data</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2.5">
+                    {(data?.insights ?? []).map((ins, i) => (
+                      <div key={i} className="flex items-start gap-3 bg-background/80 backdrop-blur-sm p-3.5 rounded-lg border border-border/50 shadow-sm">
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                          <i className="ti ti-check text-[10px]" />
+                        </div>
+                        <span className="text-[14px] leading-relaxed" dangerouslySetInnerHTML={{ __html: ins }} />
+                      </div>
+                    ))}
+                    {(data?.insights ?? []).length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No insights generated yet.</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
           </div>
         </>
       )}
     </div>
-  )
+  );
 }

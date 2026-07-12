@@ -5,21 +5,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import { mockDeploymentsData } from "@/lib/mock-data/deployments"
 import { motion } from "framer-motion"
 import { CheckCircle2, Circle, Plug, Loader2 } from "lucide-react"
-import { connectCms } from "@/lib/api/integrationsApi"
-import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { upsertIntegration } from "@/lib/api/integrationsApi"
 import { toast } from "sonner"
 
 export default function IntegrationsPage() {
-  const { organizationId } = useOrganizationStore()
   const [connecting, setConnecting] = useState<string | null>(null)
   const [connectedApps, setConnectedApps] = useState<Set<string>>(new Set())
 
   const handleConnect = async (cmsName: string) => {
     setConnecting(cmsName)
     try {
-      await connectCms({
-        organizationId,
-        cmsType: cmsName,
+      await upsertIntegration({
+        platformName: cmsName,
         apiUrl: "https://api.example.com",
         apiKey: "dummy-key-for-now"
       })

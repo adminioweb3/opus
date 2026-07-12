@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { useOrganizationStore } from "@/lib/stores/organization-store"
 import { usePermission } from "@/components/auth/PermissionGate"
-import { Key, Copy, Plus, Trash2, RefreshCw, Eye, EyeOff, Shield, Bell, User, Building2 } from "lucide-react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Key, Copy, Plus, Trash2, RefreshCw, Eye, EyeOff, Shield, Bell, User, Building2, Globe, CreditCard } from "lucide-react"
 
 interface APIKey {
   id: string
@@ -33,6 +34,15 @@ export default function SettingsPage() {
   const { orgName, orgDomain, updateOrg } = useOrganizationStore()
   const canManageSettings = usePermission("settings.manage")
   const canManageKeys = usePermission("apikeys.manage")
+  
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const tabParam = searchParams.get("tab")
+  const activeTab = tabParam || "profile"
+
+  const handleTabChange = (value: string) => {
+    router.push(`/dashboard/settings?tab=${value}`)
+  }
 
   // Profile state
   const [profileName, setProfileName] = useState((user as any)?.name || (user as any)?.displayName || "")
@@ -101,10 +111,12 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">Manage your account, organization, and API access.</p>
       </div>
 
-      <Tabs defaultValue="profile">
-        <TabsList>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="overflow-x-auto flex flex-nowrap w-fit">
           <TabsTrigger value="profile"><User className="w-4 h-4 mr-2" /> Profile</TabsTrigger>
           <TabsTrigger value="organization"><Building2 className="w-4 h-4 mr-2" /> Organization</TabsTrigger>
+          <TabsTrigger value="websites"><Globe className="w-4 h-4 mr-2" /> Websites</TabsTrigger>
+          <TabsTrigger value="billing"><CreditCard className="w-4 h-4 mr-2" /> Billing</TabsTrigger>
           <TabsTrigger value="notifications"><Bell className="w-4 h-4 mr-2" /> Notifications</TabsTrigger>
           <TabsTrigger value="security"><Shield className="w-4 h-4 mr-2" /> Security</TabsTrigger>
           <TabsTrigger value="api-keys"><Key className="w-4 h-4 mr-2" /> API Keys</TabsTrigger>
@@ -131,8 +143,57 @@ export default function SettingsPage() {
             <CardHeader><CardTitle>Organization Settings</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div><Label>Company Name</Label><Input className="mt-2" value={editOrgName} onChange={e => setEditOrgName(e.target.value)} disabled={!canManageSettings} /></div>
-              <div><Label>Domain</Label><Input className="mt-2" value={editOrgDomain} onChange={e => setEditOrgDomain(e.target.value)} disabled={!canManageSettings} /></div>
+              <div><Label>Primary Domain</Label><Input className="mt-2" value={editOrgDomain} onChange={e => setEditOrgDomain(e.target.value)} disabled={!canManageSettings} /></div>
               {canManageSettings && <Button onClick={() => updateOrg({ orgName: editOrgName, orgDomain: editOrgDomain })}>Save</Button>}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Websites Tab */}
+        <TabsContent value="websites" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader><CardTitle>Tracked Websites</CardTitle><CardDescription>Manage domains monitored by Citationly.</CardDescription></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-3">
+                <Input placeholder="Add a new domain (e.g., blog.example.com)" className="flex-1" />
+                <Button><Plus className="w-4 h-4 mr-2" /> Add Domain</Button>
+              </div>
+              <div className="border rounded-lg mt-4">
+                <div className="p-4 border-b flex justify-between items-center bg-slate-50/50">
+                  <div>
+                    <div className="font-medium text-sm">{editOrgDomain}</div>
+                    <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1"><Shield className="w-3 h-3" /> Verified Primary Domain</div>
+                  </div>
+                  <Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-muted-foreground" /></Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Billing Tab */}
+        <TabsContent value="billing" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader><CardTitle>Subscription & Billing</CardTitle><CardDescription>Manage your plan and payment methods.</CardDescription></CardHeader>
+            <CardContent className="space-y-6">
+              <div className="p-4 rounded-lg border bg-slate-50 flex items-center justify-between">
+                <div>
+                  <div className="font-semibold text-lg">Enterprise Plan</div>
+                  <div className="text-sm text-muted-foreground mt-1">Next billing date: Oct 1, 2024</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-2xl">$499<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                  <Badge className="mt-1" variant="secondary">Active</Badge>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium mb-3">Payment Method</h4>
+                <div className="flex items-center gap-3 p-3 border rounded-lg">
+                  <div className="w-10 h-6 bg-slate-200 rounded flex items-center justify-center text-xs font-bold text-slate-500">VISA</div>
+                  <div className="flex-1 text-sm font-medium">•••• •••• •••• 4242</div>
+                  <Button variant="ghost" size="sm">Update</Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

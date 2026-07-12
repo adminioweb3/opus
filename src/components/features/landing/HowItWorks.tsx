@@ -1,61 +1,97 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Search, BrainCircuit, LineChart } from "lucide-react"
-import { DataFlowBg } from "@/components/illustrations/BackgroundAssets"
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Globe, Bot, Gauge, Swords, Lightbulb, Radar } from "lucide-react"
+import { SectionLabel } from "./primitives/SectionLabel"
 
-const steps = [
-  {
-    icon: Search,
-    title: "1. Monitor AI Citations",
-    description: "Our engine continually queries leading LLMs to identify exactly when and how your brand is cited in AI responses."
-  },
-  {
-    icon: BrainCircuit,
-    title: "2. Analyze Sentiment & Context",
-    description: "We use advanced NLP to determine if the AI's sentiment towards your brand is positive, negative, or hallucinated."
-  },
-  {
-    icon: LineChart,
-    title: "3. Optimize Share of Voice",
-    description: "Actionable GEO (Generative Engine Optimization) insights help you adjust content to maximize AI recommendation frequency."
-  }
+const STEPS = [
+  { icon: Globe, title: "Website analysis", desc: "We crawl your site and extract the entities, claims, and structured data AI models actually read." },
+  { icon: Bot, title: "AI crawling", desc: "Real prompts are run against every major AI platform to see exactly how they describe your brand today." },
+  { icon: Gauge, title: "Visibility score", desc: "Every mention, citation, and omission rolls up into one real, trackable visibility score." },
+  { icon: Swords, title: "Competitor comparison", desc: "See exactly who's winning the answers you should be winning, and by how much." },
+  { icon: Lightbulb, title: "Recommendations", desc: "Get concrete, prioritized fixes — not generic SEO advice — ranked by real impact and effort." },
+  { icon: Radar, title: "Daily monitoring", desc: "Every platform, every week, automatically — so you find out about a drop before your CEO does." },
 ]
 
 export function HowItWorks() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const lineRef = useRef<HTMLDivElement>(null)
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+    const ctx = gsap.context(() => {
+      if (lineRef.current) {
+        gsap.fromTo(
+          lineRef.current,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 70%",
+              end: "bottom 60%",
+              scrub: 0.6,
+            },
+          }
+        )
+      }
+      stepRefs.current.forEach((el) => {
+        if (!el) return
+        gsap.fromTo(
+          el,
+          { opacity: 0, x: -24 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.6,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 80%" },
+          }
+        )
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <section className="py-32 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 text-accent opacity-20 pointer-events-none">
-        <DataFlowBg />
-      </div>
-      <div className="container mx-auto px-6 max-w-7xl">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-medium mb-4 tracking-tight">How Generative Engine Optimization Works</h2>
-          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-            Traditional SEO is evolving. Secure your brand&apos;s future by controlling how Artificial Intelligence perceives and recommends you.
-          </p>
+    <section ref={sectionRef} className="relative py-32 bg-background overflow-hidden">
+      <div className="container mx-auto px-6 max-w-4xl">
+        <div className="text-center mb-20">
+          <div className="flex justify-center">
+            <SectionLabel dark={false}>How it works</SectionLabel>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
+            From invisible to unavoidable, <span className="text-primary">in six steps.</span>
+          </h2>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connector */}
-          <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-px bg-border/50 -z-10" />
-          
-          {steps.map((step, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.2 }}
-              className="relative z-10 flex flex-col items-center text-center"
-            >
-              <div className="w-24 h-24 rounded-full bg-background border border-border shadow-sm flex items-center justify-center mb-6">
-                <step.icon className="w-8 h-8 text-primary" />
+
+        <div className="relative pl-14">
+          <div className="absolute left-5 top-2 bottom-2 w-px bg-border" />
+          <div ref={lineRef} className="absolute left-5 top-2 bottom-2 w-px bg-gradient-to-b from-primary to-violet-500 origin-top" />
+
+          <div className="space-y-16">
+            {STEPS.map((step, i) => (
+              <div
+                key={step.title}
+                ref={(el) => { stepRefs.current[i] = el }}
+                className="relative"
+              >
+                <div className="absolute -left-14 top-0 w-11 h-11 rounded-full bg-background border-2 border-primary/30 flex items-center justify-center shadow-sm">
+                  <step.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Step {i + 1}
+                </div>
+                <h3 className="text-2xl font-semibold text-foreground mb-2">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed max-w-lg">{step.desc}</p>
               </div>
-              <h3 className="text-lg font-medium mb-3">{step.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,26 +1,18 @@
-﻿import { Navbar } from "@/components/layouts/Navbar"
+import { Navbar } from "@/components/layouts/Navbar"
 import { Footer } from "@/components/layouts/Footer"
+import { SmoothScroll } from "@/components/features/landing/primitives/SmoothScroll"
 import { Hero } from "@/components/features/landing/Hero"
+import { SocialProof } from "@/components/features/landing/SocialProof"
 import { HowItWorks } from "@/components/features/landing/HowItWorks"
 import { ProductShowcase } from "@/components/features/landing/ProductShowcase"
-import { EnterpriseSecurity } from "@/components/features/landing/EnterpriseSecurity"
-import { 
-  TrustedCompanies, 
-  Statistics, 
-  AiMonitoring, 
-  CompetitiveIntelligence, 
-  Faq, 
-  CtaBanner 
-} from "@/components/features/landing/LandingSections"
-import { 
-  BrandTracking, 
-  CitationTracking, 
-  ShareOfVoice, 
-  PlatformComparison, 
-  UseCases 
-} from "@/components/features/landing/LandingSections2"
-import { Pricing } from "@/components/features/landing/Pricing"
+import { PlatformWall } from "@/components/features/landing/PlatformWall"
+import { FeatureShowcase } from "@/components/features/landing/FeatureShowcase"
+import { ComparisonSection } from "@/components/features/landing/ComparisonTable"
+import { UseCases } from "@/components/features/landing/UseCases"
 import { Testimonials } from "@/components/features/landing/Testimonials"
+import { Pricing } from "@/components/features/landing/Pricing"
+import { FaqSection } from "@/components/features/landing/Faq"
+import { FinalCta } from "@/components/features/landing/FinalCta"
 import Script from "next/script"
 
 export default function Home() {
@@ -29,7 +21,7 @@ export default function Home() {
     "@graph": [
       {
         "@type": "Organization",
-        "name": "CITATIONLY",
+        "name": "Citationly",
         "url": "https://citationly.com",
         "logo": "https://citationly.com/logo.png",
         "sameAs": [
@@ -39,16 +31,16 @@ export default function Home() {
       },
       {
         "@type": "Product",
-        "name": "CITATIONLY AI Visibility Tracker",
-        "description": "Enterprise platform for AI Search Optimization, ChatGPT SEO, and Share of Voice monitoring.",
+        "name": "Citationly AI Visibility Intelligence Platform",
+        "description": "Enterprise platform for measuring, monitoring, and improving how AI platforms discover, understand, recommend, and cite your brand.",
         "brand": {
           "@type": "Brand",
-          "name": "CITATIONLY"
+          "name": "Citationly"
         },
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "999.00"
+          "price": "299.00"
         }
       },
       {
@@ -82,27 +74,24 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="min-h-screen bg-background relative selection:bg-primary/30">
-        <Navbar />
-        <Hero />
-        <TrustedCompanies />
-        <HowItWorks />
-        <ProductShowcase />
-        <Statistics />
-        <AiMonitoring />
-        <BrandTracking />
-        <CitationTracking />
-        <EnterpriseSecurity />
-        <CompetitiveIntelligence />
-        <ShareOfVoice />
-        <PlatformComparison />
-        <UseCases />
-        <Testimonials />
-        <Pricing />
-        <Faq />
-        <CtaBanner />
-        <Footer />
-      </main>
+      <SmoothScroll>
+        <main className="min-h-screen relative selection:bg-primary/30">
+          <Navbar heroVariant="dark" />
+          <Hero />
+          <SocialProof />
+          <HowItWorks />
+          <ProductShowcase />
+          <PlatformWall />
+          <FeatureShowcase />
+          <ComparisonSection />
+          <UseCases />
+          <Testimonials />
+          <Pricing />
+          <FaqSection />
+          <FinalCta />
+          <Footer />
+        </main>
+      </SmoothScroll>
     </>
   )
 }

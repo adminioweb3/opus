@@ -42,8 +42,11 @@ function getSparkline(data: number[]) {
   return data.map((v, i) => `${(i / (data.length - 1) * w).toFixed(1)},${(h - ((v - mn) / rng) * h).toFixed(1)}`).join(' ');
 }
 
+const LEADERBOARD_PAGE_SIZE = 10;
+
 export default function CompetitorWatch() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [showAllCompetitors, setShowAllCompetitors] = useState(false);
   const [range, setRange] = useState('30D');
   
   const { organizationId } = useOrganizationStore();
@@ -117,9 +120,19 @@ export default function CompetitorWatch() {
   const gap = YOU.vis - L.vis;
   const activeThreats = COMPS.filter(c => c.threat === 'high' || (c.threat === 'med' && c.sovChg > 0)).length;
 
+  // With dozens of real tracked competitors, rendering every row unconditionally makes the
+  // page unusably long — show a manageable top slice by default (always including "you" even
+  // if your rank falls outside it), and let "Show all" reveal the complete list on demand.
+  const topSlice = competitors.slice(0, LEADERBOARD_PAGE_SIZE);
+  const visibleCompetitors = showAllCompetitors
+    ? competitors
+    : topSlice.some(c => c.you)
+      ? topSlice
+      : [...topSlice.slice(0, LEADERBOARD_PAGE_SIZE - 1), YOU].sort((a, b) => a.rank - b.rank);
+
   const chartData = Array.from({length: 12}).map((_, i) => {
     const point: any = { name: `Wk ${i+1}` };
-    competitors.forEach(c => {
+    visibleCompetitors.forEach(c => {
       point[c.name] = c.trend[i];
     });
     return point;
@@ -216,8 +229,9 @@ export default function CompetitorWatch() {
             <p className="text-[13px] text-slate-500">Ranked by share of voice in AI answers. Expand a row for a snapshot.</p>
           </div>
           
-          <Card className="overflow-hidden py-0 gap-0 divide-y divide-slate-100">
-            {competitors.map((c, i) => {
+          <Card className="overflow-hidden py-0 gap-0">
+            <div className="divide-y divide-slate-100">
+            {visibleCompetitors.map((c, i) => {
               const isExpanded = expandedId === c.id;
               const isYou = c.you;
               
@@ -327,6 +341,15 @@ export default function CompetitorWatch() {
                 </div>
               );
             })}
+            </div>
+            {competitors.length > LEADERBOARD_PAGE_SIZE && (
+              <button
+                onClick={() => setShowAllCompetitors((v) => !v)}
+                className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100"
+              >
+                {showAllCompetitors ? 'Show top 10 only' : `Show all ${competitors.length} competitors`}
+              </button>
+            )}
           </Card>
         </div>
 
@@ -348,7 +371,7 @@ export default function CompetitorWatch() {
                       contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 'bold' }}
                       itemStyle={{ color: '#0f172a' }}
                     />
-                    {competitors.map(c => (
+                    {visibleCompetitors.map(c => (
                       <Line
                         key={c.id}
                         type="monotone"
@@ -364,7 +387,7 @@ export default function CompetitorWatch() {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2 justify-center">
-                {competitors.map(c => (
+                {visibleCompetitors.map(c => (
                   <div key={c.id} className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
                     <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: c.color }}></div>
                     {c.name}

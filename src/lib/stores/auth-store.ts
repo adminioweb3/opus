@@ -54,6 +54,18 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
+            // Firebase auth succeeded but we have no organization/user record for this
+            // session — proceeding would land on the dashboard with stale or missing org
+            // data. Undo the partial sign-in rather than silently pretending login worked.
+            await signOut(auth).catch(() => {})
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: "Could not reach the server. Please check your connection and try again.",
+            })
+            return false
           }
 
           set({
@@ -89,6 +101,18 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
+            // Firebase auth succeeded but we have no organization/user record for this
+            // session — proceeding would land on the dashboard with stale or missing org
+            // data. Undo the partial sign-in rather than silently pretending login worked.
+            await signOut(auth).catch(() => {})
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: "Could not reach the server. Please check your connection and try again.",
+            })
+            return false
           }
 
           set({
@@ -135,6 +159,18 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
+            // Firebase auth succeeded but we have no organization/user record for this
+            // session — proceeding would land on the dashboard with stale or missing org
+            // data. Undo the partial sign-in rather than silently pretending login worked.
+            await signOut(auth).catch(() => {})
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: "Could not reach the server. Please check your connection and try again.",
+            })
+            return false
           }
 
           set({
@@ -197,6 +233,18 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
+            // Firebase auth succeeded but we have no organization/user record for this
+            // session — proceeding would land on the dashboard with stale or missing org
+            // data. Undo the partial sign-in rather than silently pretending login worked.
+            await signOut(auth).catch(() => {})
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: "Could not reach the server. Please check your connection and try again.",
+            })
+            return false
           }
 
           set({

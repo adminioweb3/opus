@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -48,10 +48,8 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            if (syncRes.organizationId) {
-              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
-              useOrganizationStore.getState().setSyncResult(syncRes)
-            }
+            const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+            useOrganizationStore.getState().setSyncResult(syncRes)
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
             // Firebase auth succeeded but we have no organization/user record for this
@@ -95,10 +93,8 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            if (syncRes.organizationId) {
-              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
-              useOrganizationStore.getState().setSyncResult(syncRes)
-            }
+            const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+            useOrganizationStore.getState().setSyncResult(syncRes)
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
             // Firebase auth succeeded but we have no organization/user record for this
@@ -153,10 +149,8 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            if (syncRes.organizationId) {
-              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
-              useOrganizationStore.getState().setSyncResult(syncRes)
-            }
+            const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+            useOrganizationStore.getState().setSyncResult(syncRes)
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
             // Firebase auth succeeded but we have no organization/user record for this
@@ -227,10 +221,8 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const syncRes = await syncUserToBackend()
-            if (syncRes.organizationId) {
-              const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
-              useOrganizationStore.getState().setSyncResult(syncRes)
-            }
+            const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+            useOrganizationStore.getState().setSyncResult(syncRes)
           } catch (syncError) {
             console.error("Backend sync failed:", syncError)
             // Firebase auth succeeded but we have no organization/user record for this
@@ -279,6 +271,15 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
             error: null,
+          })
+          // Reset org store so stale needsOnboarding doesn't carry over to the next login
+          const { useOrganizationStore } = await import('@/lib/stores/organizationStore')
+          useOrganizationStore.getState().setSyncResult({
+            organizationId: '',
+            needsOnboarding: false,
+            planType: 'Trial',
+            trialEndsAt: null,
+            isTrialExpired: false,
           })
         } catch (error) {
           console.error("Logout error", error)

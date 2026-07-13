@@ -9,7 +9,6 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { useOrganizationStore } from "@/lib/stores/organization-store";
 import { useNotificationStore } from "@/lib/stores/notification-store";
 import { useUIStore } from "@/lib/stores/ui-store";
-import "../dashboard-views.css";
 import {
   Bell,
   Search,
@@ -29,7 +28,9 @@ function DashboardHeader() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const userName = user ? ("name" in user ? user.name : user.displayName || user.email) || "Guest" : "Guest";
+  const userName = user
+    ? ("name" in user ? user.name : user.displayName || user.email) || "Guest"
+    : "Guest";
   const userAvatar = user
     ? "avatar" in user
       ? user.avatar
@@ -114,23 +115,29 @@ function DashboardHeader() {
           <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 z-50">
             <div className="px-4 py-3 border-b border-border flex flex-col gap-2">
               <div className="flex items-center gap-2 mb-1">
-                {(!orgName || orgName === "CITATIONLY") && !useOrganizationStore.getState().orgDomain ? (
-                  <Logo className="flex-1 overflow-hidden" iconClassName="w-6 h-6" textClassName="text-sm font-semibold truncate" />
+                {(!orgName || orgName === "CITATIONLY") &&
+                !useOrganizationStore.getState().orgDomain ? (
+                  <Logo className="flex-1 overflow-hidden" imgClassName="h-6 w-auto" />
                 ) : (
                   <>
                     <div className="w-6 h-6 rounded bg-white flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm border border-border shrink-0">
                       {useOrganizationStore.getState().orgDomain ? (
-                        <img 
-                          src={`https://www.google.com/s2/favicons?domain=${useOrganizationStore.getState().orgDomain}&sz=128`} 
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${useOrganizationStore.getState().orgDomain}&sz=128`}
                           alt="Logo"
                           className="w-full h-full object-contain p-0.5"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                            (e.target as HTMLImageElement).style.display =
+                              "none";
+                            (
+                              e.target as HTMLImageElement
+                            ).nextElementSibling?.classList.remove("hidden");
                           }}
                         />
                       ) : null}
-                      <span className={`${useOrganizationStore.getState().orgDomain ? 'hidden' : ''}`}>
+                      <span
+                        className={`${useOrganizationStore.getState().orgDomain ? "hidden" : ""}`}
+                      >
                         {orgName ? orgName.charAt(0) : "C"}
                       </span>
                     </div>
@@ -196,7 +203,7 @@ export default function DashboardLayout({
         <DashboardSidebar />
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-background">
           <DashboardHeader />
-          <main className="flex-1 overflow-y-auto p-5">{children}</main>
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </SidebarProvider>
       <CommandPalette />

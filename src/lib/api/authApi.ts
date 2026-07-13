@@ -6,6 +6,10 @@ export interface SyncUserResponse {
   role: string;
   organizationName: string;
   websiteDomain: string;
+  needsOnboarding: boolean;
+  planType: string;
+  trialEndsAt: string | null;
+  isTrialExpired: boolean;
 }
 
 export const syncUserToBackend = async (): Promise<SyncUserResponse> => {

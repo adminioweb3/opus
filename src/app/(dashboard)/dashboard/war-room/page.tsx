@@ -22,6 +22,10 @@ import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { getLatestSnapshot, DashboardSnapshot } from "@/lib/api/analysisApi";
 import { getFullReport, FullReportData } from "@/lib/api/reportApi";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 // Define interfaces for parsed JSON objects
 interface PlatformData {
@@ -281,12 +285,9 @@ function WarRoomContent() {
             Click &quot;Analyze Website&quot; to generate the initial executive
             snapshot based on your website&apos;s crawled data.
           </p>
-          <button
-            onClick={startAnalysis}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
-          >
+          <Button onClick={startAnalysis} className="shadow-lg shadow-primary/20">
             <Play className="w-4 h-4 fill-current" /> Run Full AI Analysis
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -298,91 +299,99 @@ function WarRoomContent() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-8"
           >
             <motion.div variants={item}>
-              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
-                <div className="flex justify-between items-start mb-3.5">
-                  <div className="w-8.5 h-8.5 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-base">
-                    ◎
+              <Card className="relative overflow-hidden h-full">
+                <CardContent className="p-4.5">
+                  <div className="flex justify-between items-start mb-3.5">
+                    <div className="w-8.5 h-8.5 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-base">
+                      ◎
+                    </div>
+                    <Badge className="text-[10.5px] font-semibold bg-emerald-500/10 text-emerald-500 tracking-[0.03em] uppercase">
+                      Excellent
+                    </Badge>
                   </div>
-                  <span className="text-[10.5px] font-semibold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
-                    Excellent
-                  </span>
-                </div>
-                <div className="text-[12.5px] text-slate-500 mb-1.5">
-                  Visibility health
-                </div>
-                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
-                  {visibilityScore.toFixed(1)}
-                </div>
-                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
-                  ▲ 3.2 pts vs last week
-                </div>
-              </div>
+                  <div className="text-[12.5px] text-slate-500 mb-1.5">
+                    Visibility health
+                  </div>
+                  <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                    {visibilityScore.toFixed(1)}
+                  </div>
+                  <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
+                    ▲ 3.2 pts vs last week
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
 
             <motion.div variants={item}>
-              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
-                <div className="flex justify-between items-start mb-3.5">
-                  <div className="w-8.5 h-8.5 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-base">
-                    $
+              <Card className="relative overflow-hidden h-full">
+                <CardContent className="p-4.5">
+                  <div className="flex justify-between items-start mb-3.5">
+                    <div className="w-8.5 h-8.5 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-base">
+                      $
+                    </div>
+                    <Badge className="text-[10.5px] font-semibold bg-indigo-500/10 text-indigo-600 tracking-[0.03em] uppercase">
+                      Growing
+                    </Badge>
                   </div>
-                  <span className="text-[10.5px] font-semibold bg-indigo-500/10 text-indigo-600 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
-                    Growing
-                  </span>
-                </div>
-                <div className="text-[12.5px] text-slate-500 mb-1.5">
-                  Revenue impact
-                </div>
-                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
-                  {revenueImpact}
-                </div>
-                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
-                  ▲ 11% attributed to AI traffic
-                </div>
-              </div>
+                  <div className="text-[12.5px] text-slate-500 mb-1.5">
+                    Revenue impact
+                  </div>
+                  <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                    {revenueImpact}
+                  </div>
+                  <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-emerald-500">
+                    ▲ 11% attributed to AI traffic
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
 
             <motion.div variants={item}>
-              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
-                <div className="flex justify-between items-start mb-3.5">
-                  <div className="w-8.5 h-8.5 rounded-md bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-base">
-                    ❖
+              <Card className="relative overflow-hidden h-full">
+                <CardContent className="p-4.5">
+                  <div className="flex justify-between items-start mb-3.5">
+                    <div className="w-8.5 h-8.5 rounded-md bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-base">
+                      ❖
+                    </div>
+                    <Badge className="text-[10.5px] font-semibold bg-cyan-500/10 text-cyan-500 tracking-[0.03em] uppercase">
+                      Stable
+                    </Badge>
                   </div>
-                  <span className="text-[10.5px] font-semibold bg-cyan-500/10 text-cyan-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
-                    Stable
-                  </span>
-                </div>
-                <div className="text-[12.5px] text-slate-500 mb-1.5">
-                  Citation health
-                </div>
-                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
-                  {citationHealth.toFixed(0)}
-                </div>
-                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-slate-500">
-                  — 0.4% vs last week
-                </div>
-              </div>
+                  <div className="text-[12.5px] text-slate-500 mb-1.5">
+                    Citation health
+                  </div>
+                  <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                    {citationHealth.toFixed(0)}
+                  </div>
+                  <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-slate-500">
+                    — 0.4% vs last week
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
 
             <motion.div variants={item}>
-              <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 pt-4.5 pb-4 relative overflow-hidden h-full">
-                <div className="flex justify-between items-start mb-3.5">
-                  <div className="w-8.5 h-8.5 rounded-md bg-amber-500/10 text-amber-500 flex items-center justify-center text-base">
-                    ▲
+              <Card className="relative overflow-hidden h-full">
+                <CardContent className="p-4.5">
+                  <div className="flex justify-between items-start mb-3.5">
+                    <div className="w-8.5 h-8.5 rounded-md bg-amber-500/10 text-amber-500 flex items-center justify-center text-base">
+                      ▲
+                    </div>
+                    <Badge className="text-[10.5px] font-semibold bg-amber-500/10 text-amber-500 tracking-[0.03em] uppercase">
+                      Watch
+                    </Badge>
                   </div>
-                  <span className="text-[10.5px] font-semibold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full tracking-[0.03em] uppercase">
-                    Watch
-                  </span>
-                </div>
-                <div className="text-[12.5px] text-slate-500 mb-1.5">
-                  Competitor risk
-                </div>
-                <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
-                  {competitorRisk}
-                </div>
-                <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-amber-500">
-                  ▲ 2 new threats this week
-                </div>
-              </div>
+                  <div className="text-[12.5px] text-slate-500 mb-1.5">
+                    Competitor risk
+                  </div>
+                  <div className="font-space-grotesk text-[28px] font-semibold tracking-[-0.3px]">
+                    {competitorRisk}
+                  </div>
+                  <div className="text-[12px] font-mono mt-2 flex items-center gap-1.5 text-amber-500">
+                    ▲ 2 new threats this week
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           </motion.div>
 
@@ -396,7 +405,8 @@ function WarRoomContent() {
                 7 platforms scanned
               </span>
             </div>
-            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 flex flex-wrap gap-x-6 gap-y-4 items-center">
+            <Card className="flex-row flex-wrap gap-x-6 gap-y-4 items-center">
+              <CardContent className="p-4.5 flex flex-wrap gap-x-6 gap-y-4 items-center w-full">
               <div className="text-center pr-6 border-r border-slate-100">
                 <div className="font-space-grotesk text-[34px] font-semibold leading-none">
                   {visibilityScore.toFixed(1)}
@@ -430,18 +440,17 @@ function WarRoomContent() {
                   <span className="font-mono text-[12px] text-slate-500">2</span>
                 </div>
               </div>
-              <button
-                onClick={() => {}}
-                className="self-center bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50"
-              >
+              <Button variant="outline" size="sm" onClick={() => {}} className="self-center">
                 View platform breakdown <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+              </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* SECTION 4 + 5: CITATION + AGENT SUMMARIES */}
           <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-4 mb-8">
-            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5">
+            <Card>
+              <CardContent className="p-4.5">
               <h3 className="font-space-grotesk text-[13.5px] font-semibold uppercase tracking-[0.3px] text-slate-500 mb-3.5">Citation activity</h3>
               <div className="flex gap-5.5 flex-wrap mb-3.5">
                 <div>
@@ -454,11 +463,13 @@ function WarRoomContent() {
                 </div>
               </div>
               <div className="text-[12.5px] text-slate-400 mb-3.5">Latest: <b className="text-slate-900 font-semibold">ChatGPT</b> cited FAQ — &quot;AI visibility metrics&quot; at 10:35.</div>
-              <button className="bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50">
+              <Button variant="outline" size="sm">
                 Open Citation Intelligence <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5">
+              </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4.5">
               <h3 className="font-space-grotesk text-[13.5px] font-semibold uppercase tracking-[0.3px] text-slate-500 mb-3.5">Agent operations</h3>
               <div className="flex gap-5.5 flex-wrap mb-3.5">
                 <div>
@@ -475,10 +486,11 @@ function WarRoomContent() {
                 </div>
               </div>
               <div className="text-[12.5px] text-slate-400 mb-3.5">Content, Citation, Authority, Technical and Revenue agents are configured for this workspace.</div>
-              <button className="bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit flex items-center gap-1 hover:bg-slate-50">
+              <Button variant="outline" size="sm">
                 Open Citationly agents <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+              </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* SECTION 6: EXECUTIVE ALERTS */}
@@ -493,7 +505,8 @@ function WarRoomContent() {
             </div>
             <div className="flex flex-col gap-2.5">
               {executiveAlerts.map((rec, i) => (
-                <div key={i} className="grid grid-cols-[4px_auto_1fr_auto] gap-3.5 items-stretch bg-white border border-slate-200 rounded-xl p-3.5">
+                <Card key={i} className="p-3.5">
+                  <div className="grid grid-cols-[4px_auto_1fr_auto] gap-3.5 items-stretch">
                   <div className={`rounded ${i === 1 ? 'bg-amber-500' : 'bg-red-500'}`}></div>
                   <div className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center text-[14px] self-start ${i === 1 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
                     {i === 1 ? '▲' : '!'}
@@ -503,10 +516,11 @@ function WarRoomContent() {
                     <div className="text-[12px] text-slate-500">Est. impact: {rec.estimatedImpact}</div>
                     <div className="text-[11.5px] text-slate-400 italic">Suggested: {rec.description}</div>
                   </div>
-                  <button className="self-center bg-transparent border border-slate-200 text-slate-900 text-[12px] font-medium px-3.5 py-1.5 rounded-lg whitespace-nowrap h-fit hover:bg-slate-50">
+                  <Button variant="outline" size="sm" className="self-center">
                     Resolve
-                  </button>
-                </div>
+                  </Button>
+                  </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -521,15 +535,17 @@ function WarRoomContent() {
                 AI-generated
               </span>
             </div>
-            <div className="bg-white border border-slate-200 rounded-[14px] p-4.5 flex items-center justify-between gap-4 flex-wrap">
+            <Card>
+              <CardContent className="p-4.5 flex items-center justify-between gap-4 flex-wrap">
               <div>
                 <div className="text-[14px] font-semibold">{recommendedActions.length} AI-recommended actions ready</div>
                 <div className="text-[12.5px] text-slate-500 mt-1">Top priority: Improve Gemini citation coverage · +14% impact</div>
               </div>
-              <button className="bg-indigo-600 text-white border-none text-[12.5px] font-semibold px-3.5 py-2 rounded-lg w-auto hover:bg-indigo-700 flex items-center gap-1.5">
+              <Button>
                 <Sparkles className="w-4 h-4" /> Review with Assistant
-              </button>
-            </div>
+              </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* SECTION 8: OPPORTUNITY PIPELINE */}
@@ -540,31 +556,31 @@ function WarRoomContent() {
               </h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+              <Card className="text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default p-4">
                 <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-[16px]">$</div>
                 <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.revenue}</div>
                 <div className="text-[11.5px] text-slate-500 mt-1">Revenue</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+              </Card>
+              <Card className="text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default p-4">
                 <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-[16px]">↗</div>
                 <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.traffic}</div>
                 <div className="text-[11.5px] text-slate-500 mt-1">Traffic</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+              </Card>
+              <Card className="text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default p-4">
                 <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-[16px]">❝</div>
                 <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.citations}</div>
                 <div className="text-[11.5px] text-slate-500 mt-1">Citation</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+              </Card>
+              <Card className="text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default p-4">
                 <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-amber-500/10 text-amber-500 flex items-center justify-center text-[16px]">◆</div>
                 <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.authority}</div>
                 <div className="text-[11.5px] text-slate-500 mt-1">Authority</div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default">
+              </Card>
+              <Card className="text-center hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-default p-4">
                 <div className="w-9 h-9 rounded-[10px] mx-auto mb-2.5 bg-red-500/10 text-red-500 flex items-center justify-center text-[16px]">▣</div>
                 <div className="font-space-grotesk text-[20px] font-semibold">{opportunityPipeline.coverage}</div>
                 <div className="text-[11.5px] text-slate-500 mt-1">AI coverage</div>
-              </div>
+              </Card>
             </div>
           </div>
 
@@ -578,45 +594,45 @@ function WarRoomContent() {
                 Share of voice
               </span>
             </div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Brand</th>
-                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Visibility</th>
-                  <th className="text-left text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5 border-b border-slate-200">Share</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="p-3 text-[13px] border-b border-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5">Brand</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5">Visibility</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-[0.04em] text-slate-400 font-semibold px-3 pb-2.5">Share</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="p-3 text-[13px]">
                     <div className="font-semibold flex items-center gap-2">
-                      {domainName} <span className="text-[10px] bg-indigo-50 text-indigo-600 px-1.75 py-0.5 rounded-[10px] font-semibold">You</span>
+                      {domainName} <Badge className="text-[10px] bg-indigo-50 text-indigo-600 font-semibold">You</Badge>
                     </div>
-                  </td>
-                  <td className="p-3 text-[13px] border-b border-slate-100">
+                  </TableCell>
+                  <TableCell className="p-3 text-[13px]">
                     <div className="h-1.25 rounded bg-slate-200 w-22.5 overflow-hidden inline-block align-middle mr-2">
                       <div className="h-full rounded bg-indigo-600" style={{ width: `${visibilityScore}%` }}></div>
-                    </div> 
+                    </div>
                     {visibilityScore.toFixed(1)}
-                  </td>
-                  <td className="p-3 text-[13px] border-b border-slate-100">41%</td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="p-3 text-[13px]">41%</TableCell>
+                </TableRow>
                 {topCompetitors.map((comp, i) => (
-                  <tr key={i}>
-                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">
+                  <TableRow key={i}>
+                    <TableCell className="p-3 text-[13px]">
                       <div className="font-semibold flex items-center gap-2">{comp.name}</div>
-                    </td>
-                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">
+                    </TableCell>
+                    <TableCell className="p-3 text-[13px]">
                       <div className="h-1.25 rounded bg-slate-200 w-22.5 overflow-hidden inline-block align-middle mr-2">
                         <div className="h-full rounded bg-slate-400" style={{ width: `${comp.visibility}%` }}></div>
-                      </div> 
+                      </div>
                       {comp.visibility.toFixed(1)}
-                    </td>
-                    <td className="p-3 text-[13px] border-b border-slate-100 last:border-b-0">{comp.share}%</td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="p-3 text-[13px]">{comp.share}%</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </>
       )}

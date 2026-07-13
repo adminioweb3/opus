@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Resources | Citationly",
+  description:
+    "Guides, documentation, an API, integrations, and a help center for building your AI visibility program with Citationly.",
+}
+
 export default function ResourcesPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/resources</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

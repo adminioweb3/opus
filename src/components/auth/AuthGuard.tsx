@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
+import { syncUserToBackend } from "@/lib/api/authApi"
 import { Skeleton } from "@/components/ui/skeleton"
 import { auth } from "@/lib/firebase"
 import { onAuthStateChanged } from "firebase/auth"
@@ -12,10 +14,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [isHydrated, setIsHydrated] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
+  const [onboardingChecked, setOnboardingChecked] = useState(false)
 
   useEffect(() => {
     setIsHydrated(true)
-    
+
     // Listen to Firebase auth state to rehydrate the user object on reload
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -27,7 +30,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       }
       setAuthChecked(true)
     })
-    
+
     return () => unsubscribe()
   }, [])
 
@@ -37,7 +40,39 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [isHydrated, authChecked, isAuthenticated, router])
 
-  if (!isHydrated || !authChecked) {
+  // Re-checks onboarding status against the real backend on every dashboard load (not just at
+  // login) — closes the gap where a user could reach /dashboard directly (bookmark, stale tab,
+  // browser history) without ever completing onboarding, since a stale persisted "needsOnboarding:
+  // false" from a previous session would otherwise never get corrected.
+  useEffect(() => {
+    if (!authChecked || !isAuthenticated) return
+    if (useAuthStore.getState().token === "demo-token") {
+      setOnboardingChecked(true)
+      return
+    }
+
+    let cancelled = false
+    syncUserToBackend()
+      .then((result) => {
+        if (cancelled) return
+        useOrganizationStore.getState().setSyncResult(result)
+        if (result.needsOnboarding) {
+          router.replace("/onboarding")
+        } else {
+          setOnboardingChecked(true)
+        }
+      })
+      .catch((err) => {
+        console.error("Onboarding status check failed:", err)
+        if (!cancelled) setOnboardingChecked(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [authChecked, isAuthenticated, router])
+
+  if (!isHydrated || !authChecked || (isAuthenticated && !onboardingChecked)) {
     return (
       <div className="flex-1 p-8 space-y-6">
         <div className="space-y-2">

@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Changelog & Roadmap | Citationly",
+  description:
+    "Every improvement to Citationly's AI visibility platform, in the open — recent releases across Visibility Radar, Citation Intelligence, Brand Pulse, and Opportunity Finder, plus what's coming next.",
+}
+
 export default function ChangelogPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/changelog</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

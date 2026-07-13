@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Careers | Citationly",
+  description:
+    "Join the small, senior team building the AI visibility category. Open roles in engineering, product, and go-to-market — fully remote, shipped weekly.",
+}
+
 export default function CareersPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/careers</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

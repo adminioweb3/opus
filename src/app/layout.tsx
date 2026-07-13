@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
@@ -50,6 +51,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable}`}>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased flex flex-col">
         <ThemeProvider
           attribute="class"

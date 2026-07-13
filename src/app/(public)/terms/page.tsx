@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Terms of Service | Citationly",
+  description:
+    "The terms that govern your use of Citationly, the AI visibility intelligence platform — accounts, trials, billing, acceptable use, and more.",
+}
+
 export default function TermsPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/terms</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

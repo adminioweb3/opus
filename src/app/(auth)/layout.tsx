@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Logo } from "@/components/ui/logo"
+import { LANDING_PHOTOS } from "@/lib/landing-images"
 
 export default function AuthLayout({
   children,
@@ -17,12 +18,21 @@ export default function AuthLayout({
         </div>
       </div>
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 h-full w-full p-12 flex flex-col justify-end bg-linear-to-br from-primary via-primary/90 to-blue-600">
-          {/* SVG grid pattern */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.08]" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="auth-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#auth-grid)"/></svg>
+        <div className="absolute inset-0 h-full w-full p-12 flex flex-col justify-end overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LANDING_PHOTOS.teamAtMonitor(1600)}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Brand-tinted gradient so the photo reads as ours, not a stock crop */}
+          <div className="absolute inset-0 bg-linear-to-br from-primary/92 via-primary/75 to-blue-600/80" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/10" />
+          {/* SVG grid pattern for texture */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="auth-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#auth-grid)"/></svg>
           {/* Radial glow */}
           <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="relative z-10 backdrop-blur-sm bg-white/10 p-8 rounded-2xl max-w-lg border border-white/20">
+          <div className="relative z-10 backdrop-blur-sm bg-white/10 p-8 rounded-2xl max-w-lg border border-white/20 shadow-2xl">
             <h2 className="text-3xl font-bold tracking-tight text-white mb-4">Master your AI visibility.</h2>
             <p className="text-lg text-white/80 font-medium">
               Join industry leaders monitoring their brand presence across ChatGPT, Gemini, and Claude.

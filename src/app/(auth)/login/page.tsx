@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
-import { useOrganizationStore } from "@/lib/stores/organization-store"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { DEMO_CREDENTIALS, MOCK_USERS } from "@/lib/mock-data/users"
 import { Loader2 } from "lucide-react"
 
@@ -15,41 +15,30 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login, loginWithGoogle, loginWithGithub, isLoading, error, clearError } = useAuthStore()
-  const { onboarding } = useOrganizationStore()
   const router = useRouter()
+
+  // Read fresh from the store rather than a destructured value — auth-store's login
+  // functions update this store asynchronously via setSyncResult, and by the time the
+  // awaited login() call above resolves, the real (not stale-render) value is what matters.
+  const routeAfterLogin = () => {
+    const { needsOnboarding } = useOrganizationStore.getState()
+    router.push(needsOnboarding ? "/onboarding" : "/dashboard")
+  }
 
   const handleDemoSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const success = await login(email, password)
-    if (success) {
-      if (!onboarding.completed) {
-        router.push("/onboarding")
-      } else {
-        router.push("/dashboard")
-      }
-    }
+    if (success) routeAfterLogin()
   }
 
   const handleGoogleLogin = async () => {
     const success = await loginWithGoogle()
-    if (success) {
-      if (!onboarding.completed) {
-        router.push("/onboarding")
-      } else {
-        router.push("/dashboard")
-      }
-    }
+    if (success) routeAfterLogin()
   }
 
   const handleGithubLogin = async () => {
     const success = await loginWithGithub()
-    if (success) {
-      if (!onboarding.completed) {
-        router.push("/onboarding")
-      } else {
-        router.push("/dashboard")
-      }
-    }
+    if (success) routeAfterLogin()
   }
 
   const fillDemoCredentials = (userEmail?: string) => {

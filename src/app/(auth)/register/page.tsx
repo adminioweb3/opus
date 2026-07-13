@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
@@ -26,7 +27,10 @@ export default function RegisterPage() {
 
     const success = await register(name, email, password)
     if (success) {
-      router.push("/onboarding")
+      // A brand-new registration always needs onboarding — but read the real, synced flag
+      // rather than assuming, in case this email was already invited to an existing org.
+      const { needsOnboarding } = useOrganizationStore.getState()
+      router.push(needsOnboarding ? "/onboarding" : "/dashboard")
     }
   }
 

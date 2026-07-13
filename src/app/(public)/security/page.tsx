@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "Security | Citationly",
+  description:
+    "How Citationly protects your data: TLS 1.2+ and AES-256 encryption, Firebase-backed authentication, strict tenant isolation, least-privilege access, SOC 2-aligned controls, and GDPR-aligned data rights.",
+}
+
 export default function SecurityPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/security</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

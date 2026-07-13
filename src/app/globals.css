@@ -88,33 +88,33 @@
   --card-foreground: #0F172A;
   --popover: #ffffff;
   --popover-foreground: #0F172A;
-  --primary: #1E293B;
+  --primary: #6366F1;
   --primary-foreground: #ffffff;
   --secondary: #F8FAFC;
   --secondary-foreground: #1E293B;
   --muted: #F8FAFC;
   --muted-foreground: #64748B;
-  --accent: #000068;
+  --accent: #4F46E5;
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #E2E8F0;
   --input: #E2E8F0;
-  --ring: #000068;
-  --chart-1: #000068;
+  --ring: #6366F1;
+  --chart-1: #6366F1;
   --chart-2: #10B981;
   --chart-3: #F59E0B;
   --chart-4: #6366f1;
   --chart-5: #8b5cf6;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --sidebar: #F8FAFC;
   --sidebar-foreground: #0F172A;
-  --sidebar-primary: #1E293B;
+  --sidebar-primary: #6366F1;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #F1F5F9;
   --sidebar-accent-foreground: #0F172A;
   --sidebar-border: #E2E8F0;
-  --sidebar-ring: #000068;
+  --sidebar-ring: #6366F1;
 
   /* Citationly Theme Additions */
   --c-orange: #6366F1;
@@ -194,11 +194,130 @@
 }
 
 @utility bg-grid-pattern {
-  background-image: linear-gradient(to right, rgba(0, 0, 104, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 104, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 @utility radial-glow {
-  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 104, 0.04) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 60%);
+}
+
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@utility radar-sweep {
+  animation: radar-sweep 6s linear infinite;
+  transform-origin: 200px 200px;
+}
+
+/* ============================================================
+   Landing page v2 — premium design system.
+   Namespaced (`landing-*`) to avoid touching dashboard styling.
+   ============================================================ */
+
+:root {
+  --landing-void: #050508;
+  --landing-void-soft: #0a0a12;
+  --landing-indigo: #5b5bff;
+  --landing-blue: #3b82f6;
+  --landing-violet: #a855f7;
+  --landing-line: rgba(255, 255, 255, 0.08);
+}
+
+.landing-root {
+  background: var(--landing-void);
+}
+
+@keyframes landing-aurora-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(2%, -3%, 0) scale(1.05); }
+  66% { transform: translate3d(-2%, 2%, 0) scale(0.98); }
+}
+
+@utility landing-aurora {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 38% at 22% 28%, rgba(91, 91, 255, 0.55) 0%, transparent 70%),
+    radial-gradient(32% 32% at 78% 18%, rgba(168, 85, 247, 0.4) 0%, transparent 70%),
+    radial-gradient(40% 40% at 68% 72%, rgba(59, 130, 246, 0.35) 0%, transparent 70%),
+    radial-gradient(30% 30% at 15% 80%, rgba(91, 91, 255, 0.25) 0%, transparent 70%);
+  filter: blur(60px) saturate(130%);
+  animation: landing-aurora-drift 22s ease-in-out infinite;
+}
+
+@utility landing-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 91, 255, 0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(168, 85, 247, 0.15), transparent),
+    var(--landing-void);
+}
+
+@utility landing-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@utility landing-glass-dark {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--landing-line);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+@utility landing-glass-light {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(15, 15, 20, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+@utility landing-text-gradient {
+  background: linear-gradient(120deg, #eef2ff 0%, #c7d2fe 40%, #a5b4fc 60%, #818cf8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility landing-text-gradient-brand {
+  background: linear-gradient(120deg, var(--landing-indigo) 0%, var(--landing-violet) 50%, var(--landing-blue) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility landing-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 90%);
+}
+
+@keyframes landing-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-16px) rotate(1deg); }
+}
+
+@utility landing-float {
+  animation: landing-float 6s ease-in-out infinite;
+}
+
+@keyframes landing-glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@utility landing-glow-pulse {
+  animation: landing-glow-pulse 3s ease-in-out infinite;
 }

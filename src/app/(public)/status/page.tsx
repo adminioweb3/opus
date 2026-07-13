@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "System Status | Citationly",
+  description:
+    "Live status and uptime for Citationly's web application, public API, scan pipeline, AI analysis engine, and notifications — plus a history of past incidents.",
+}
+
 export default function StatusPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/status</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

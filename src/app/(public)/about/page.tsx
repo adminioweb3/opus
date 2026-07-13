@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { Content } from "./content"
+
+export const metadata: Metadata = {
+  title: "About | Citationly",
+  description:
+    "Citationly makes AI visibility measurable. Meet the team building the intelligence platform that tracks how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok discover, recommend, and cite your brand.",
+}
+
 export default function AboutPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">(public)/about</h1>
-      <p className="text-muted-foreground">This page is under construction.</p>
-    </div>
-  )
+  return <Content />
 }

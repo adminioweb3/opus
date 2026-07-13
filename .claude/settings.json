@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(curl -s -o /tmp/radar2.html -w \"HTTP %{http_code}\\\\n\" \"http://localhost:3010/dashboard/visibility-radar\")",
+      "Read(//tmp/**)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(chromium-cli --help)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(npm ls *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node screenshot-radar.mjs)",
+      "Bash(node screenshot-radar2.mjs)"
+    ]
+  }
+}

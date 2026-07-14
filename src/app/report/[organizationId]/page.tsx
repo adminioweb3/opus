@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { getFullReport, FullReportData } from "@/lib/api/reportApi"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { Loader2, Lock } from "lucide-react"
 
 import ReportCover from "@/components/report/ReportCover"
@@ -109,8 +110,14 @@ export default function ReportPage() {
               <p className="text-slate-500 mb-8 leading-relaxed">
                 Subscribe to access deep competitor intelligence, AI prompt analysis, regional dominance, and your complete action plan.
               </p>
-              <button 
-                onClick={() => router.push(`/dashboard/geo?orgId=${organizationId}`)}
+              <button
+                onClick={() => {
+                  // geo-dashboard reads the active org from the Zustand store, not a query
+                  // param — normally already set by auth sync, but pin it defensively so this
+                  // always lands on the org this report was actually generated for.
+                  useOrganizationStore.getState().setOrganizationId(organizationId)
+                  router.push("/dashboard/geo-dashboard")
+                }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3.5 px-6 rounded-xl transition-all shadow-[0_2px_10px_rgb(37,99,235,0.2)] hover:shadow-[0_4px_15px_rgb(37,99,235,0.3)] active:scale-[0.98]"
               >
                 Subscribe Now

@@ -11,6 +11,8 @@ import {
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import apiClient from "@/lib/apiClient";
 import { getDomainLogoUrl } from "@/lib/logoUtils";
@@ -45,6 +47,7 @@ function getSparkline(data: number[]) {
 const LEADERBOARD_PAGE_SIZE = 10;
 
 export default function CompetitorWatch() {
+  const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAllCompetitors, setShowAllCompetitors] = useState(false);
   const [range, setRange] = useState('30D');
@@ -80,11 +83,33 @@ export default function CompetitorWatch() {
       const res = await apiClient.post(`/Dashboard/competitor-watch/rescan`, null, { params: { organizationId } });
       setYOU(res.data.you);
       setCOMPS(res.data.comps);
+      toast.success("Competitor scan refreshed");
     } catch (err) {
       console.error(err);
+      toast.error("Rescan failed — try again in a moment");
     } finally {
       setRescanning(false);
     }
+  };
+
+  const handleExport = () => {
+    if (!YOU) {
+      toast.error("Nothing to export yet");
+      return;
+    }
+    const all = [YOU, ...COMPS].sort((a, b) => a.rank - b.rank);
+    const rows = ["Rank,Name,Share of Voice %,SOV Change,Visibility,Threat"];
+    all.forEach((c) => rows.push(`${c.rank},"${(c.name as string).replace(/"/g, '""')}",${c.sov},${c.sovChg},${c.vis},${c.threat ?? ""}`));
+
+    const csv = rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `competitor-watch-${range}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Competitor report exported");
   };
 
   if (loading) {
@@ -179,7 +204,7 @@ export default function CompetitorWatch() {
           <Button variant="outline" size="sm" onClick={handleRescan} disabled={rescanning}>
             <RefreshCcw className={`w-3.5 h-3.5 ${rescanning ? "animate-spin" : ""}`} /> {rescanning ? "Rescanning…" : "Rescan"}
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="w-3.5 h-3.5" /> Export <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </Button>
         </div>
@@ -426,7 +451,10 @@ export default function CompetitorWatch() {
                 </div>
               ))}
             </div>
-            <button className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100">
+            <button
+              onClick={() => router.push("/dashboard/opportunity-finder")}
+              className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100"
+            >
               View all opportunities
             </button>
           </Card>
@@ -455,7 +483,10 @@ export default function CompetitorWatch() {
                 </div>
               ))}
             </div>
-            <button className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100">
+            <button
+              onClick={() => toast.info("Full activity timeline coming soon")}
+              className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100"
+            >
               View complete timeline
             </button>
           </Card>

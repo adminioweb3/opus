@@ -23,6 +23,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "CITATIONLY | Enterprise AI Visibility Tracking & AI Search Optimization",
@@ -64,6 +65,7 @@ export default function RootLayout({
           <TooltipProvider>
             {children}
           </TooltipProvider>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

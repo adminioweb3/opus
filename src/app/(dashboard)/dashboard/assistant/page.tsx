@@ -177,6 +177,12 @@ export default function AssistantPage() {
     if (!text.trim() || isLoading) return;
 
     const userMsg = text.trim();
+    // Inspect mode reframes the question as an AI-visibility check rather than open chat — the
+    // backend has no separate "mode" field, it detects intent from message text, so this is what
+    // actually makes Inspect behave differently instead of being a cosmetic-only toggle.
+    const outgoingMsg = mode === "inspect"
+      ? `Inspect what AI engines currently say in response to this: ${userMsg}`
+      : userMsg;
     setInput("");
 
     const newMessages = [...messages, { role: "user", content: userMsg }];
@@ -184,7 +190,6 @@ export default function AssistantPage() {
     setIsLoading(true);
     setThinkingStatuses([]);
     setIsThinking(true);
-    setMode("ask");
 
     try {
       const baseUrl = apiClient.defaults.baseURL || "http://localhost:8088/api";
@@ -197,7 +202,7 @@ export default function AssistantPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          message: userMsg,
+          message: outgoingMsg,
           history: messages,
         }),
       });
@@ -268,7 +273,7 @@ export default function AssistantPage() {
               handleSend(input);
             }
           }}
-          placeholder="Ask Citationly anything..."
+          placeholder={mode === "inspect" ? "e.g. What does ChatGPT say about our pricing?" : "Ask Citationly anything..."}
           className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-[14.5px] text-slate-900 outline-none max-h-30 min-h-6"
           rows={1}
           style={{ height: "auto" }}

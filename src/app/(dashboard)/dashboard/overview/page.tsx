@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,10 +80,12 @@ function Sparkline({ points, color }: { points: number[]; color: string }) {
 
 /* ---------- PAGE ---------- */
 export default function CommandCenterPage() {
+  const router = useRouter();
   const { organizationId } = useOrganizationStore();
   const [range, setRange] = useState<"7D" | "30D" | "90D">("30D");
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<CommandCenterResponse | null>(null);
+  const [search, setSearch] = useState("");
 
   const fetchData = useCallback(async () => {
     if (!organizationId) return;
@@ -111,6 +114,54 @@ export default function CommandCenterPage() {
     () => (data?.breakdown ?? []).map((b) => ({ ...b, ...(BREAKDOWN_STYLE[b.name] ?? { ic: "ti-chart-bar", tint: "#64748B" }) })),
     [data],
   );
+
+  const query = search.trim().toLowerCase();
+  const filteredActionItems = useMemo(
+    () => (data?.actionItems ?? []).filter((a) => !query || a.title.toLowerCase().includes(query) || a.detail.toLowerCase().includes(query) || a.source.toLowerCase().includes(query)),
+    [data, query],
+  );
+  const filteredAlerts = useMemo(
+    () => (data?.alerts ?? []).filter((al) => !query || al.title.toLowerCase().includes(query) || al.message.toLowerCase().includes(query)),
+    [data, query],
+  );
+
+  const handleExport = useCallback(() => {
+    if (!data) {
+      toast.error("Nothing to export yet — run a scan first");
+      return;
+    }
+
+    const rows: string[] = ["Metric,Value,Change"];
+    kpis.forEach((k) => rows.push(`${k.label},${k.val}${k.suffix ?? ""},${k.delta}`));
+    rows.push("");
+    rows.push("Category,Current,Previous");
+    breakdown.forEach((b) => rows.push(`${b.name},${b.cur},${b.prev}`));
+    rows.push("");
+    rows.push("Action Item,Severity,Source");
+    (data.actionItems ?? []).forEach((a) => rows.push(`"${a.title.replace(/"/g, '""')}",${a.severity},${a.source}`));
+    rows.push("");
+    rows.push("Alert,Severity");
+    (data.alerts ?? []).forEach((al) => rows.push(`"${al.title.replace(/"/g, '""')}",${al.severity}`));
+
+    const csv = rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `command-center-${range}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Command center report exported");
+  }, [data, kpis, breakdown, range]);
+
+  const handleShare = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard");
+    } catch {
+      toast.error("Couldn't copy link — copy it from the address bar instead");
+    }
+  }, []);
 
   if (!isLoading && data && !data.hasData) {
     return (
@@ -144,18 +195,18 @@ export default function CommandCenterPage() {
         </div>
         <div className="flex flex-col sm:flex-row gap-2 shrink-0">
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => toast.info("Agents coming soon")}>
+            <Button variant="outline" onClick={() => router.push("/dashboard/agents")}>
               <i className="ti ti-robot mr-2" /> Agents
             </Button>
-            <Button variant="outline" onClick={() => toast.info("Reports coming soon")}>
+            <Button variant="outline" onClick={() => router.push(organizationId ? `/report/${organizationId}` : "/dashboard/overview")}>
               <i className="ti ti-file-analytics mr-2" /> Reports
             </Button>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => toast.info("Export coming soon")}>
+            <Button onClick={handleExport}>
               <i className="ti ti-download mr-2" /> Export
             </Button>
-            <Button variant="secondary" onClick={() => toast.info("Share coming soon")}>
+            <Button variant="secondary" onClick={handleShare}>
               <i className="ti ti-share mr-2" /> Share
             </Button>
           </div>
@@ -166,7 +217,13 @@ export default function CommandCenterPage() {
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-6 border-b border-border/50">
         <div className="relative w-full md:max-w-md">
           <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input className="pl-9 h-10" placeholder="Search reports, action items, alerts..." autoComplete="off" />
+          <Input
+            className="pl-9 h-10"
+            placeholder="Search reports, action items, alerts..."
+            autoComplete="off"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center rounded-md border p-1 bg-muted/20">
@@ -282,7 +339,7 @@ export default function CommandCenterPage() {
               <span className="text-sm text-muted-foreground">Aggregated from all 4 feature scans</span>
             </div>
             <div className="space-y-3">
-              {(data?.actionItems ?? []).map((a, i) => {
+              {filteredActionItems.map((a, i) => {
                 const sev = SEVERITY_STYLE[a.severity] ?? SEVERITY_STYLE.Medium;
                 return (
                   <Card key={i} className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => (window.location.href = a.link)}>
@@ -304,8 +361,10 @@ export default function CommandCenterPage() {
                   </Card>
                 );
               })}
-              {(data?.actionItems ?? []).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">No open action items — everything's looking healthy.</p>
+              {filteredActionItems.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  {query ? "No action items match your search." : "No open action items — everything's looking healthy."}
+                </p>
               )}
             </div>
           </section>
@@ -320,7 +379,7 @@ export default function CommandCenterPage() {
                 </h2>
               </div>
               <div className="space-y-3">
-                {(data?.alerts ?? []).map((al, i) => {
+                {filteredAlerts.map((al, i) => {
                   const sev = SEVERITY_STYLE[al.severity] ?? SEVERITY_STYLE.Medium;
                   return (
                     <Card key={i}>
@@ -341,8 +400,10 @@ export default function CommandCenterPage() {
                     </Card>
                   );
                 })}
-                {(data?.alerts ?? []).length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-8">No alerts — nothing regressed since your last scan.</p>
+                {filteredAlerts.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {query ? "No alerts match your search." : "No alerts — nothing regressed since your last scan."}
+                  </p>
                 )}
               </div>
             </section>

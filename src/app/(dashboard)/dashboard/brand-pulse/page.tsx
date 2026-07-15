@@ -70,6 +70,43 @@ export default function BrandPulsePage() {
     fetchData();
   }, [fetchData]);
 
+  const handleExport = useCallback((filenamePrefix: string) => {
+    if (!data) {
+      toast.error("Nothing to export yet — data hasn't loaded");
+      return;
+    }
+
+    const rows: string[] = ["Metric,Value,Change"];
+    rows.push(`Brand health,${data.brandHealth},${data.healthDelta}`);
+    rows.push(`AI confidence,${data.aiConfidence},${data.confidenceDelta}`);
+    rows.push(`Messaging consistency,${data.messagingConsistency},${data.messagingDelta}`);
+    rows.push(`Brand trust,${data.brandTrust},${data.trustDelta}`);
+    rows.push("");
+    rows.push("Sentiment,Percent");
+    rows.push(`Positive,${data.sentimentMix.positive}`);
+    rows.push(`Neutral,${data.sentimentMix.neutral}`);
+    rows.push(`Negative,${data.sentimentMix.negative}`);
+    rows.push("");
+    rows.push("Model,Confidence,Sentiment,Flagged");
+    data.modelInsights.forEach((m) => rows.push(`${m.platform},${m.confidence},${m.sentiment},${m.flag ? "Yes" : "No"}`));
+    rows.push("");
+    rows.push("Alert Type,Title,Message");
+    data.alerts.forEach((a) => rows.push(`${a.type},"${a.title.replace(/"/g, '""')}","${a.message.replace(/"/g, '""')}"`));
+    rows.push("");
+    rows.push("Accuracy Flag,Severity,Detail");
+    data.accuracyFlags.forEach((f) => rows.push(`"${f.claim.replace(/"/g, '""')}",${f.severity},"${f.detail.replace(/"/g, '""')}"`));
+
+    const csv = rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${filenamePrefix}-${range}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Report exported");
+  }, [data, range]);
+
   const metrics = useMemo(() => {
     if (!data) return [];
     return [
@@ -126,7 +163,7 @@ export default function BrandPulsePage() {
               </button>
             ))}
           </div>
-          <Button variant="outline" size="sm" onClick={() => toast.info("Export coming soon")}>
+          <Button variant="outline" size="sm" onClick={() => handleExport("brand-pulse")}>
             <Download className="w-3.5 h-3.5" /> Export <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </Button>
         </div>
@@ -395,7 +432,7 @@ export default function BrandPulsePage() {
                 <Button size="sm" onClick={() => toast.info("Action plans coming soon")}>
                   <Route className="w-4 h-4" /> Create action plan
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => toast.info("Export coming soon")}>
+                <Button variant="outline" size="sm" onClick={() => handleExport("brand-pulse-executive-report")}>
                   <FileUp className="w-4 h-4" /> Export executive report
                 </Button>
               </div>

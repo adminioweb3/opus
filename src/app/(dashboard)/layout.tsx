@@ -16,17 +16,32 @@ import {
   Settings,
   User,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
+function timeAgo(iso: string) {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
 function DashboardHeader() {
+  const router = useRouter();
   const { user, logout } = useAuthStore();
   const { orgName } = useOrganizationStore();
-  const { unreadCount } = useNotificationStore();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore();
   const { setCommandPaletteOpen } = useUIStore();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
 
   const userName = user
     ? ("name" in user ? user.name : user.displayName || user.email) || "Guest"
@@ -44,6 +59,12 @@ function DashboardHeader() {
         !profileRef.current.contains(e.target as Node)
       ) {
         setProfileOpen(false);
+      }
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(e.target as Node)
+      ) {
+        setNotificationsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -69,17 +90,61 @@ function DashboardHeader() {
       <div className="flex-1" />
 
       {/* Notification Bell */}
-      <Link
-        href="/dashboard/alerts"
-        className="relative p-2 rounded-lg hover:bg-muted transition-colors"
-      >
-        <Bell className="w-5 h-5 text-muted-foreground" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
+      <div ref={notificationsRef} className="relative">
+        <button
+          onClick={() => setNotificationsOpen((o) => !o)}
+          className="relative p-2 rounded-lg hover:bg-muted transition-colors"
+        >
+          <Bell className="w-5 h-5 text-muted-foreground" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </button>
+
+        {notificationsOpen && (
+          <div className="absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-lg py-2 z-50">
+            <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+              <span className="text-sm font-semibold">Notifications</span>
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => markAllAsRead()}
+                  className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                >
+                  <Check className="w-3 h-3" /> Mark all read
+                </button>
+              )}
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">You're all caught up.</p>
+              ) : (
+                notifications.slice(0, 20).map((n) => (
+                  <button
+                    key={n.id}
+                    onClick={() => {
+                      markAsRead(n.id);
+                      setNotificationsOpen(false);
+                      if (n.actionUrl) router.push(n.actionUrl);
+                    }}
+                    className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors border-b border-border/50 last:border-0 ${!n.read ? "bg-primary/5" : ""}`}
+                  >
+                    <div className="flex items-start gap-2">
+                      {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />}
+                      <div className={`flex-1 min-w-0 ${n.read ? "ml-3.5" : ""}`}>
+                        <div className="text-sm font-medium truncate">{n.title}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{n.message}</div>
+                        <div className="text-[11px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</div>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
         )}
-      </Link>
+      </div>
 
       {/* Profile Dropdown */}
       <div ref={profileRef} className="relative">

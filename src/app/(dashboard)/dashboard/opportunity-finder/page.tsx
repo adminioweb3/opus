@@ -105,6 +105,26 @@ export default function OpportunityFinderPage() {
 
   const opportunities = data?.opportunities ?? [];
 
+  const handleExport = () => {
+    if (opportunities.length === 0) {
+      toast.error("Nothing to export yet — run a scan first");
+      return;
+    }
+    const rows = ["Title,Category,Priority,Score,Effort,Difficulty,Estimated Gain %,ETA"];
+    opportunities.forEach((o) =>
+      rows.push(`"${o.title.replace(/"/g, '""')}",${o.category},${o.priority},${o.score},${o.effort},${o.difficulty},${o.estimatedGainPct},${o.eta}`)
+    );
+    const csv = rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `opportunity-finder-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Opportunities exported");
+  };
+
   const filtered = useMemo(() => {
     let list = opportunities.filter((m) => {
       const s = search.toLowerCase();
@@ -181,7 +201,7 @@ export default function OpportunityFinderPage() {
             <Button size="sm" onClick={handleDeepScan} disabled={!data?.canRunDeepScan || isScanning}>
               <Search className="w-4 h-4" /> {isScanning ? "Scanning…" : "Run Deep Scan"}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => toast.info("Export coming soon")}>
+            <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="w-4 h-4" /> Export Report <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </Button>
           </div>

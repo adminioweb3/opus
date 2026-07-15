@@ -182,8 +182,31 @@ export default function GeoOptimizerPage() {
   }, [schemaOutput]);
 
   const handleExport = useCallback(() => {
-    toast.info("Export coming soon");
-  }, []);
+    if (!results) {
+      toast.error("Nothing to export yet — run an analysis first");
+      return;
+    }
+
+    const rows: string[] = [`GEO Score,${results.score}`, `Verdict,${results.verdict}`, ""];
+    rows.push("Sub-metric,Score");
+    results.subMetrics.forEach((m) => rows.push(`${m.label},${m.score}`));
+    rows.push("");
+    rows.push("Fix,Impact,Description");
+    results.fixRecommendations.forEach((f) => rows.push(`"${f.title.replace(/"/g, '""')}",${f.impact},"${f.description.replace(/"/g, '""')}"`));
+    rows.push("");
+    rows.push("Competitor,Coverage,Status");
+    results.competitorGap.forEach((c) => rows.push(`${c.name},${c.coverage},${c.status}`));
+
+    const csv = rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = `geo-optimizer-report-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(blobUrl);
+    toast.success("Report exported");
+  }, [results]);
 
   return (
     <div className="p-6 md:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">

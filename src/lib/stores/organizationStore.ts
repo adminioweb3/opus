@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 
 interface OrganizationState {
   organizationId: string;
+  organizationName: string;
+  websiteDomain: string;
   needsOnboarding: boolean;
   planType: string;
   trialEndsAt: string | null;
@@ -10,6 +12,8 @@ interface OrganizationState {
   setOrganizationId: (id: string) => void;
   setSyncResult: (result: {
     organizationId: string;
+    organizationName?: string;
+    websiteDomain?: string;
     needsOnboarding: boolean;
     planType: string;
     trialEndsAt: string | null;
@@ -24,6 +28,8 @@ export const useOrganizationStore = create<OrganizationState>()(
   persist(
     (set) => ({
       organizationId: DUMMY_ORG_ID,
+      organizationName: '',
+      websiteDomain: '',
       needsOnboarding: false,
       planType: 'Trial',
       trialEndsAt: null,
@@ -32,6 +38,8 @@ export const useOrganizationStore = create<OrganizationState>()(
       setSyncResult: (result) =>
         set({
           organizationId: result.organizationId,
+          organizationName: result.organizationName ?? '',
+          websiteDomain: result.websiteDomain ?? '',
           needsOnboarding: result.needsOnboarding,
           planType: result.planType,
           trialEndsAt: result.trialEndsAt,

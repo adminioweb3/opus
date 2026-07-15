@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,8 +10,19 @@ import { useAuthStore } from "@/lib/stores/auth-store"
 import { Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
+  )
+}
+
+function RegisterForm() {
+  const searchParams = useSearchParams()
   const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
+  // Pre-filled from a team invite link (?email=...) — the actual org/role linking happens
+  // server-side by matching this email against a pending invite, not by anything in the URL.
+  const [email, setEmail] = useState(() => searchParams.get("email") || "")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const { register, isLoading, error, clearError } = useAuthStore()

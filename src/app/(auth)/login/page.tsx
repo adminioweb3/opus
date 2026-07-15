@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
-import { DEMO_CREDENTIALS, MOCK_USERS } from "@/lib/mock-data/users"
 import { Loader2 } from "lucide-react"
 
 export default function LoginPage() {
@@ -41,12 +40,6 @@ export default function LoginPage() {
     if (success) routeAfterLogin()
   }
 
-  const fillDemoCredentials = (userEmail?: string) => {
-    setEmail(userEmail ?? DEMO_CREDENTIALS.email)
-    setPassword(DEMO_CREDENTIALS.password)
-    clearError()
-  }
-
   return (
     <>
       <div>
@@ -60,23 +53,6 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8">
-        {/* Demo Credentials Helper */}
-        <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
-          <p className="text-xs font-semibold text-primary mb-3">Quick Demo Access</p>
-          <div className="flex flex-wrap gap-2">
-            {MOCK_USERS.map((u) => (
-              <button
-                key={u.id}
-                type="button"
-                onClick={() => fillDemoCredentials(u.email)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-white border border-border hover:border-primary/30 hover:bg-primary/5 transition-colors font-medium text-foreground"
-              >
-                {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div>
           <div>
             <p className="text-sm font-medium leading-6 text-foreground">Sign in with</p>

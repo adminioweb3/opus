@@ -347,6 +347,10 @@ export default function KnowledgeVaultPage() {
 
   const startScraping = async () => {
     if (!scrapeUrl || !kbId) return;
+    if (!organizationId) {
+      toast.error("Still loading your organization — try again in a moment");
+      return;
+    }
     const isCrawl = scrapeType === 'Website';
     if (isCrawl && folderChoice === '__new__' && !newCrawlFolderName.trim()) {
       toast.error("Please name the folder for this crawl");
@@ -366,7 +370,7 @@ export default function KnowledgeVaultPage() {
       }
 
       const data = await startScrapeJob({
-        organizationId: organizationId || '11111111-1111-1111-1111-111111111111',
+        organizationId,
         knowledgeBaseId: kbId,
         folderId,
         url: scrapeUrl,
@@ -409,10 +413,14 @@ export default function KnowledgeVaultPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRetrySource = async (source: any) => {
     if (!source.url || !kbId) return;
+    if (!organizationId) {
+      toast.error("Still loading your organization — try again in a moment");
+      return;
+    }
     const type: "Single" | "Website" = source.type === 'Crawl' ? 'Website' : 'Single';
     try {
       const data = await startScrapeJob({
-        organizationId: organizationId || '11111111-1111-1111-1111-111111111111',
+        organizationId,
         knowledgeBaseId: kbId,
         folderId: source.folderId,
         url: source.url,

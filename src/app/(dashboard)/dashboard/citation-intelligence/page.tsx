@@ -151,7 +151,7 @@ export default function CitationIntelligencePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
             {kpis.map((k, i) => (
               <Card key={i} className="h-[150px] relative overflow-hidden group hover:border-slate-300 transition-colors">
-                <CardContent className="p-5 flex flex-col justify-between h-full">
+                <CardContent className="p-5 flex flex-col h-full">
                   <div className="flex justify-between items-start mb-2">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50" style={{ color: k.color }}>
                       <k.ic className="w-5 h-5" />
@@ -162,7 +162,7 @@ export default function CitationIntelligencePage() {
                     <div className="text-[13px] font-medium text-slate-500 mb-0.5">{k.label}</div>
                     <div className="text-[26px] font-space-grotesk font-bold tracking-tight">{k.val}</div>
                   </div>
-                  <div className="absolute bottom-4 right-5 flex items-end gap-3 text-right">
+                  <div className="mt-auto flex items-end justify-end gap-3 text-right">
                     <div className={`text-[12px] font-semibold flex items-center gap-1 ${isPositive(k.trend) ? "text-emerald-500" : "text-red-500"}`}>
                       {isPositive(k.trend) ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                       {k.trend}

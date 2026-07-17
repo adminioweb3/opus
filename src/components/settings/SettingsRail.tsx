@@ -1,6 +1,6 @@
 "use client"
 
-import { Building2, Users, Globe, Plug, CreditCard, Key, ShieldAlert } from "lucide-react"
+import { User, Building2, Users, Globe, Plug, CreditCard, Key, ShieldAlert } from "lucide-react"
 
 export interface SettingsSection {
   id: string
@@ -10,6 +10,7 @@ export interface SettingsSection {
 }
 
 export const SETTINGS_SECTIONS: SettingsSection[] = [
+  { id: "profile", label: "Profile", icon: User, desc: "Your personal name and account details." },
   { id: "org", label: "Organization", icon: Building2, desc: "Company profile, brand, locale, AI defaults and audit." },
   { id: "team", label: "Team Management", icon: Users, desc: "Members, roles, departments, invites and sessions." },
   { id: "sites", label: "Websites", icon: Globe, desc: "Connected sites, crawl preferences and verification." },

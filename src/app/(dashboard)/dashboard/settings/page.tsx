@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation"
 import { SettingsRail, SETTINGS_SECTIONS } from "@/components/settings/SettingsRail"
+import ProfileSection from "@/components/settings/ProfileSection"
 import OrganizationSection from "@/components/settings/OrganizationSection"
 import TeamSection from "@/components/settings/TeamSection"
 import WebsitesSection from "@/components/settings/WebsitesSection"
@@ -12,6 +13,7 @@ import SecuritySection from "@/components/settings/SecuritySection"
 import { ChevronRight, Settings as SettingsIcon } from "lucide-react"
 
 const SECTION_COMPONENTS: Record<string, React.ComponentType> = {
+  profile: ProfileSection,
   org: OrganizationSection,
   team: TeamSection,
   sites: WebsitesSection,

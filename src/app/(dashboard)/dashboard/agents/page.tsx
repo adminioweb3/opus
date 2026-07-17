@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Plus, LayoutGrid, List, LayoutDashboard, CalendarClock, Play,
   PlayCircle, BookOpen, Bot, Zap, Quote, Clock, CheckCircle2,
   HelpCircle, Copy, Link, Swords, Code, ChevronRight, ChevronDown,
   User, CircleDot, Hexagon, FolderPlus, Search, Pencil,
-  MoreVertical
+  MoreVertical, Pause, Trash2, Copy as DuplicateIcon, X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,25 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type AgentStatus = 'running' | 'published' | 'scheduled' | 'draft';
+type AgentType = 'Content' | 'Monitoring' | 'Reporting' | 'Optimization';
+
+interface AgentItem {
+  id: string;
+  name: string;
+  ic: typeof Bot;
+  tint: string;
+  status: AgentStatus;
+  type: AgentType;
+  by: string;
+  init: string;
+  when: string;
+  metric: string;
+}
 
 // Dummy Data
 const AG_TEMPLATES = [
@@ -25,12 +44,15 @@ const AG_TEMPLATES = [
   {ic: Code, tint:'#7C3AED', t:'Schema Markup Builder', d:'Generates valid JSON-LD schema so engines parse your pages with confidence.', by:'Community'}
 ];
 
-const AGENTS = [
-  {name:'IOWEB3 AEO Content Producer', ic: Pencil, tint:'#7C3AED', status:'running', by:'Sudarshan Patil', init:'SP', when:'running now', metric:'12 pages in queue'},
-  {name:'AEO-Optimized FAQ Generator', ic: HelpCircle, tint:'#6366F1', status:'published', by:'Sudarshan Patil', init:'SP', when:'1d ago', metric:'+38 citations won'},
-  {name:'Competitor snippet watch', ic: Swords, tint:'#DC2626', status:'scheduled', by:'Sarah Chen', init:'SC', when:'runs daily · 9:00', metric:'2 alerts this week'},
-  {name:'Untitled agent', ic: Bot, tint:'#64748B', status:'draft', by:'Sudarshan Patil', init:'SP', when:'1d ago', metric:'—'}
+const INITIAL_AGENTS: AgentItem[] = [
+  {id:'a1', name:'IOWEB3 AEO Content Producer', ic: Pencil, tint:'#7C3AED', status:'running', type:'Content', by:'Sudarshan Patil', init:'SP', when:'running now', metric:'12 pages in queue'},
+  {id:'a2', name:'AEO-Optimized FAQ Generator', ic: HelpCircle, tint:'#6366F1', status:'published', type:'Content', by:'Sudarshan Patil', init:'SP', when:'1d ago', metric:'+38 citations won'},
+  {id:'a3', name:'Competitor snippet watch', ic: Swords, tint:'#DC2626', status:'scheduled', type:'Monitoring', by:'Sarah Chen', init:'SC', when:'runs daily · 9:00', metric:'2 alerts this week'},
+  {id:'a4', name:'Untitled agent', ic: Bot, tint:'#64748B', status:'draft', type:'Reporting', by:'Sudarshan Patil', init:'SP', when:'1d ago', metric:'—'}
 ];
+
+const STATUS_OPTIONS: AgentStatus[] = ['running', 'published', 'scheduled', 'draft'];
+const TYPE_OPTIONS: AgentType[] = ['Content', 'Monitoring', 'Reporting', 'Optimization'];
 
 // Helper functions
 const soft = (hex: string) => {
@@ -43,10 +65,90 @@ const agColor = (s: string) => ({running:'var(--orange)', published:'var(--green
 export default function AgentsPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showBanner, setShowBanner] = useState(true);
+  const [agents, setAgents] = useState<AgentItem[]>(INITIAL_AGENTS);
+  const [folders, setFolders] = useState<string[]>([]);
+  const [showNewFolder, setShowNewFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [builderText, setBuilderText] = useState("");
+
+  // Filters (All agents tab)
+  const [filterCreatedBy, setFilterCreatedBy] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<AgentStatus | null>(null);
+  const [filterType, setFilterType] = useState<AgentType | null>(null);
+  const [search, setSearch] = useState("");
+
+  const creators = useMemo(() => Array.from(new Set(agents.map((a) => a.by))), [agents]);
 
   const switchTab = (t: string) => {
     setActiveTab(t);
   };
+
+  const focusBuilder = () => {
+    switchTab('overview');
+  };
+
+  const applyTemplate = (title: string, description: string) => {
+    setBuilderText(`${title}: ${description}`);
+    focusBuilder();
+    toast.success(`Loaded template — ${title}`);
+  };
+
+  const handleGenerateAgent = () => {
+    if (!builderText.trim()) {
+      toast.error("Describe the agent you want to build first");
+      return;
+    }
+    const newAgent: AgentItem = {
+      id: `a_${Date.now()}`,
+      name: builderText.trim().slice(0, 60),
+      ic: Bot,
+      tint: '#64748B',
+      status: 'draft',
+      type: 'Content',
+      by: 'You',
+      init: 'Y',
+      when: 'just now',
+      metric: '—',
+    };
+    setAgents((prev) => [newAgent, ...prev]);
+    setBuilderText("");
+    toast.success("Draft agent created — find it under Your agents");
+  };
+
+  const createFolder = () => {
+    if (!newFolderName.trim()) return;
+    setFolders((prev) => [...prev, newFolderName.trim()]);
+    setNewFolderName("");
+    setShowNewFolder(false);
+    toast.success(`Folder "${newFolderName.trim()}" created`);
+  };
+
+  const updateAgentStatus = (id: string, status: AgentStatus) => {
+    setAgents((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+    toast.success(`Agent ${status === 'running' ? 'resumed' : 'paused'}`);
+  };
+
+  const duplicateAgent = (agent: AgentItem) => {
+    const copy: AgentItem = { ...agent, id: `a_${Date.now()}`, name: `${agent.name} (copy)`, status: 'draft', when: 'just now' };
+    setAgents((prev) => [copy, ...prev]);
+    toast.success("Agent duplicated");
+  };
+
+  const deleteAgent = (id: string) => {
+    setAgents((prev) => prev.filter((a) => a.id !== id));
+    toast.success("Agent deleted");
+  };
+
+  const filteredAgents = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return agents.filter((a) => {
+      if (filterCreatedBy && a.by !== filterCreatedBy) return false;
+      if (filterStatus && a.status !== filterStatus) return false;
+      if (filterType && a.type !== filterType) return false;
+      if (q && !a.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [agents, filterCreatedBy, filterStatus, filterType, search]);
 
   const renderBanner = () => {
     if (!showBanner) return null;
@@ -71,10 +173,10 @@ export default function AgentsPage() {
               Automate reporting, hunt opportunities, optimize content and defend citations — agents run on their own and ping your Mission Alerts when it matters.
             </div>
             <div className="flex gap-2.5 mt-3.5">
-              <Button size="sm" onClick={() => toast.info('Playing walkthrough')}>
+              <Button size="sm" onClick={() => toast.info('Agent walkthrough video coming soon')}>
                 <Play size={16} className="mr-1.5" /> See how it works
               </Button>
-              <Button size="sm" variant="outline" onClick={() => toast.info('Opening Citationly University')}>
+              <Button size="sm" variant="outline" onClick={() => toast.info('Citationly University guides coming soon')}>
                 <BookOpen size={16} className="mr-1.5" /> Explore guides
               </Button>
             </div>
@@ -87,8 +189,8 @@ export default function AgentsPage() {
   const renderStrip = () => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {[
-        { label: 'Active agents', icon: Bot, value: '8', meta: 'deployed in your org', accent: '#7C3AED' },
-        { label: 'Running now', icon: Zap, value: '1', meta: 'content producer, live', accent: '#6366F1' },
+        { label: 'Active agents', icon: Bot, value: `${agents.length}`, meta: 'deployed in your org', accent: '#7C3AED' },
+        { label: 'Running now', icon: Zap, value: `${agents.filter(a => a.status === 'running').length}`, meta: 'content producer, live', accent: '#6366F1' },
         { label: 'Citations won', icon: Quote, value: '+412', meta: 'last 30 days', accent: '#16A34A' },
         { label: 'Hours saved', icon: Clock, value: '64', meta: 'vs manual, this month', accent: '#2563EB' },
       ].map((stat) => (
@@ -113,13 +215,21 @@ export default function AgentsPage() {
         <CardContent className="p-4">
           <textarea
             rows={1}
+            value={builderText}
+            onChange={(e) => setBuilderText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleGenerateAgent();
+              }
+            }}
             placeholder="Describe the agent you want — e.g. monitor Perplexity for lost snippets and draft replacement pages."
             className="w-full border-0 outline-none resize-none font-sans text-sm text-foreground bg-transparent leading-relaxed min-h-6 max-h-36 placeholder:text-slate-400"
           />
           <div className="flex items-center gap-2 mt-2.5">
             <button
               className="w-8.5 h-8.5 rounded-lg border border-border bg-card text-muted-foreground hover:bg-muted flex items-center justify-center transition-colors"
-              onClick={() => toast.info('Attach context')}
+              onClick={() => toast.info('Attaching context coming soon')}
             >
               <Plus size={16} />
             </button>
@@ -127,8 +237,9 @@ export default function AgentsPage() {
               <Bot size={14} className="mr-1" /> Auto <ChevronDown size={14} className="ml-1" />
             </span>
             <button
-              className="ml-auto w-9.5 h-9.5 rounded-xl border-0 bg-gradient-to-br from-primary to-c-orange-mid text-white flex items-center justify-center hover:scale-[1.08] transition-transform"
-              onClick={() => toast.success('Drafting your agent…')}
+              className="ml-auto w-9.5 h-9.5 rounded-xl border-0 bg-gradient-to-br from-primary to-c-orange-mid text-white flex items-center justify-center hover:scale-[1.08] transition-transform disabled:opacity-50"
+              onClick={handleGenerateAgent}
+              disabled={!builderText.trim()}
             >
               <Zap size={18} />
             </button>
@@ -160,7 +271,7 @@ export default function AgentsPage() {
               <Card
                 key={i}
                 className="cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all"
-                onClick={() => toast.success(`Starting from template — ${t.t}`)}
+                onClick={() => applyTemplate(t.t, t.d)}
               >
                 <CardContent className="p-4 flex flex-col h-full">
                   <div
@@ -194,27 +305,88 @@ export default function AgentsPage() {
 
   const renderFilterBar = () => (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
-        <User size={14} className="mr-1.5" /> Created by <ChevronDown size={14} className="ml-1" />
-      </Button>
-      <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
-        <CircleDot size={14} className="mr-1.5" /> Status <ChevronDown size={14} className="ml-1" />
-      </Button>
-      <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
-        <Hexagon size={14} className="mr-1.5" /> Type <ChevronDown size={14} className="ml-1" />
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger render={
+          <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
+            <User size={14} className="mr-1.5" /> {filterCreatedBy || "Created by"} <ChevronDown size={14} className="ml-1" />
+          </Button>
+        } />
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setFilterCreatedBy(null)}>All creators</DropdownMenuItem>
+          {creators.map((c) => (
+            <DropdownMenuItem key={c} onClick={() => setFilterCreatedBy(c)}>{c}</DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger render={
+          <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
+            <CircleDot size={14} className="mr-1.5" /> {filterStatus ? agStatusLabel(filterStatus) : "Status"} <ChevronDown size={14} className="ml-1" />
+          </Button>
+        } />
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setFilterStatus(null)}>All statuses</DropdownMenuItem>
+          {STATUS_OPTIONS.map((s) => (
+            <DropdownMenuItem key={s} onClick={() => setFilterStatus(s)}>{agStatusLabel(s)}</DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger render={
+          <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-semibold text-muted-foreground">
+            <Hexagon size={14} className="mr-1.5" /> {filterType || "Type"} <ChevronDown size={14} className="ml-1" />
+          </Button>
+        } />
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setFilterType(null)}>All types</DropdownMenuItem>
+          {TYPE_OPTIONS.map((t) => (
+            <DropdownMenuItem key={t} onClick={() => setFilterType(t)}>{t}</DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {folders.map((f) => (
+        <Badge key={f} variant="secondary" className="text-xs gap-1.5">
+          {f}
+          <button onClick={() => setFolders((prev) => prev.filter((x) => x !== f))}><X size={12} /></button>
+        </Badge>
+      ))}
+
       <div className="flex-1" />
-      <Button variant="outline" size="sm" onClick={() => toast.success('New folder created')}>
-        <FolderPlus size={16} className="mr-1" /> New folder
-      </Button>
+
+      {showNewFolder ? (
+        <div className="flex items-center gap-1.5">
+          <Input
+            autoFocus
+            placeholder="Folder name"
+            value={newFolderName}
+            onChange={(e) => setNewFolderName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && createFolder()}
+            className="h-8 text-xs w-36"
+          />
+          <Button size="sm" className="h-8" onClick={createFolder}>Add</Button>
+          <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowNewFolder(false); setNewFolderName(""); }}><X size={14} /></Button>
+        </div>
+      ) : (
+        <Button variant="outline" size="sm" onClick={() => setShowNewFolder(true)}>
+          <FolderPlus size={16} className="mr-1" /> New folder
+        </Button>
+      )}
       <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-1.5 min-w-[200px] bg-card">
         <Search size={16} className="text-slate-400" />
-        <Input placeholder="Search agents…" className="border-0 h-auto p-0 shadow-none focus-visible:ring-0 text-sm" />
+        <Input
+          placeholder="Search agents…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border-0 h-auto p-0 shadow-none focus-visible:ring-0 text-sm"
+        />
       </div>
     </div>
   );
 
-  const renderAgentsTable = (list: typeof AGENTS, title: string) => (
+  const renderAgentsTable = (list: AgentItem[], title: string) => (
     <section className="space-y-4">
       {title && (
         <div className="flex items-center justify-between">
@@ -235,11 +407,14 @@ export default function AgentsPage() {
             <span>Agent</span><span>Status</span><span>Created by</span><span>Last modified</span><span></span>
           </div>
           <div className="divide-y divide-border/50">
-            {list.map((a, i) => {
+            {list.length === 0 && (
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">No agents match these filters.</div>
+            )}
+            {list.map((a) => {
               const Icon = a.ic;
               return (
                 <div
-                  key={i}
+                  key={a.id}
                   className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_150px_180px_130px_44px] gap-2 lg:gap-3.5 items-center px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
                   onClick={() => toast.info(`Opening agent — ${a.name}`)}
                 >
@@ -269,12 +444,25 @@ export default function AgentsPage() {
                     <span className="text-foreground truncate">{a.by}</span>
                   </div>
                   <div className="text-xs text-muted-foreground">{a.when}</div>
-                  <button
-                    className="w-7.5 h-7.5 rounded-lg border-0 bg-transparent text-slate-400 hover:bg-muted hover:text-foreground flex items-center justify-center transition-colors"
-                    onClick={(e) => { e.stopPropagation(); toast.info('Agent options'); }}
-                  >
-                    <MoreVertical size={18} />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={
+                      <button
+                        className="w-7.5 h-7.5 rounded-lg border-0 bg-transparent text-slate-400 hover:bg-muted hover:text-foreground flex items-center justify-center transition-colors"
+                        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+                    } />
+                    <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                      {a.status === 'running' ? (
+                        <DropdownMenuItem onClick={() => updateAgentStatus(a.id, 'draft')}><Pause size={14} className="mr-2" /> Pause</DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem onClick={() => updateAgentStatus(a.id, 'running')}><Play size={14} className="mr-2" /> Resume</DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => duplicateAgent(a)}><DuplicateIcon size={14} className="mr-2" /> Duplicate</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => deleteAgent(a.id)} className="text-destructive"><Trash2 size={14} className="mr-2" /> Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               );
             })}
@@ -292,7 +480,7 @@ export default function AgentsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Citationly agents</h1>
           <p className="text-muted-foreground text-sm">Go from insight to action — agents do the work and report back.</p>
         </div>
-        <Button onClick={() => toast.info('Describe your agent below to start')}>
+        <Button onClick={focusBuilder}>
           <Plus size={16} className="mr-1" /> Create agent
         </Button>
       </div>
@@ -304,7 +492,7 @@ export default function AgentsPage() {
           </TabsTrigger>
           <TabsTrigger value="all" className="gap-2 pb-3 text-sm font-semibold">
             <List size={17} /> All agents
-            <Badge variant="secondary" className="text-[11px]">{AGENTS.length}</Badge>
+            <Badge variant="secondary" className="text-[11px]">{agents.length}</Badge>
           </TabsTrigger>
           <TabsTrigger value="templates" className="gap-2 pb-3 text-sm font-semibold">
             <LayoutDashboard size={17} /> Templates
@@ -323,7 +511,7 @@ export default function AgentsPage() {
           {renderBuilder()}
           {renderTemplates(4, false)}
           {renderFavorites()}
-          {renderAgentsTable(AGENTS, 'Your agents')}
+          {renderAgentsTable(agents, 'Your agents')}
         </div>
       )}
 
@@ -331,14 +519,14 @@ export default function AgentsPage() {
         <div className="space-y-8">
           {renderStrip()}
           {renderFilterBar()}
-          {renderAgentsTable(AGENTS, '')}
+          {renderAgentsTable(filteredAgents, '')}
         </div>
       )}
 
       {activeTab === 'templates' && renderTemplates(AG_TEMPLATES.length, true)}
 
       {activeTab === 'scheduled' && (
-        renderAgentsTable(AGENTS.filter(a => a.status === 'scheduled' || a.status === 'running'), 'Scheduled & running')
+        renderAgentsTable(agents.filter(a => a.status === 'scheduled' || a.status === 'running'), 'Scheduled & running')
       )}
     </div>
   );

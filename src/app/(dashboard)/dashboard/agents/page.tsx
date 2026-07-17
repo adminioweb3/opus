@@ -163,7 +163,7 @@ export default function AgentsPage() {
           </span>
           <div
             className="w-18 h-18 rounded-2xl bg-muted border border-border flex items-center justify-center text-primary text-2xl shrink-0 cursor-pointer hover:scale-[1.06] hover:border-primary transition-transform"
-            onClick={() => toast.info('Playing — how agents work')}
+            onClick={() => window.open('/#how-it-works', '_blank', 'noopener')}
           >
             <PlayCircle size={28} />
           </div>
@@ -173,10 +173,10 @@ export default function AgentsPage() {
               Automate reporting, hunt opportunities, optimize content and defend citations — agents run on their own and ping your Mission Alerts when it matters.
             </div>
             <div className="flex gap-2.5 mt-3.5">
-              <Button size="sm" onClick={() => toast.info('Agent walkthrough video coming soon')}>
+              <Button size="sm" onClick={() => window.open('/#how-it-works', '_blank', 'noopener')}>
                 <Play size={16} className="mr-1.5" /> See how it works
               </Button>
-              <Button size="sm" variant="outline" onClick={() => toast.info('Citationly University guides coming soon')}>
+              <Button size="sm" variant="outline" onClick={() => window.open('/resources', '_blank', 'noopener')}>
                 <BookOpen size={16} className="mr-1.5" /> Explore guides
               </Button>
             </div>

@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  Flag, DollarSign, Gauge, CheckCircle2, Sparkles,
+  Flag, DollarSign, Gauge, CheckCircle2, Sparkles, ChevronRight,
   Zap, LayoutGrid, User, ChevronDown, Search, Target, RefreshCcw,
   Swords, Plus, MoreVertical, Pause, Trash2, Copy as DuplicateIcon
 } from 'lucide-react';
@@ -38,7 +38,9 @@ const INITIAL_PROJECTS: ProjectItem[] = [
 const INITIAL_SUGGESTED = [
   {t:'Close 3 GEO gaps on sourcing-intent queries', why:'Engines cite competitors on three high-intent queries you should own.', impact:'+$80k', tint:'#6366F1', ic: Target},
   {t:'Refresh 12 stale high-traffic pages', why:'Content older than 90 days is bleeding citations on time-sensitive prompts.', impact:'+6% citations', tint:'#2563EB', ic: RefreshCcw},
-  {t:'Counter Competitor A listicle placements', why:'Competitor A picked up 4 third-party listicles now driving AI mentions.', impact:'Defend $40k', tint:'#DC2626', ic: Swords}
+  {t:'Counter Competitor A listicle placements', why:'Competitor A picked up 4 third-party listicles now driving AI mentions.', impact:'Defend $40k', tint:'#DC2626', ic: Swords},
+  {t:'Add FAQ schema to the pricing page', why:'Missing structured data means engines skip your pricing details entirely.', impact:'+4% citations', tint:'#16A34A', ic: Target},
+  {t:'Consolidate 5 duplicate blog posts', why:'Overlapping content is splitting authority signals across near-identical pages.', impact:'+$15k', tint:'#7C3AED', ic: RefreshCcw},
 ];
 
 const CATEGORY_OPTIONS = ['GEO', 'Content', 'Citations', 'Authority'];
@@ -54,6 +56,9 @@ const prColor = (s: string) => ({'In progress':'var(--orange)','Planning':'#2563
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
   const [suggested, setSuggested] = useState(INITIAL_SUGGESTED);
+  const [showAllSuggested, setShowAllSuggested] = useState(false);
+  const SUGGESTED_PREVIEW_COUNT = 3;
+  const visibleSuggested = showAllSuggested ? suggested : suggested.slice(0, SUGGESTED_PREVIEW_COUNT);
 
   // Filters
   const [filterImpact, setFilterImpact] = useState<Impact | null>(null);
@@ -180,14 +185,22 @@ export default function ProjectsPage() {
           <span className="text-sm font-bold flex items-center">
             <Sparkles size={16} className="text-primary mr-2" /> Suggested by Citationly
           </span>
-          {suggested.length === 0 && (
+          {suggested.length === 0 ? (
             <span className="text-xs text-slate-400">No more suggestions right now</span>
+          ) : suggested.length > SUGGESTED_PREVIEW_COUNT && (
+            <span
+              className="text-xs font-semibold text-c-orange-dark cursor-pointer flex items-center hover:underline"
+              onClick={() => setShowAllSuggested((v) => !v)}
+            >
+              {showAllSuggested ? "Show less" : "See all"} <ChevronRight size={14} className="ml-1" />
+            </span>
           )}
         </div>
 
         {suggested.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {suggested.map((s, i) => {
+            {visibleSuggested.map((s) => {
+              const i = suggested.indexOf(s);
               const Icon = s.ic;
               return (
                 <Card key={i} className="relative overflow-hidden">

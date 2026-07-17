@@ -59,7 +59,7 @@ export function HowItWorks() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative py-32 bg-background overflow-hidden">
+    <section id="how-it-works" ref={sectionRef} className="relative py-32 bg-background overflow-hidden">
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="text-center mb-20">
           <div className="flex justify-center">

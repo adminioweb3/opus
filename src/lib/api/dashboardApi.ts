@@ -31,6 +31,20 @@ export interface ExecutiveMetricsResult {
   shareOfVoice: ShareOfVoiceData[];
 }
 
+export interface CompetitorResult {
+  id: string;
+  name: string;
+  websiteUrl: string;
+  industry: string;
+}
+
+export const getTopCompetitors = async (organizationId: string): Promise<CompetitorResult[]> => {
+  const response = await apiClient.get<CompetitorResult[]>('/Dashboard/top-competitors', {
+    params: { organizationId }
+  });
+  return response.data;
+};
+
 export const getDailyMetrics = async (organizationId: string): Promise<DailyMetricsResult> => {
   const response = await apiClient.get<DailyMetricsResult>('/metrics/daily', {
     params: { organizationId }

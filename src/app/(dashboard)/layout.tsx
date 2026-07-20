@@ -81,9 +81,9 @@ function DashboardHeader() {
         className="hidden md:flex items-center gap-2 h-9 px-4 rounded-lg border border-border bg-muted/50 text-sm text-muted-foreground hover:bg-muted transition-colors flex-1 max-w-md"
       >
         <Search className="w-4 h-4" />
-        <span>Search prompts, reports, competitors...</span>
+        <span>Search pages, competitors, team...</span>
         <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border border-border font-mono">
-          âŒ˜K
+          &#8984;K
         </kbd>
       </button>
 

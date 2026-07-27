@@ -55,7 +55,7 @@ export const caseStudies: CaseStudy[] = [
       "Northwind Cloud went from invisible in AI comparison answers to the most-cited vendor in its category, using Visibility Radar and the GEO Optimizer to close 212 citation gaps in five months.",
     challenge: [
       "Northwind Cloud's growth team could see organic search holding steady while inbound demo requests quietly declined. The reason surfaced almost by accident: a sales rep noticed ChatGPT recommending two smaller competitors by name when a prospect asked for \"the best cloud data platform for mid-market teams,\" and Northwind wasn't mentioned at all. Nobody on the team had a way to check how often that was happening, on which platforms, or why.",
-      "Elena Marsh, VP Marketing, ran a manual audit — dozens of hand-typed prompts across ChatGPT and Perplexity, screenshotted and pasted into a shared doc. It confirmed the fear: Northwind appeared in barely a quarter of the buyer questions it should have owned, and when it did appear, the citations backing the answer pointed to a five-year-old integration-partner blog post, not to Northwind's own docs. There was no owner, no scoring, and no repeatable process to fix it.",
+      "Elena Marsh, VP Marketing, ran a manual audit: dozens of hand-typed prompts across ChatGPT and Perplexity, screenshotted and pasted into a shared doc. It confirmed the fear: Northwind appeared in barely a quarter of the buyer questions it should have owned, and when it did appear, the citations backing the answer pointed to a five-year-old integration-partner blog post, not to Northwind's own docs. There was no owner, no scoring, and no repeatable process to fix it.",
     ],
     approach: [
       {
@@ -102,19 +102,19 @@ export const caseStudies: CaseStudy[] = [
     excerpt:
       "Fielder's lean growth team used Opportunity Finder and the Answer Simulator to prioritize a backlog of 89 fixes and lift prompt appearances 52% without adding headcount.",
     challenge: [
-      "Fielder was scaling fast but its growth team was three people, and AI visibility had become one more channel with no clear owner and no time to hand-audit. Jonah Okonkwo, Head of Growth, could see from support tickets that prospects were arriving with wrong assumptions about pricing and features — assumptions that traced back to how AI assistants were describing the product, not to anything on Fielder's own site.",
+      "Fielder was scaling fast but its growth team was three people, and AI visibility had become one more channel with no clear owner and no time to hand-audit. Jonah Okonkwo, Head of Growth, could see from support tickets that prospects were arriving with wrong assumptions about pricing and features, assumptions that traced back to how AI assistants were describing the product, not to anything on Fielder's own site.",
       "The team's early attempts to fix this were reactive and expensive: someone would spot a bad AI answer, guess at a content fix, publish it, and hope. There was no way to know which of dozens of possible gaps mattered most, and with a three-person team, guessing wrong cost a week they didn't have.",
     ],
     approach: [
       {
         title: "Rank the backlog instead of guessing",
         module: "Opportunity Finder",
-        desc: "A deep scan surfaced every visibility gap — missing prompt coverage, weak citations, competitor-owned comparisons — and ranked them by projected score impact, letting a three-person team work the top ten instead of an undifferentiated list of 200.",
+        desc: "A deep scan surfaced every visibility gap (missing prompt coverage, weak citations, competitor-owned comparisons) and ranked them by projected score impact, letting a three-person team work the top ten instead of an undifferentiated list of 200.",
       },
       {
         title: "Test the fix before shipping it",
         module: "Answer Simulator",
-        desc: "Before writing a single page, the team ran candidate positioning and FAQ copy through the Answer Simulator to see how ChatGPT and Gemini would answer real buyer questions using it — catching two fixes that would have made the mismatch worse.",
+        desc: "Before writing a single page, the team ran candidate positioning and FAQ copy through the Answer Simulator to see how ChatGPT and Gemini would answer real buyer questions using it, catching two fixes that would have made the mismatch worse.",
       },
       {
         title: "Watch brand accuracy in real time",
@@ -150,8 +150,8 @@ export const caseStudies: CaseStudy[] = [
     excerpt:
       "Larkspur Group turned AI visibility from a one-off audit product into a recurring service across 14 client accounts, using Reports and Team & roles to run it at agency scale.",
     challenge: [
-      "Larkspur Group's SEO team had been fielding the same client question for over a year: \"why does our competitor show up when I ask ChatGPT, and we don't?\" Priya Chandrasekaran, Director of SEO, would answer it the only way she could — a one-time manual audit, billed as a project, delivered as a slide deck that was stale within a month. Clients loved the insight and hated that it wasn't a living number.",
-      "Turning that into a recurring service meant solving an agency-specific problem: running consistent measurement across 14 client accounts with different competitors, different prompt sets, and different stakeholders who each needed their own report — without 14x-ing the analyst hours a one-off audit already required.",
+      "Larkspur Group's SEO team had been fielding the same client question for over a year: \"why does our competitor show up when I ask ChatGPT, and we don't?\" Priya Chandrasekaran, Director of SEO, would answer it the only way she could: a one-time manual audit, billed as a project, delivered as a slide deck that was stale within a month. Clients loved the insight and hated that it wasn't a living number.",
+      "Turning that into a recurring service meant solving an agency-specific problem: running consistent measurement across 14 client accounts with different competitors, different prompt sets, and different stakeholders who each needed their own report, without 14x-ing the analyst hours a one-off audit already required.",
     ],
     approach: [
       {
@@ -167,12 +167,12 @@ export const caseStudies: CaseStudy[] = [
       {
         title: "Replace the slide deck with a live export",
         module: "Reports",
-        desc: "Board-ready Reports pull directly from each account's live scan data — visibility trend, top citation gaps, competitor movement — so a client update that used to take two days of deck-building now takes three hours of review.",
+        desc: "Board-ready Reports pull directly from each account's live scan data (visibility trend, top citation gaps, competitor movement), so a client update that used to take two days of deck-building now takes three hours of review.",
       },
     ],
     results: [
       "Larkspur now runs AI visibility as a standing retainer line across all 14 client accounts, not a one-time audit. Clients averaged a 9.2-point visibility score improvement in their first quarter on the platform, with the fastest movers concentrated among clients who also adopted the GEO Optimizer's page-level fixes.",
-      "Producing a client-ready report dropped from roughly two days of analyst time to about three hours, because Reports assembles directly from live scan data instead of a manually rebuilt deck. Every one of Larkspur's 14 accounts now carries a standing GEO scorecard the client can check between meetings — no report request needed.",
+      "Producing a client-ready report dropped from roughly two days of analyst time to about three hours, because Reports assembles directly from live scan data instead of a manually rebuilt deck. Every one of Larkspur's 14 accounts now carries a standing GEO scorecard the client can check between meetings. No report request needed.",
     ],
     pullQuote: {
       quote:
@@ -198,14 +198,14 @@ export const caseStudies: CaseStudy[] = [
     excerpt:
       "Meridian Health used Brand Pulse and Knowledge Vault to catch AI answers misstating clinical information about its services, turning an unmeasured compliance risk into a monitored, correctable one.",
     challenge: [
-      "For a healthcare provider, an AI assistant getting a fact wrong isn't a brand annoyance, it's a compliance and patient-trust risk. Grace Whitfield, Director of Digital at Meridian Health, had no visibility into what ChatGPT, Perplexity, or Copilot were telling patients who asked about Meridian's services, insurance coverage, or care protocols — and no way to know when an answer was simply outdated or actively wrong.",
+      "For a healthcare provider, an AI assistant getting a fact wrong isn't a brand annoyance, it's a compliance and patient-trust risk. Grace Whitfield, Director of Digital at Meridian Health, had no visibility into what ChatGPT, Perplexity, or Copilot were telling patients who asked about Meridian's services, insurance coverage, or care protocols, and no way to know when an answer was simply outdated or actively wrong.",
       "The stakes made a wait-and-see approach unacceptable, but Meridian's legal and compliance team also couldn't approve content changes on a hunch. Grace needed evidence: which specific AI answers were inaccurate, what they should say instead, and an audit trail showing the fix was reviewed before it shipped.",
     ],
     approach: [
       {
         title: "Monitor for accuracy, not just presence",
         module: "Brand Pulse",
-        desc: "Brand Pulse was configured around accuracy flags rather than visibility alone — surfacing any AI answer describing Meridian's services, coverage, or protocols in terms that conflicted with Meridian's published, compliance-approved source material.",
+        desc: "Brand Pulse was configured around accuracy flags rather than visibility alone, surfacing any AI answer describing Meridian's services, coverage, or protocols in terms that conflicted with Meridian's published, compliance-approved source material.",
       },
       {
         title: "Give the engines a single source of truth",

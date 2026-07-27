@@ -29,8 +29,8 @@ export function FinalCta() {
       <div className="container relative z-10 mx-auto px-6 max-w-3xl text-center">
         <RevealText
           as="h2"
-          text="Ready to Own AI Search?"
-          gradientWords={["AI", "Search?"]}
+          text="Find out what AI engines say about your brand today"
+          gradientWords={["AI", "today"]}
           className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] leading-[1.05] mb-6 text-white"
         />
         <motion.p
@@ -40,20 +40,28 @@ export function FinalCta() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg text-white/55 mb-10 max-w-lg mx-auto"
         >
-          Start your free 7-day analysis. See exactly how ChatGPT, Gemini, and Claude talk about your brand today.
+          Run a free analysis and see your mentions, citations, and Share of Voice across six AI search engines,
+          benchmarked against your closest competitors. No commitment, and the first insights arrive in minutes.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <MagneticButton
             onClick={() => router.push("/register")}
             className="group h-14 px-9 rounded-full font-medium text-base bg-white text-[#050508] shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_70px_rgba(255,255,255,0.3)] transition-shadow inline-flex items-center gap-2"
           >
-            Start Free AI Analysis
+            Start Free Analysis
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </MagneticButton>
+          <MagneticButton
+            onClick={() => router.push("/register")}
+            className="h-14 px-9 rounded-full font-medium text-base landing-glass-dark text-white inline-flex items-center gap-2 hover:bg-white/10 transition-colors"
+          >
+            Book a Demo
           </MagneticButton>
         </motion.div>
       </div>

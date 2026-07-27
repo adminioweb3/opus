@@ -32,7 +32,7 @@ const AGGREGATE_STATS: { value: number; suffix: string; label: string }[] = [
   {
     value: 4,
     suffix: "",
-    label: "industries running the same AI visibility workflow — B2B SaaS, growth-stage SaaS, agency, and healthcare.",
+    label: "industries running the same AI visibility workflow: B2B SaaS, growth-stage SaaS, agency, and healthcare.",
   },
   {
     value: 30,
@@ -154,7 +154,7 @@ export function Content() {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="text-muted-foreground max-w-xl mx-auto"
             >
-              Different products, different buyers, different compliance requirements — the same measure,
+              Different products, different buyers, different compliance requirements: the same measure,
               fix, re-measure loop moves the score every time.
             </motion.p>
           </div>

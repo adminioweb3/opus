@@ -4,7 +4,7 @@ import { Content } from "./content"
 export const metadata: Metadata = {
   title: "Privacy Policy | Citationly",
   description:
-    "How Citationly collects, uses, and protects your data — including AI processing, subprocessors, retention, and your privacy rights.",
+    "How Citationly collects, uses, protects, and retains personal information across the AI visibility platform, and the rights you have over your data.",
 }
 
 export default function PrivacyPage() {

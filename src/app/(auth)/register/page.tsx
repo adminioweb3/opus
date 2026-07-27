@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons"
+import { Divider } from "@/components/auth/Divider"
+import { PasswordInput } from "@/components/auth/PasswordInput"
 import { Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
@@ -46,88 +49,81 @@ function RegisterForm() {
 
   return (
     <>
-      <div>
-        <h2 className="mt-6 text-3xl font-bold tracking-tight text-foreground">Create your account</h2>
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">Start your free trial</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-primary hover:text-primary/90 transition-colors">
+          <Link href="/login" className="font-semibold text-primary hover:text-primary/90 transition-colors">
             Sign in
           </Link>
         </p>
       </div>
 
-      <div className="mt-8">
+      <div className="space-y-6">
+        <SocialLoginButtons fullWidth />
+
+        <Divider text="or create with email" />
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label htmlFor="name">Full name</Label>
-            <div className="mt-2">
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder="Jane Doe"
-                value={name}
-                onChange={(e) => { setName(e.target.value); clearError() }}
-              />
-            </div>
+            <Label htmlFor="name" className="text-sm font-medium">Full name</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              required
+              placeholder="Jane Doe"
+              value={name}
+              onChange={(e) => { setName(e.target.value); clearError() }}
+              className="mt-2"
+            />
           </div>
 
           <div>
-            <Label htmlFor="email">Work email</Label>
-            <div className="mt-2">
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="jane@company.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); clearError() }}
-              />
-            </div>
+            <Label htmlFor="email" className="text-sm font-medium">Work email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="jane@company.com"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); clearError() }}
+              className="mt-2"
+            />
           </div>
 
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <div className="mt-2">
-              <Input
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+              <PasswordInput
                 id="password"
-                name="password"
-                type="password"
-                required
-                placeholder="Minimum 8 characters"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={setPassword}
               />
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="confirm-password">Confirm password</Label>
-            <div className="mt-2">
-              <Input
+            <div>
+              <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm</Label>
+              <PasswordInput
                 id="confirm-password"
-                name="confirm-password"
-                type="password"
-                required
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={setConfirmPassword}
               />
             </div>
-            {password && confirmPassword && password !== confirmPassword && (
-              <p className="text-xs text-destructive mt-1">Passwords do not match</p>
-            )}
           </div>
+          {password && confirmPassword && password !== confirmPassword && (
+            <p className="text-xs text-destructive font-medium">Passwords do not match</p>
+          )}
 
           {error && (
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-xs text-destructive font-medium">
               {error}
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading || (!!confirmPassword && password !== confirmPassword)}>
+          <Button type="submit" className="w-full mt-6" size="lg" disabled={isLoading || (!!confirmPassword && password !== confirmPassword)}>
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -138,10 +134,10 @@ function RegisterForm() {
             )}
           </Button>
 
-          <p className="text-xs text-muted-foreground text-center leading-relaxed">
+          <p className="text-xs text-muted-foreground text-center leading-relaxed pt-2">
             By creating an account, you agree to our{" "}
-            <Link href="#" className="text-primary hover:underline">Terms of Service</Link> and{" "}
-            <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
+            <Link href="#" className="font-medium text-primary hover:underline">Terms of Service</Link> and{" "}
+            <Link href="#" className="font-medium text-primary hover:underline">Privacy Policy</Link>.
           </p>
         </form>
       </div>

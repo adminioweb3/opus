@@ -185,7 +185,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         Create an account, connect your website, and Knowledge Vault begins crawling immediately. Your
         first Visibility Radar scan across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok
-        completes within 48 hours — no setup beyond verifying your domain.
+        completes within 48 hours, with no setup beyond verifying your domain.
       </>
     ),
   },
@@ -204,7 +204,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         Open Competitor Watch and add up to your plan&apos;s competitor limit by domain. We pull in real
-        logos and start tracking share of voice against your set from the next scan cycle onward — no
+        logos and start tracking share of voice against your set from the next scan cycle onward, with no
         separate onboarding step required.
       </>
     ),
@@ -213,7 +213,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "Does the trial require a credit card, and what happens after?",
     a: (
       <>
-        Every plan — Starter, Professional, and Enterprise — starts with a real 7-day free trial and no
+        Every plan (Starter, Professional, and Enterprise) starts with a real 7-day free trial and no
         credit card. At the end of the trial you choose a plan to continue; nothing is charged
         automatically and nothing is deleted while you decide.
       </>
@@ -223,7 +223,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "How do I invite teammates and manage roles?",
     a: (
       <>
-        From Team & roles, invite by email and assign a role that scopes what they can see and edit —
+        From Team & roles, invite by email and assign a role that scopes what they can see and edit,
         from read-only reporting access to full workspace administration. Seats and role limits vary by
         plan.
       </>
@@ -309,7 +309,7 @@ export function Content() {
         eyebrow="Resources"
         title="Everything you need to win AI search."
         gradientWords={["AI"]}
-        description="Guides, documentation, an API, integrations, and a help center — everything to run your AI visibility program, in one place."
+        description="Guides, documentation, an API, integrations, and a help center: everything to run your AI visibility program, in one place."
       />
 
       {/* ---------------------------------------------------------- */}
@@ -485,7 +485,7 @@ export function Content() {
                 className="space-y-5 text-muted-foreground leading-relaxed text-[15px] md:text-base"
               >
                 <p>
-                  Every score in Citationly — visibility, citation share, brand accuracy — is available as
+                  Every score in Citationly (visibility, citation share, brand accuracy) is available as
                   structured data. Pull scan results into your own dashboards, trigger workflows off a
                   score change, or feed Opportunity Finder findings straight into your task tracker.
                 </p>
@@ -508,7 +508,7 @@ export function Content() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">
-                    API access rolling out on Enterprise — join the waitlist
+                    API access rolling out on Enterprise: join the waitlist
                   </p>
                 </div>
                 <Link

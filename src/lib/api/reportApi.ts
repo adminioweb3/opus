@@ -200,3 +200,32 @@ export const getFullReport = async (organizationId: string): Promise<FullReportD
   const response = await apiClient.get<FullReportData>(`/report/${organizationId}`);
   return response.data;
 };
+
+export interface UnifiedCompetitor {
+  name?: string;
+  websiteUrl?: string;
+  similarityScore: number;
+  confidence: number;
+  reason?: string;
+  sourceOrganization?: string;
+}
+
+export interface UnifiedCompetitorsResult {
+  success: boolean;
+  error?: string;
+  totalCompetitors: number;
+  competitors?: UnifiedCompetitor[];
+  includedOrganizations?: string[];
+}
+
+export const getUnifiedCompetitors = async (organizationId: string): Promise<UnifiedCompetitorsResult> => {
+  try {
+    const response = await apiClient.get<UnifiedCompetitorsResult>(`/onboarding/competitors/unified`, {
+      params: { organizationId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get unified competitors:", error);
+    return { success: false, totalCompetitors: 0, competitors: [] };
+  }
+};

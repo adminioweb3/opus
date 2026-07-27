@@ -42,7 +42,7 @@ const TEAMS: TeamCard[] = [
     icon: Megaphone,
     team: "Marketing Teams",
     problem:
-      "Buyers now ask ChatGPT before they ever reach your site — and that influence is invisible in your attribution stack. When budget review comes, the channel you can't measure is the channel that gets cut.",
+      "Buyers now ask ChatGPT before they ever reach your site, and that influence is invisible in your attribution stack. When budget review comes, the channel you can't measure is the channel that gets cut.",
     outcomes: [
       "Put a number on AI visibility with weekly Visibility Radar scans and one Command Center score",
       "Defend budget with executive-ready Reports built on trend lines, not anecdotes",
@@ -54,11 +54,11 @@ const TEAMS: TeamCard[] = [
     icon: Search,
     team: "SEO Teams",
     problem:
-      "Rankings still matter, but they no longer describe the whole journey. Answer engines synthesize, cite, and recommend — and none of that shows up in a rank tracker.",
+      "Rankings still matter, but they no longer describe the whole journey. Answer engines synthesize, cite, and recommend, and none of that shows up in a rank tracker.",
     outcomes: [
       "Extend your stack into GEO and AEO with platform-by-platform Visibility Radar scores",
       "See exactly which sources AI engines cite instead of you with Citation Intelligence",
-      "Ship page-level fixes from GEO Optimizer audits — structure, prompt coverage, citation gaps",
+      "Ship page-level fixes from GEO Optimizer audits: structure, prompt coverage, citation gaps",
     ],
     metric: { value: 3.2, suffix: "x", decimals: 1, label: "Faster to first citation" },
   },
@@ -99,7 +99,7 @@ const INDUSTRIES: IndustryCard[] = [
   {
     icon: Building2,
     industry: "Enterprise",
-    desc: "AI visibility becomes another line in the reporting stack your executives already trust — with the access controls and audit posture procurement expects before anything gets rolled out.",
+    desc: "AI visibility becomes another line in the reporting stack your executives already trust, with the access controls and audit posture procurement expects before anything gets rolled out.",
     bullets: [
       "Executive-ready Reports for board decks and QBRs",
       "Team roles and permissions that scope who sees what",
@@ -153,7 +153,7 @@ const WEEK: WeekEntry[] = [
     time: "9:04 AM",
     module: "Visibility Radar",
     title: "The weekly scan lands",
-    body: "Visibility Radar finishes its pass across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok. Command Center shows the composite score slipped from 61 to 58 — Perplexity dropped nine points while every other platform held or gained.",
+    body: "Visibility Radar finishes its pass across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok. Command Center shows the composite score slipped from 61 to 58; Perplexity dropped nine points while every other platform held or gained.",
     mock: "radar",
   },
   {
@@ -169,7 +169,7 @@ const WEEK: WeekEntry[] = [
     time: "11:15 AM",
     module: "GEO Optimizer",
     title: "Assign the fixes",
-    body: "The Page Auditor traces the stale price to a comparison table AI engines still cite. That fix — plus two prompt-coverage gaps on the pricing page — goes to the content team as three scoped tasks.",
+    body: "The Page Auditor traces the stale price to a comparison table AI engines still cite. That fix (plus two prompt-coverage gaps on the pricing page) goes to the content team as three scoped tasks.",
     mock: "fixes",
   },
   {
@@ -184,7 +184,7 @@ const WEEK: WeekEntry[] = [
     time: "4:00 PM",
     module: "Reports",
     title: "The report writes itself",
-    body: "One export covers the week: score trend, share of voice against three competitors from Competitor Watch, two alerts resolved, three fixes shipped. It reaches the VP's inbox before the weekend — and Monday's scan will confirm the recovery.",
+    body: "One export covers the week: score trend, share of voice against three competitors from Competitor Watch, two alerts resolved, three fixes shipped. It reaches the VP's inbox before the weekend, and Monday's scan will confirm the recovery.",
     mock: "report",
   },
 ]
@@ -333,7 +333,7 @@ export function Content() {
         eyebrow="Solutions"
         title="Built for every team that owns brand visibility."
         gradientWords={["visibility"]}
-        description="Marketing, SEO, agencies, SaaS — Citationly turns how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok describe your brand into a number your team can move."
+        description="Marketing, SEO, agencies, SaaS: Citationly turns how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok describe your brand into a number your team can move."
       />
 
       {/* ---------------- Section 1 · By team ---------------- */}
@@ -356,7 +356,7 @@ export function Content() {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
             >
-              Citationly meets each team where its questions start — pipeline, rankings, client retainers, or category
+              Citationly meets each team where its questions start: pipeline, rankings, client retainers, or category
               share of voice.
             </motion.p>
           </div>
@@ -480,7 +480,7 @@ export function Content() {
             <ShieldCheck className="w-4 h-4 text-indigo-500/70 shrink-0 mt-0.5" />
             <span>
               Citationly monitors public AI answers and flags inaccuracies for your team to review. It complements your
-              compliance and legal workflows — it does not replace them. See our{" "}
+              compliance and legal workflows; it does not replace them. See our{" "}
               <Link href="/security" className="text-indigo-600 hover:text-indigo-700 underline underline-offset-2">
                 security overview
               </Link>{" "}
@@ -527,7 +527,7 @@ export function Content() {
                   transition={{ duration: 0.6, delay: 0.25 }}
                   className="text-white/55 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
                 >
-                  How a marketing lead actually runs Citationly — one alert, one fix, one verified answer at a time.
+                  How a marketing lead actually runs Citationly: one alert, one fix, one verified answer at a time.
                 </motion.p>
               </div>
 
@@ -595,7 +595,7 @@ export function Content() {
             <Quote className="w-10 h-10 text-indigo-500/25 mb-6" />
             <blockquote className="text-xl md:text-2xl font-medium tracking-[-0.01em] leading-relaxed text-foreground/90 mb-8">
               &ldquo;The Monday scan is the first thing our growth standup looks at now. In week one it caught ChatGPT
-              quoting an 18-month-old price — we fixed the source page, verified the corrected answer in the simulator,
+              quoting an 18-month-old price; we fixed the source page, verified the corrected answer in the simulator,
               and watched it hold in the next scan. That single catch protected real pipeline.&rdquo;
             </blockquote>
             <figcaption className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-4 sm:justify-between">

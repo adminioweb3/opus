@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { Content } from "./content"
 
 export const metadata: Metadata = {
-  title: "Security | Citationly",
+  title: "Security at Citationly | How We Protect Your Data",
   description:
-    "How Citationly protects your data: TLS 1.2+ and AES-256 encryption, Firebase-backed authentication, strict tenant isolation, least-privilege access, SOC 2-aligned controls, and GDPR-aligned data rights.",
+    "How Citationly secures the data behind your AI brand monitoring: infrastructure, encryption, access controls, and our approach to responsible AI.",
 }
 
 export default function SecurityPage() {

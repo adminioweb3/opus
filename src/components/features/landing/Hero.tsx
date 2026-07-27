@@ -46,13 +46,13 @@ export function Hero() {
       <div className="container relative z-10 mx-auto px-6 max-w-6xl">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center">
-            <SectionLabel>Introducing Generative Engine Optimization</SectionLabel>
+            <SectionLabel>Enterprise AI Search Intelligence Platform</SectionLabel>
           </div>
 
           <RevealText
             as="h1"
-            text="Dominate AI Search Before Your Competitors Do."
-            gradientWords={["AI", "Search."]}
+            text="Your buyers ask AI first. Make sure it answers with you."
+            gradientWords={["AI", "you."]}
             className="text-5xl md:text-6xl lg:text-[5.25rem] font-semibold tracking-[-0.03em] leading-[1.03] mb-7 text-white"
           />
 
@@ -63,8 +63,10 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="text-lg md:text-xl text-white/60 font-normal leading-relaxed mb-11 max-w-2xl mx-auto"
           >
-            Citationly measures, monitors, and improves how ChatGPT, Gemini, Claude, Perplexity,
-            and every major AI platform discovers, understands, and cites your brand.
+            Citationly measures how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok talk about your
+            brand, then shows your team exactly how to improve those answers through AI search optimization.
+            Track citations, monitor brand mentions, benchmark competitors, and measure Share of Voice across
+            every major AI engine from one platform.
           </motion.p>
 
           <motion.div
@@ -78,7 +80,7 @@ export function Hero() {
               onClick={() => router.push("/register")}
               className="group h-13 px-8 rounded-full font-medium text-[15px] bg-white text-[#050508] shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25)] transition-shadow flex items-center gap-2"
             >
-              Start Free AI Analysis
+              Start Free Analysis
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </MagneticButton>
             <MagneticButton
@@ -86,7 +88,7 @@ export function Hero() {
               className="h-13 px-8 rounded-full font-medium text-[15px] landing-glass-dark text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
             >
               <PlayCircle className="w-4 h-4" />
-              Watch Demo
+              Book a Demo
             </MagneticButton>
           </motion.div>
         </div>

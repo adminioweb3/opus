@@ -49,7 +49,7 @@ const fadeUp = {
 
 const STATS = [
   { value: 6, suffix: "+", label: "AI platforms monitored, from ChatGPT to Grok" },
-  { value: 7, suffix: "-day", label: "scan cadence — every platform, every week" },
+  { value: 7, suffix: "-day", label: "scan cadence, every platform, every week" },
   { value: 9, suffix: "", label: "intelligence modules in one platform" },
   { value: 1, suffix: "-click", label: "executive reports your leadership can read" },
 ]
@@ -228,7 +228,7 @@ function MonitorMock() {
         <span className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
           <Bell className="w-4 h-4" />
         </span>
-        <span className="text-sm font-semibold text-foreground">Brand Pulse — live alerts</span>
+        <span className="text-sm font-semibold text-foreground">Brand Pulse: live alerts</span>
       </div>
 
       <div className="relative space-y-2.5 mb-8">
@@ -262,7 +262,7 @@ function MonitorMock() {
         <span className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
           <Quote className="w-4 h-4" />
         </span>
-        <span className="text-sm font-semibold text-foreground">Citation Intelligence — most-cited sources</span>
+        <span className="text-sm font-semibold text-foreground">Citation Intelligence: most-cited sources</span>
       </div>
 
       <div className="relative space-y-3">
@@ -303,7 +303,7 @@ const FIXES = [
   { text: "Add FAQ schema to /pricing for buyer prompts", impact: "High", done: true },
   { text: "Publish comparison page vs. your top-cited alternative", impact: "High", done: false },
   { text: "Close citation gap on the “AI visibility platforms” prompt set", impact: "Medium", done: false },
-  { text: "Refresh /blog/geo-guide — stale stats flagged by Brand Pulse", impact: "Medium", done: true },
+  { text: "Refresh /blog/geo-guide (stale stats flagged by Brand Pulse)", impact: "Medium", done: true },
 ]
 
 function OptimizeMock() {
@@ -316,7 +316,7 @@ function OptimizeMock() {
           <span className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
             <ListChecks className="w-4 h-4" />
           </span>
-          <span className="text-sm font-semibold text-foreground">Opportunity Finder — this week&apos;s queue</span>
+          <span className="text-sm font-semibold text-foreground">Opportunity Finder: this week&apos;s queue</span>
         </div>
       </div>
 
@@ -387,7 +387,7 @@ const PILLARS: Pillar[] = [
     kicker: "01 · Measure",
     title: "A single score for how AI sees you",
     gradientWords: ["AI"],
-    body: "Visibility Radar scans ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok every week, then the Command Center distills the results into one visibility score — with a platform-by-platform breakdown you can defend in any meeting.",
+    body: "Visibility Radar scans ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok every week, then the Command Center distills the results into one visibility score, with a platform-by-platform breakdown you can defend in any meeting.",
     features: [
       {
         icon: Gauge,
@@ -402,7 +402,7 @@ const PILLARS: Pillar[] = [
       {
         icon: LineChart,
         name: "AI Search Analytics",
-        desc: "Trends across prompts, platforms, and weeks — not one-off snapshots.",
+        desc: "Trends across prompts, platforms, and weeks, not one-off snapshots.",
       },
     ],
     mock: <MeasureMock />,
@@ -421,7 +421,7 @@ const PILLARS: Pillar[] = [
       {
         icon: Quote,
         name: "AI Citation Tracking",
-        desc: "The exact sources AI engines cite for your category — and where you are missing.",
+        desc: "The exact sources AI engines cite for your category, and where you are missing.",
       },
       {
         icon: Swords,
@@ -445,7 +445,7 @@ const PILLARS: Pillar[] = [
       {
         icon: MessageSquareText,
         name: "AEO Optimization",
-        desc: "Answer Simulator shows how engines answer buyer questions — before and after your fixes.",
+        desc: "Answer Simulator shows how engines answer buyer questions, before and after your fixes.",
       },
       {
         icon: FileText,
@@ -560,7 +560,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Quote,
     title: "AI Citation Tracking",
-    desc: "Citation Intelligence reveals the sources engines cite for your category — and where you are absent.",
+    desc: "Citation Intelligence reveals the sources engines cite for your category, and where you are absent.",
   },
   {
     icon: Bell,
@@ -580,7 +580,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Swords,
     title: "Competitor Intelligence",
-    desc: "Competitor Watch tracks who is winning the answers you should own — with real share-of-voice data.",
+    desc: "Competitor Watch tracks who is winning the answers you should own, with real share-of-voice data.",
   },
   {
     icon: Wand2,
@@ -595,7 +595,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: FileText,
     title: "Reports",
-    desc: "Executive-ready exports that connect fixes shipped to visibility gained — generated in one click.",
+    desc: "Executive-ready exports that connect fixes shipped to visibility gained, generated in one click.",
   },
 ]
 
@@ -618,7 +618,7 @@ function CapabilityGrid() {
             transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
             className="text-muted-foreground leading-relaxed"
           >
-            Everything in the Platform menu, built on the same weekly scan data — so your dashboard, your alerts, and
+            Everything in the Platform menu, built on the same weekly scan data, so your dashboard, your alerts, and
             your fix queue never disagree.
           </motion.p>
         </div>
@@ -708,7 +708,7 @@ function WorkflowStrip() {
             transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
             className="text-muted-foreground leading-relaxed"
           >
-            From first crawl to board slide in four steps — no new rituals, no manual prompt-checking spreadsheets.
+            From first crawl to board slide in four steps: no new rituals, no manual prompt-checking spreadsheets.
           </motion.p>
         </div>
 
@@ -768,7 +768,7 @@ export function Content() {
         eyebrow="Platform"
         title="Every signal of your AI visibility. One platform."
         gradientWords={["AI"]}
-        description="Citationly measures, monitors, and improves how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok discover, understand, recommend, and cite your brand — from one command center."
+        description="Citationly measures, monitors, and improves how ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok discover, understand, recommend, and cite your brand, from one command center."
         wide
       >
         <MagneticButton

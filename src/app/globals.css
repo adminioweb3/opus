@@ -321,3 +321,71 @@
 @utility landing-glow-pulse {
   animation: landing-glow-pulse 3s ease-in-out infinite;
 }
+
+/* ============================================================
+   Executive Report (`/report/[organizationId]`) — A4 print layout.
+   Scoped to `.report-doc` so it never touches the dashboard UI.
+   ============================================================ */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm 14mm;
+  }
+
+  .report-doc,
+  .report-doc * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .report-doc {
+    font-size: 10.5pt;
+    line-height: 1.5;
+    background: #fff !important;
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .report-doc main {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Purely decorative blurred gradient blobs don't render reliably in print/PDF — drop them. */
+  .report-doc [class*="blur-3xl"] {
+    display: none !important;
+  }
+
+  /* No section-wide break-inside:avoid — with 13 sections on one report, "avoid" bumps
+     whichever section doesn't fully fit to the next page instead of splitting it, leaving
+     the rest of the current page blank. Letting content flow densely and only break where it
+     actually runs out of room uses the page far better than protecting every card from ever
+     splitting. */
+
+  .report-doc main > * + *,
+  .report-doc main > div > * + * {
+    margin-top: 14pt !important;
+  }
+
+  /* Standard A4 document type scale (pt), overriding the on-screen dashboard scale. */
+  .report-doc .text-6xl { font-size: 30pt !important; }
+  .report-doc .text-5xl { font-size: 24pt !important; }
+  .report-doc .text-4xl { font-size: 20pt !important; }
+  .report-doc .text-3xl { font-size: 17pt !important; }
+  .report-doc .text-2xl { font-size: 15pt !important; }
+  .report-doc .text-xl  { font-size: 13pt !important; }
+  .report-doc .text-lg  { font-size: 12pt !important; }
+  .report-doc .text-sm  { font-size: 9.5pt !important; }
+  .report-doc .text-xs  { font-size: 8.5pt !important; }
+
+  /* Denser padding than the on-screen dashboard spacing to fit an A4 page well. */
+  .report-doc .p-16 { padding: 16pt !important; }
+  .report-doc .p-10 { padding: 12pt !important; }
+  .report-doc .p-8  { padding: 10pt !important; }
+  .report-doc .p-6  { padding: 8pt !important; }
+}

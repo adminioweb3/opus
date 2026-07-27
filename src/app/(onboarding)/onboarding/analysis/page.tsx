@@ -34,11 +34,16 @@ export default function AnalysisSimulationPage() {
           // STEP 0: Analysis
           setActiveStepIndex(0)
           setProgress(5)
+          
+          const finalIndustry = storeState.industry === "Other" && storeState.customIndustry
+            ? storeState.customIndustry
+            : storeState.industry;
+            
           const result = await analyzeOnboardingData({
             organizationId: orgId,
             websiteUrl: storeState.websiteUrl,
             businessName: storeState.businessName,
-            industry: storeState.industry,
+            industry: finalIndustry,
             targetAudience: storeState.targetAudience,
             keywords: storeState.keywords
           })
@@ -86,6 +91,9 @@ export default function AnalysisSimulationPage() {
           
           setTimeout(() => {
             router.push(`/report/${orgId}`)
+            setTimeout(() => {
+              storeState.resetJourney()
+            }, 1000)
           }, 1000)
 
         } catch (err) {

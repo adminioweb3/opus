@@ -2,239 +2,60 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUpRight,
-  Armchair,
-  Clock,
-  Compass,
-  FlaskConical,
-  Globe,
-  GraduationCap,
-  Hammer,
-  HeartPulse,
-  Laptop,
-  MapPin,
-  MessagesSquare,
-  PieChart,
-  Plane,
-  Rocket,
-  Target,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, Check, MessageCircle, Scale, Target, Zap, type LucideIcon } from "lucide-react"
 import { PageHero } from "@/components/features/public/PageHero"
 import { CtaBand } from "@/components/features/public/CtaBand"
 import { SectionLabel } from "@/components/features/landing/primitives/SectionLabel"
 import { RevealText } from "@/components/features/landing/primitives/RevealText"
-import { AnimatedCounter } from "@/components/features/landing/primitives/AnimatedCounter"
 
 /* ---------------------------------- data --------------------------------- */
 
-const WHY_CARDS: { icon: LucideIcon; title: string; body: React.ReactNode }[] = [
-  {
-    icon: Compass,
-    title: "A category-defining problem",
-    body: (
-      <>
-        Generative engines now answer buyer questions directly. Brands can measure their Google
-        rankings to the decimal — and have no idea what ChatGPT, Gemini, Claude, Perplexity,
-        Copilot, or Grok say about them. We are building the instrument panel for that blind spot.
-      </>
-    ),
-  },
-  {
-    icon: Rocket,
-    title: "Real product, shipped weekly",
-    body: (
-      <>
-        Fourteen live modules — from Visibility Radar and Citation Intelligence to Answer Simulator
-        and Publishing Center — used by paying customers every day. Code you write this week is in
-        production the next.{" "}
-        <Link
-          href="/changelog"
-          className="inline-flex items-center gap-1 text-indigo-600 font-medium hover:text-indigo-700 transition-colors"
-        >
-          See what we shipped
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </>
-    ),
-  },
-  {
-    icon: Users,
-    title: "A small, senior team",
-    body: (
-      <>
-        No layers, no handoffs, no ticket factories. Everyone owns a full surface of the product,
-        talks to customers directly, and works alongside the founders. Your judgment is the
-        process.
-      </>
-    ),
-  },
-]
-
-const WHY_STATS: { value: number; suffix: string; label: string }[] = [
-  { value: 6, suffix: "", label: "AI platforms monitored" },
-  { value: 14, suffix: "", label: "live product modules" },
-  { value: 6, suffix: "", label: "open roles right now" },
-  { value: 100, suffix: "%", label: "remote-first team" },
-]
-
 const VALUES: { icon: LucideIcon; title: string; body: string }[] = [
   {
-    icon: Hammer,
-    title: "Ship real things",
-    body: "Demos over decks, production over prototypes. The unit of progress here is something a customer can use — everything else is overhead.",
-  },
-  {
-    icon: FlaskConical,
-    title: "Evidence over opinion",
-    body: "We run the discipline we sell. Decisions are argued with scan data, citation counts, and customer recordings — not seniority or volume.",
+    icon: Scale,
+    title: "Evidence wins arguments",
+    body: "Decisions run on observed data, tested hypotheses, and honest readings of results.",
   },
   {
     icon: Target,
-    title: "Own the outcome",
-    body: "You own problems, not tickets. If the metric does not move, the work is not done — and you have the autonomy to change the plan.",
+    title: "Ownership over assignment",
+    body: "We hire people we trust with problems, not tasks.",
   },
   {
-    icon: MessagesSquare,
-    title: "Kind and direct",
-    body: "Feedback arrives early, plainly, and usually in writing. We are hard on the work and easy on the person — in that order.",
+    icon: Zap,
+    title: "Speed with craft",
+    body: "AI search changes monthly, so we ship fast, but fast never means careless.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Direct and kind",
+    body: "Feedback here is specific, prompt, and delivered with respect.",
   },
 ]
 
-const BENEFITS: { icon: LucideIcon; title: string; body: string }[] = [
-  {
-    icon: Globe,
-    title: "Remote-first",
-    body: "Work from anywhere with 4+ hours of EU/US overlap. Async by default.",
-  },
-  {
-    icon: PieChart,
-    title: "Meaningful equity",
-    body: "Every full-time role carries real ownership in the company you are building.",
-  },
-  {
-    icon: Armchair,
-    title: "Home-office budget",
-    body: "$1,500 to build a workspace you actually want to sit in.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Learning budget",
-    body: "$1,000 a year for books, courses, and conferences — no approval theater.",
-  },
-  {
-    icon: HeartPulse,
-    title: "Private healthcare",
-    body: "Comprehensive private cover from day one, wherever you are based.",
-  },
-  {
-    icon: Clock,
-    title: "Flexible hours",
-    body: "Own your calendar. We measure output, not presence.",
-  },
-  {
-    icon: Plane,
-    title: "Annual offsite",
-    body: "One week a year, the whole company in one place to plan — and unwind.",
-  },
-  {
-    icon: Laptop,
-    title: "Latest hardware",
-    body: "Top-spec laptop and peripherals of your choice, refreshed on schedule.",
-  },
+const OFFER_ITEMS: string[] = [
+  "Competitive salary with meaningful equity.",
+  "Flexible and remote-friendly working.",
+  "Health coverage for you and your family.",
+  "A learning and development budget you are expected to actually use.",
+  "Modern equipment and the tools you need.",
+  "Generous paid leave, and a culture where taking it is normal.",
 ]
 
-interface Role {
-  title: string
-  blurb: string
-}
-
-const DEPARTMENTS: { name: string; badgeClass: string; roles: Role[] }[] = [
-  {
-    name: "Engineering",
-    badgeClass: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
-    roles: [
-      {
-        title: "Senior Full-Stack Engineer (TypeScript / .NET)",
-        blurb:
-          "Own features end to end across our Next.js frontend and .NET services — from Visibility Radar scans to the Reports pipeline. You will ship to production in your first week.",
-      },
-      {
-        title: "AI/ML Engineer",
-        blurb:
-          "Design the evaluation and prompt-coverage systems behind Answer Simulator and Citation Intelligence. Deep familiarity with LLM behavior across ChatGPT, Gemini, Claude, and Perplexity required.",
-      },
-      {
-        title: "Platform Engineer",
-        blurb:
-          "Scale the crawling, scanning, and scheduling infrastructure behind Knowledge Vault and our weekly platform scans. Queues, Kubernetes, and observability are your home turf.",
-      },
-    ],
-  },
-  {
-    name: "Product",
-    badgeClass: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-    roles: [
-      {
-        title: "Senior Product Designer",
-        blurb:
-          "Shape how marketing leaders read AI visibility data, from Command Center to Competitor Watch. You will design systems rather than screens, and test with real customers weekly.",
-      },
-    ],
-  },
-  {
-    name: "Go-to-market",
-    badgeClass: "bg-sky-500/10 text-sky-600 border-sky-500/20",
-    roles: [
-      {
-        title: "Founding Account Executive",
-        blurb:
-          "Run the full sales cycle for a category buyers are actively trying to understand. You will work directly with the founders and write the playbook from first call to close.",
-      },
-      {
-        title: "Content Lead — AI Search",
-        blurb:
-          "Own the voice of the AI visibility category: research, benchmarks, and playbooks strong enough that AI engines end up citing them. Proof that we practice what we sell.",
-      },
-    ],
-  },
+const PROCESS_STEPS: { step: string; title: string }[] = [
+  { step: "01", title: "Application review" },
+  { step: "02", title: "Conversation" },
+  { step: "03", title: "Working session" },
+  { step: "04", title: "Team conversations" },
+  { step: "05", title: "Decision" },
 ]
 
-const PROCESS_STEPS: { step: string; days: string; title: string; body: string }[] = [
-  {
-    step: "01",
-    days: "Day 1–2",
-    title: "Intro call",
-    body: "30 minutes with the hiring manager on mutual fit and what you want next.",
-  },
-  {
-    step: "02",
-    days: "Day 3–5",
-    title: "Deep-dive",
-    body: "60–90 minutes on your craft, with the people you would actually work with.",
-  },
-  {
-    step: "03",
-    days: "Day 6–9",
-    title: "Practical exercise",
-    body: "A paid, scoped exercise close to the real job. Capped at four hours.",
-  },
-  {
-    step: "04",
-    days: "Day 10–12",
-    title: "Team fit",
-    body: "Meet the founders and future teammates. You are interviewing us too.",
-  },
-  {
-    step: "05",
-    days: "Day 14",
-    title: "Offer",
-    body: "A clear written offer with salary and equity. Decide on your own time.",
-  },
+const FIT_ITEMS: string[] = [
+  "Ambiguity energizes you more than it worries you.",
+  "You would rather define a metric than inherit one.",
+  "You care about the customer's outcome, not just your component of it.",
+  "You communicate directly and receive directness well.",
+  "The idea of AI search and innovation genuinely interests you.",
 ]
 
 /* -------------------------------- helpers -------------------------------- */
@@ -250,29 +71,50 @@ function SectionHeading({
   eyebrow,
   title,
   gradientWords,
+  dark = false,
   children,
 }: {
   eyebrow: string
   title: string
   gradientWords?: string[]
+  dark?: boolean
   children?: React.ReactNode
 }) {
   return (
     <div className="text-center max-w-2xl mx-auto mb-14">
       <div className="flex justify-center">
-        <SectionLabel dark={false}>{eyebrow}</SectionLabel>
+        <SectionLabel dark={dark}>{eyebrow}</SectionLabel>
       </div>
       <RevealText
         as="h2"
         text={title}
         gradientWords={gradientWords}
-        className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-4"
+        className={`text-3xl md:text-4xl font-semibold tracking-[-0.02em] mb-4 ${
+          dark ? "text-white" : "text-foreground"
+        }`}
       />
       {children && (
-        <motion.p {...fadeUp(0.25)} className="text-muted-foreground leading-relaxed">
+        <motion.p {...fadeUp(0.25)} className={`leading-relaxed ${dark ? "text-white/55" : "text-muted-foreground"}`}>
           {children}
         </motion.p>
       )}
+    </div>
+  )
+}
+
+function CheckList({ items, columns = 1 }: { items: string[]; columns?: 1 | 2 }) {
+  return (
+    <div
+      className={`max-w-3xl mx-auto rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-8 md:p-10 grid grid-cols-1 ${
+        columns === 2 ? "sm:grid-cols-2" : ""
+      } gap-x-10 gap-y-5`}
+    >
+      {items.map((item, i) => (
+        <motion.div key={item} {...fadeUp(i * 0.06)} className="flex items-start gap-3">
+          <Check className="w-4 h-4 shrink-0 text-indigo-600 mt-1" />
+          <span className="text-[15px] text-foreground/80 leading-relaxed">{item}</span>
+        </motion.div>
+      ))}
     </div>
   )
 }
@@ -283,76 +125,57 @@ export function Content() {
   return (
     <>
       <PageHero
-        eyebrow="Careers"
-        title="Help build the AI visibility category."
-        gradientWords={["AI"]}
-        description="Citationly is becoming the system of record for how AI platforms see brands. We are a small, senior team shipping real product every week — and we hire people who want their work in front of customers, not on a roadmap."
+        eyebrow="Careers at Citationly"
+        title="Help build the category everyone will measure by"
+        gradientWords={["category"]}
+        description="AI search is rewriting how the world finds products, answers, and brands. We are building the software that makes that world measurable, and we are hiring people who want their work to define a discipline."
       >
         <a
           href="#open-roles"
           className="group h-12 px-7 rounded-full font-medium text-[15px] bg-foreground text-background inline-flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
         >
-          See open roles
-          <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
+          View Open Positions
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </a>
         <Link
           href="/about"
           className="h-12 px-7 rounded-full font-medium text-[15px] text-foreground border border-black/10 bg-white hover:bg-black/3 transition-colors inline-flex items-center gap-2"
         >
-          Meet the team
+          Apply Now
         </Link>
       </PageHero>
 
-      {/* ------------------------- Why Citationly ------------------------- */}
+      {/* ------------------- A rare moment to join something early ------------------ */}
       <section className="py-20 md:py-24 bg-background">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-4xl">
           <SectionHeading
-            eyebrow="Why Citationly"
-            title="The best time to join a category is before it has a name."
-            gradientWords={["category"]}
-          >
-            Search is being rebuilt around AI answers. Citationly measures how six AI platforms
-            discover, understand, recommend, and cite brands — and we need more hands on the
-            instruments.
-          </SectionHeading>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {WHY_CARDS.map((card, i) => (
-              <motion.div
-                key={card.title}
-                {...fadeUp(i * 0.08)}
-                className="bg-white border border-black/5 rounded-[1.5rem] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow"
-              >
-                <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-5">
-                  <card.icon className="w-5 h-5" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-3 tracking-[-0.01em]">
-                  {card.title}
-                </h3>
-                <p className="text-[15px] text-muted-foreground leading-relaxed">{card.body}</p>
-              </motion.div>
-            ))}
-          </div>
+            eyebrow="Why now"
+            title="A rare moment to join something early"
+            gradientWords={["early"]}
+          />
 
           <motion.div
-            {...fadeUp(0.2)}
-            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-black/5 bg-black/5"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="space-y-5 text-muted-foreground leading-relaxed text-[15px] md:text-base max-w-3xl mx-auto"
           >
-            {WHY_STATS.map((stat) => (
-              <div key={stat.label} className="bg-indigo-50/50 px-6 py-7 text-center">
-                <AnimatedCounter
-                  value={stat.value}
-                  suffix={stat.suffix}
-                  className="block text-3xl font-semibold text-indigo-600 tracking-[-0.02em] mb-1"
-                />
-                <span className="text-[13px] text-muted-foreground">{stat.label}</span>
-              </div>
-            ))}
+            <p>
+              Most careers in software mean improving an established category. Citationly offers
+              something less common: the chance to help define one. Enterprise AI visibility software
+              barely existed two years ago.
+            </p>
+            <p>
+              Today, CMOs at serious companies are asking how their brand appears in AI answers, and
+              the methodology for answering them is being written right now, partly by us. Working
+              here means your decisions compound.
+            </p>
           </motion.div>
         </div>
       </section>
 
-      {/* --------------------------- How we work -------------------------- */}
+      {/* --------------------------- How we work (dark) --------------------------- */}
       <section className="py-6 md:py-10">
         <div className="container mx-auto px-6 max-w-6xl">
           <motion.div
@@ -372,18 +195,7 @@ export function Content() {
             <div className="landing-noise" />
 
             <div className="relative">
-              <div className="text-center max-w-2xl mx-auto mb-12">
-                <div className="flex justify-center">
-                  <SectionLabel dark>How we work</SectionLabel>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-white mb-4">
-                  Four principles, applied daily.
-                </h2>
-                <p className="text-white/55 leading-relaxed">
-                  Not poster values. These are the tiebreakers we actually use when a decision is
-                  close.
-                </p>
-              </div>
+              <SectionHeading eyebrow="Culture" title="How we work" dark />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                 {VALUES.map((value, i) => (
@@ -410,118 +222,50 @@ export function Content() {
         </div>
       </section>
 
-      {/* ---------------------------- Benefits ---------------------------- */}
+      {/* ------------------------------ How you grow ------------------------------ */}
       <section className="py-20 md:py-24 bg-background">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <SectionHeading
-            eyebrow="Benefits"
-            title="Set up to do the best work of your career."
-            gradientWords={["best"]}
-          >
-            The philosophy is simple: remove friction, share the upside, and trust adults to manage
-            their own time.
-          </SectionHeading>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {BENEFITS.map((benefit, i) => (
-              <motion.div
-                key={benefit.title}
-                {...fadeUp((i % 4) * 0.06 + Math.floor(i / 4) * 0.1)}
-                className="bg-white border border-black/5 rounded-2xl p-6 hover:border-indigo-500/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all"
-              >
-                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-4">
-                  <benefit.icon className="w-4.5 h-4.5" />
-                </div>
-                <h3 className="text-[15px] font-semibold text-foreground mb-1.5">{benefit.title}</h3>
-                <p className="text-[13.5px] text-muted-foreground leading-relaxed">{benefit.body}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --------------------------- Open roles --------------------------- */}
-      <section id="open-roles" className="scroll-mt-28 py-20 md:py-24">
         <div className="container mx-auto px-6 max-w-4xl">
-          <SectionHeading eyebrow="Open roles" title="Where we need help right now." gradientWords={["help"]}>
-            Every role is remote with EU/US overlap, full-time, and comes with equity. If you are
-            close but not an exact match, apply anyway — the description is a sketch, not a fence.
-          </SectionHeading>
+          <SectionHeading eyebrow="Growth" title="How you grow here" gradientWords={["grow"]} />
 
-          <div className="space-y-12">
-            {DEPARTMENTS.map((dept) => (
-              <div key={dept.name}>
-                <motion.div {...fadeUp()} className="flex items-center gap-3 mb-5">
-                  <h3 className="text-sm font-semibold tracking-[0.08em] uppercase text-foreground/70">
-                    {dept.name}
-                  </h3>
-                  <span className="text-[12px] font-medium text-muted-foreground bg-black/5 rounded-full px-2.5 py-0.5">
-                    {dept.roles.length} {dept.roles.length === 1 ? "role" : "roles"}
-                  </span>
-                  <div className="flex-1 h-px bg-black/5" />
-                </motion.div>
-
-                <div className="space-y-4">
-                  {dept.roles.map((role, i) => (
-                    <motion.div
-                      key={role.title}
-                      {...fadeUp(i * 0.07)}
-                      className="group bg-white border border-black/5 rounded-2xl p-6 md:p-7 hover:border-indigo-500/25 hover:shadow-[0_10px_36px_rgba(0,0,0,0.06)] transition-all"
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2.5 mb-2.5">
-                            <h4 className="text-[17px] font-semibold text-foreground tracking-[-0.01em]">
-                              {role.title}
-                            </h4>
-                            <span
-                              className={`text-[11px] font-semibold tracking-[0.04em] uppercase border rounded-full px-2.5 py-0.5 ${dept.badgeClass}`}
-                            >
-                              {dept.name}
-                            </span>
-                          </div>
-                          <p className="text-[14.5px] text-muted-foreground leading-relaxed mb-3.5 max-w-2xl">
-                            {role.blurb}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[13px] text-muted-foreground">
-                            <span className="inline-flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5 text-indigo-500" />
-                              Remote (EU/US overlap)
-                            </span>
-                            <span className="inline-flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-indigo-500" />
-                              Full-time
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="shrink-0">
-                          <a
-                            href={`mailto:careers@citationly.io?subject=${encodeURIComponent(
-                              `Application: ${role.title}`
-                            )}`}
-                            className="inline-flex items-center gap-1.5 h-10 px-5 rounded-full text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-500 transition-colors shadow-sm"
-                          >
-                            Apply
-                            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                          </a>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="space-y-5 text-muted-foreground leading-relaxed text-[15px] md:text-base max-w-3xl mx-auto"
+          >
+            <p>
+              Early-stage category work is the fastest professional development available. Everyone
+              gets exposure to real customer conversations. Scope grows with demonstrated ability
+              rather than tenure.
+            </p>
+            <p>
+              The expertise you develop here, in{" "}
+              <Link
+                href="/generative-engine-optimization"
+                className="text-indigo-600 hover:text-indigo-700 font-medium underline underline-offset-2 transition-colors"
+              >
+                Generative Engine Optimization
+              </Link>
+              , answer engines, and AI search measurement, is expertise almost nobody else in the
+              market has yet.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* ------------------------- Hiring process ------------------------- */}
-      <section className="py-20 md:py-24 bg-background">
+      {/* ------------------------------ What we offer ------------------------------ */}
+      <section className="py-20 md:py-24 bg-indigo-50/40 border-y border-black/5">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <SectionHeading eyebrow="Benefits" title="What we offer" gradientWords={["offer"]} />
+          <CheckList items={OFFER_ITEMS} columns={2} />
+        </div>
+      </section>
+
+      {/* ------------------------------ How we hire ------------------------------- */}
+      <section id="open-roles" className="scroll-mt-28 py-20 md:py-24 bg-background">
         <div className="container mx-auto px-6 max-w-6xl">
-          <SectionHeading eyebrow="Hiring process" title="Two weeks from hello to offer." gradientWords={["Two", "weeks"]}>
-            No ghosting, no gauntlets. You will always know where you stand and what happens next.
-          </SectionHeading>
+          <SectionHeading eyebrow="Hiring process" title="How we hire" gradientWords={["hire"]} />
 
           <div className="relative">
             {/* Connector line behind the steps (desktop only) */}
@@ -533,30 +277,65 @@ export function Content() {
                   <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white border border-indigo-500/25 text-indigo-600 text-[13px] font-semibold mb-4 shadow-sm">
                     {step.step}
                   </div>
-                  <div className="text-[11px] font-semibold tracking-widest uppercase text-indigo-600 mb-1.5">
-                    {step.days}
-                  </div>
-                  <h3 className="text-[15px] font-semibold text-foreground mb-2">{step.title}</h3>
-                  <p className="text-[13px] text-muted-foreground leading-relaxed">{step.body}</p>
+                  <h3 className="text-[15px] font-semibold text-foreground">{step.title}</h3>
                 </motion.div>
               ))}
             </div>
           </div>
 
           <motion.p {...fadeUp(0.3)} className="text-center text-[13px] text-muted-foreground mt-12">
-            Practical exercises are always paid, always scoped, and never speculative work we could
-            ship.
+            We hire for trajectory and judgment over pedigree.
           </motion.p>
+        </div>
+      </section>
+
+      {/* --------------------- You will do well at Citationly if -------------------- */}
+      <section className="py-20 md:py-24 bg-background">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <SectionHeading
+            eyebrow="Fit"
+            title="You will do well at Citationly if"
+            gradientWords={["well"]}
+          />
+          <CheckList items={FIT_ITEMS} columns={1} />
+        </div>
+      </section>
+
+      {/* ------------------------------ Closing card -------------------------------- */}
+      <section className="pt-20 md:pt-24">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-indigo-50/50 px-8 py-14 md:px-16 text-center"
+          >
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(50% 70% at 50% -10%, rgba(91,91,255,0.10), transparent), radial-gradient(35% 50% at 90% 100%, rgba(168,85,247,0.07), transparent)",
+              }}
+            />
+            <div className="relative">
+              <h3 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em] text-foreground mb-3">
+                Come define this with us
+              </h3>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                The companies measuring AI visibility in five years will use metrics being invented
+                today. Be one of the people inventing them.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ------------------------------ CTA ------------------------------- */}
       <CtaBand
-        title="Do not see your role?"
-        description="Exceptional people rarely fit a job description exactly. Tell us what you would own at Citationly and why now — we read and answer every note."
-        primaryLabel="Email us"
-        primaryHref="/contact"
-        secondaryLabel="Learn about us"
+        primaryLabel="View Open Positions"
+        primaryHref="#open-roles"
+        secondaryLabel="Apply Now"
         secondaryHref="/about"
       />
     </>

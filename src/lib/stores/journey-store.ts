@@ -12,6 +12,7 @@ interface AIJourneyStore {
   websiteUrl: string
   businessName: string
   industry: string
+  customIndustry: string
   country: string
   targetAudience: string
   services: string
@@ -41,6 +42,7 @@ const initialState = {
   websiteUrl: "",
   businessName: "",
   industry: "",
+  customIndustry: "",
   country: "",
   targetAudience: "",
   services: "",

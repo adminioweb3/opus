@@ -1,6 +1,7 @@
 import { FullReportData } from "@/lib/api/reportApi"
 import { getDomainLogoUrl } from "@/lib/logoUtils"
 import { LogoAvatar } from "@/components/ui/logo-avatar"
+import { Logo } from "@/components/ui/logo"
 
 export default function ReportCover({ data }: { data: FullReportData }) {
   const profile = data.websiteProfile
@@ -13,6 +14,7 @@ export default function ReportCover({ data }: { data: FullReportData }) {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-blue-50/80 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
       <div className="space-y-6 relative z-10 max-w-2xl">
+        <Logo imgClassName="h-7" />
         <div className="flex items-center gap-3">
           <LogoAvatar
             logoUrl={getDomainLogoUrl(profile?.websiteUrl)}

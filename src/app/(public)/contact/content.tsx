@@ -3,22 +3,18 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import {
-  Rocket,
-  LifeBuoy,
-  ShieldCheck,
-  Send,
-  CheckCircle2,
-  ChevronDown,
-  Clock,
-  Mail,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, CheckCircle2, Clock, Mail, Send, type LucideIcon } from "lucide-react"
 import { PageHero } from "@/components/features/public/PageHero"
 import { CtaBand } from "@/components/features/public/CtaBand"
 import { SectionLabel } from "@/components/features/landing/primitives/SectionLabel"
 import { RevealText } from "@/components/features/landing/primitives/RevealText"
 import { MagneticButton } from "@/components/features/landing/primitives/MagneticButton"
+
+/* ------------------------------------------------------------------ */
+/* Shared inline link styles                                          */
+/* ------------------------------------------------------------------ */
+
+const LINK_LIGHT = "text-indigo-600 hover:text-indigo-700 underline underline-offset-2"
 
 /* ------------------------------------------------------------------ */
 /* Fixed content data                                                  */
@@ -37,54 +33,32 @@ interface ContactFormData {
 
 type FormErrors = Partial<Record<keyof ContactFormData, string>>
 
-const CONTACT_CARDS: {
+const RESPONSE_TIMES: {
   icon: LucideIcon
   title: string
-  desc: string
-  email: string
-  cta: { label: string; href: string }
-  note?: string
+  time: string
+  desc?: string
 }[] = [
   {
-    icon: Rocket,
-    title: "Sales",
-    desc: "See Visibility Radar, Citation Intelligence, and the GEO Optimizer on your own domain. We'll size a plan to your brand's footprint across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok.",
-    email: "sales@citationly.io",
-    cta: { label: "Start free trial", href: "/register" },
+    icon: Clock,
+    title: "Sales inquiries",
+    time: "Within 1 business day",
   },
   {
-    icon: LifeBuoy,
-    title: "Support",
-    desc: "Already a customer? Questions about scans, integrations, or your account go straight to the team that builds the product.",
-    email: "support@citationly.io",
-    cta: { label: "Email support", href: "mailto:support@citationly.io" },
-    note: "We reply within one business day.",
+    icon: Clock,
+    title: "Support requests",
+    time: "Within 1 business day",
+    desc: "Prioritized by plan tier, with Enterprise response commitments defined in your agreement.",
   },
   {
-    icon: ShieldCheck,
-    title: "Security disclosures",
-    desc: "Found a vulnerability or need documentation for a security review? Reach our security team directly, or see our practices in detail.",
-    email: "security@citationly.io",
-    cta: { label: "View security practices", href: "/security" },
-  },
-]
-
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: "What's the difference between a demo and the free trial?",
-    a: "A demo is a guided walkthrough with our team on your own domain and your actual AI visibility data — useful if you want questions answered live before committing. The free trial gives you full product access to explore on your own, no call required. Most teams do one or the other, not both.",
+    icon: Clock,
+    title: "Partnership inquiries",
+    time: "Within 3 business days",
   },
   {
-    q: "What exactly do I get with the 7-day free trial?",
-    a: "Full access to Citationly for 7 days — Visibility Radar, Citation Intelligence, Competitor Watch, GEO Optimizer, and the rest of the platform, on every plan from Starter to Enterprise. No credit card is required to start.",
-  },
-  {
-    q: "What do you need from me to get started?",
-    a: "Just your domain. Point Citationly at your website and we run the first scans across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok automatically — there's no crawler to install and no tracking snippet to add before you see results.",
-  },
-  {
-    q: "Do you support agencies managing multiple brands?",
-    a: "Yes. Agencies and multi-brand teams run separate visibility programs side by side under one account, with workspace-level roles and reporting per client. Talk to sales about volume pricing across a portfolio of domains.",
+    icon: Clock,
+    title: "Everything else",
+    time: "Within 3 business days",
   },
 ]
 
@@ -101,7 +75,7 @@ function validate(data: ContactFormData): FormErrors {
   else if (!EMAIL_RE.test(data.email.trim())) errors.email = "Enter a valid email address."
   if (!data.company.trim()) errors.company = "Enter your company name."
   if (!data.message.trim()) errors.message = "Tell us a little about what you need."
-  else if (data.message.trim().length < 10) errors.message = "A few more details would help — at least 10 characters."
+  else if (data.message.trim().length < 10) errors.message = "A few more details would help, at least 10 characters."
   return errors
 }
 
@@ -259,7 +233,7 @@ function ContactForm() {
             >
               <CheckCircle2 className="w-4.5 h-4.5 shrink-0 mt-0.5" />
               <p>
-                Your email client should have opened — or write to{" "}
+                Your email client should have opened, or write to{" "}
                 <a href="mailto:hello@citationly.io" className="font-medium underline underline-offset-2">
                   hello@citationly.io
                 </a>{" "}
@@ -274,52 +248,6 @@ function ContactForm() {
 }
 
 /* ------------------------------------------------------------------ */
-/* FAQ accordion                                                       */
-/* ------------------------------------------------------------------ */
-
-function FaqAccordion() {
-  const [open, setOpen] = useState<number | null>(0)
-
-  return (
-    <div className="max-w-2xl mx-auto divide-y divide-black/5 rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)]">
-      {FAQS.map((item, i) => {
-        const isOpen = open === i
-        return (
-          <div key={item.q}>
-            <button
-              type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
-              className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
-              aria-expanded={isOpen}
-            >
-              <span className="font-medium text-foreground text-[15px]">{item.q}</span>
-              <ChevronDown
-                className={`w-4.5 h-4.5 shrink-0 text-muted-foreground transition-transform duration-300 ${
-                  isOpen ? "rotate-180 text-indigo-500" : ""
-                }`}
-              />
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="overflow-hidden"
-                >
-                  <p className="px-6 pb-5 text-muted-foreground text-[15px] leading-relaxed">{item.a}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -328,92 +256,301 @@ export function Content() {
     <div className="bg-background">
       <PageHero
         eyebrow="Contact"
-        title="Talk to our team."
-        gradientWords={["team"]}
-        description="Sales, support, or partnerships — tell us what you need and we'll route it to the right person. Or skip the form and start your free 7-day trial right now."
-      />
+        title="Talk to a person who knows the platform."
+        gradientWords={["platform"]}
+        description="Whether you are evaluating plans, need help with your account, or want to explore a partnership, your message goes to the team that can actually answer it. No ticket black holes."
+      >
+        <a
+          href="#contact-form"
+          className="group h-12 px-7 rounded-full font-medium text-[15px] bg-foreground text-background inline-flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+        >
+          Book a Demo
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </a>
+        <a
+          href="mailto:hello@citationly.io"
+          className="h-12 px-7 rounded-full font-medium text-[15px] text-foreground border border-black/10 bg-white hover:bg-black/3 transition-colors inline-flex items-center gap-2"
+        >
+          <Mail className="w-4 h-4" />
+          Email Us
+        </a>
+      </PageHero>
 
       {/* ---------------------------------------------------------- */}
-      {/* Section 1 — Form + contact cards                             */}
+      {/* Section 1 — Whatever the question, ask it early              */}
       {/* ---------------------------------------------------------- */}
       <section className="py-16 md:py-20">
+        <div className="container mx-auto px-6 max-w-3xl text-center">
+          <div className="flex justify-center">
+            <SectionLabel dark={false}>Start here</SectionLabel>
+          </div>
+          <RevealText
+            as="h2"
+            text="Whatever the question, ask it early."
+            gradientWords={["early"]}
+            className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-6"
+          />
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-muted-foreground leading-relaxed text-[15px] md:text-base"
+          >
+            AI search measurement is a young discipline, and most conversations we have start well before
+            a purchase decision. Prospective customers ask us how measurement works, what an AI visibility
+            platform can and cannot see, and how to build the internal case for the channel. We answer
+            those questions gladly, whether or not a deal follows, because informed buyers make better
+            long-term customers. Existing customers reach us about their accounts, their data, and their
+            programs. Partners reach us about integrations and agency relationships. Every route below
+            goes to people, not queues.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/* Section 2 — Sales + contact form                             */}
+      {/* ---------------------------------------------------------- */}
+      <section id="contact-form" className="py-16 md:py-20">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 lg:gap-14 items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <SectionLabel dark={false}>Sales</SectionLabel>
+              <RevealText
+                as="h2"
+                text="Evaluating Citationly for your team?"
+                gradientWords={["team"]}
+                className="text-2xl md:text-3xl font-semibold tracking-[-0.02em] text-foreground mb-5"
+              />
+              <p className="text-muted-foreground leading-relaxed text-[15px] mb-4">
+                Sales conversations at Citationly are diagnostic before they are commercial. We start with
+                your situation: which engines matter to your buyers, what your competitive set looks like,
+                and what your leadership needs to see. Then we show you the platform against your own
+                brand&apos;s data rather than a canned demo. Good reasons to talk to sales include comparing{" "}
+                <Link href="/pricing" className={LINK_LIGHT}>
+                  plans
+                </Link>{" "}
+                for your team size, scoping an Enterprise agreement, discussing{" "}
+                <Link href="/features/brand-monitoring" className={LINK_LIGHT}>
+                  brand monitoring
+                </Link>{" "}
+                for a regulated business, or planning{" "}
+                <Link href="/features/competitor-intelligence" className={LINK_LIGHT}>
+                  competitor intelligence
+                </Link>{" "}
+                across a client portfolio.
+              </p>
+              <p className="text-muted-foreground leading-relaxed text-[15px]">
+                Reach sales directly at{" "}
+                <a href="mailto:sales@citationly.io" className={LINK_LIGHT}>
+                  sales@citationly.io
+                </a>
+                , or use the form to book a demo.
+              </p>
+            </motion.div>
+
             <ContactForm />
-
-            <div className="flex flex-col gap-5">
-              {CONTACT_CARDS.map((card, i) => (
-                <motion.div
-                  key={card.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
-                  className="rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-6"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="shrink-0 w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 text-indigo-600 flex items-center justify-center">
-                      <card.icon className="w-4.5 h-4.5" />
-                    </div>
-                    <h3 className="font-semibold text-foreground">{card.title}</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{card.desc}</p>
-
-                  <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium mb-4">
-                    <Mail className="w-3.5 h-3.5" />
-                    <a href={`mailto:${card.email}`} className="hover:underline underline-offset-2">
-                      {card.email}
-                    </a>
-                  </div>
-
-                  {card.note && (
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
-                      <Clock className="w-3.5 h-3.5" />
-                      {card.note}
-                    </div>
-                  )}
-
-                  <Link
-                    href={card.cta.href}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-indigo-600 transition-colors"
-                  >
-                    {card.cta.label}
-                    <span aria-hidden>&rarr;</span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* ---------------------------------------------------------- */}
-      {/* Section 2 — FAQ                                              */}
+      {/* Section 3 — Support                                          */}
+      {/* ---------------------------------------------------------- */}
+      <section className="py-16 md:py-20 bg-indigo-50/40 border-y border-black/5">
+        <div className="container mx-auto px-6 max-w-3xl text-center">
+          <div className="flex justify-center">
+            <SectionLabel dark={false}>Support</SectionLabel>
+          </div>
+          <RevealText
+            as="h2"
+            text="Already a customer and need help?"
+            gradientWords={["help"]}
+            className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-6"
+          />
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-muted-foreground leading-relaxed text-[15px] md:text-base mb-4"
+          >
+            Support handles account questions, data questions, and anything that is not behaving as
+            expected. Include your workspace name and, where relevant, the report or view you are asking
+            about, and resolution gets faster. For self-serve answers, the{" "}
+            <Link href="/help" className={LINK_LIGHT}>
+              Help Center
+            </Link>{" "}
+            covers setup, monitoring configuration, and reporting, and the{" "}
+            <Link href="/docs" className={LINK_LIGHT}>
+              documentation
+            </Link>{" "}
+            covers platform mechanics in depth.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-muted-foreground leading-relaxed text-[15px] md:text-base"
+          >
+            Reach support directly at{" "}
+            <a href="mailto:support@citationly.io" className={LINK_LIGHT}>
+              support@citationly.io
+            </a>
+            . We reply within one business day.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/* Section 4 — Partnerships                                     */}
+      {/* ---------------------------------------------------------- */}
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-6 max-w-3xl text-center">
+          <div className="flex justify-center">
+            <SectionLabel dark={false}>Partnerships</SectionLabel>
+          </div>
+          <RevealText
+            as="h2"
+            text="Want to build with us?"
+            gradientWords={["us"]}
+            className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-6"
+          />
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-muted-foreground leading-relaxed text-[15px] md:text-base mb-4"
+          >
+            We work with agencies delivering{" "}
+            <Link href="/generative-engine-optimization" className={LINK_LIGHT}>
+              AI search optimization services
+            </Link>{" "}
+            to clients, technology partners connecting Citationly data into adjacent tools, and consultants
+            building measurement practices. If your work touches AI visibility,{" "}
+            <Link href="/features/brand-monitoring" className={LINK_LIGHT}>
+              brand monitoring
+            </Link>
+            , or{" "}
+            <Link href="/features/competitor-intelligence" className={LINK_LIGHT}>
+              competitive intelligence
+            </Link>
+            , there is probably a conversation worth having.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-muted-foreground leading-relaxed text-[15px] md:text-base"
+          >
+            Select Partnerships in the form above, or write to{" "}
+            <a href="mailto:hello@citationly.io" className={LINK_LIGHT}>
+              hello@citationly.io
+            </a>
+            , and we will route it to the right person.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/* Section 5 — When you will hear back                          */}
       {/* ---------------------------------------------------------- */}
       <section className="py-16 md:py-20 bg-indigo-50/40 border-y border-black/5">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-12">
             <div className="flex justify-center">
-              <SectionLabel dark={false}>Common questions</SectionLabel>
+              <SectionLabel dark={false}>Response times</SectionLabel>
             </div>
             <RevealText
               as="h2"
-              text="Before you write to us."
-              gradientWords={["us"]}
+              text="When you will hear back."
+              gradientWords={["back"]}
               className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground"
             />
           </div>
 
-          <FaqAccordion />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+            {RESPONSE_TIMES.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
+                className="rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-6"
+              >
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 text-indigo-600 flex items-center justify-center mb-4">
+                  <item.icon className="w-4.5 h-4.5" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1.5">{item.title}</h3>
+                <div className="text-indigo-600 font-medium text-[15px] mb-2">{item.time}</div>
+                {item.desc && <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>}
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center text-muted-foreground max-w-xl mx-auto"
+          >
+            If a question needs research on our side, you will hear that too, with an honest timeline
+            rather than silence.
+          </motion.p>
         </div>
       </section>
 
-      <CtaBand
-        title="Prefer to just try it?"
-        description="Start your free 7-day trial on any plan. No credit card required."
-        secondaryLabel="See pricing"
-        secondaryHref="/pricing"
-      />
+      {/* ---------------------------------------------------------- */}
+      {/* Closing teaser                                               */}
+      {/* ---------------------------------------------------------- */}
+      <section className="pt-20 md:pt-24">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-indigo-50/50 px-8 py-14 md:px-16 text-center"
+          >
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(50% 70% at 50% -10%, rgba(91,91,255,0.10), transparent), radial-gradient(35% 50% at 90% 100%, rgba(168,85,247,0.07), transparent)",
+              }}
+            />
+            <div className="relative">
+              <h3 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em] text-foreground mb-3">
+                The fastest route is a conversation.
+              </h3>
+              <p className="text-muted-foreground max-w-lg mx-auto mb-8">
+                If you are evaluating the platform, skip the email round-trip: book a demo and bring your
+                questions. Thirty minutes against your own brand&apos;s data answers more than a week of
+                correspondence.
+              </p>
+              <a
+                href="#contact-form"
+                className="group inline-flex items-center gap-2 h-12 px-7 rounded-full font-medium text-[15px] bg-[#050508] text-white hover:bg-[#1a1a24] transition-colors"
+              >
+                Book a Demo
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <CtaBand primaryLabel="Book a Demo" primaryHref="#contact-form" secondaryLabel="Start Free Analysis" secondaryHref="/register" />
     </div>
   )
 }

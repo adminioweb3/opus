@@ -1,47 +1,56 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRef, useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion"
-import { Search, Menu } from "lucide-react"
-import { AnimatedLogo } from "./navbar/AnimatedLogo"
-import { MegaMenu } from "./navbar/MegaMenu"
-import { MobileMenu } from "./navbar/MobileMenu"
-import { SearchOverlay } from "./navbar/SearchOverlay"
-import { ThemeToggle } from "./navbar/ThemeToggle"
-import { NAV_GROUPS } from "./navbar/navData"
+import Link from "next/link";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
+import { Search, Menu } from "lucide-react";
+import { AnimatedLogo } from "./navbar/AnimatedLogo";
+import { MegaMenu } from "./navbar/MegaMenu";
+import { MobileMenu } from "./navbar/MobileMenu";
+import { SearchOverlay } from "./navbar/SearchOverlay";
+import { ThemeToggle } from "./navbar/ThemeToggle";
+import { NAV_GROUPS } from "./navbar/navData";
 
 // `heroVariant="dark"` is opt-in (only the new homepage passes it, since it opens on a
 // full-bleed dark hero). Every other public page defaults to "light" and the navbar starts
 // dark-text-on-transparent, which reads correctly against their white page tops.
-export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "light" }) {
-  const router = useRouter()
-  const [scrolled, setScrolled] = useState(false)
-  const [activeMenu, setActiveMenu] = useState<string | null>(null)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const { scrollY } = useScroll()
+export function Navbar({
+  heroVariant = "light",
+}: {
+  heroVariant?: "dark" | "light";
+}) {
+  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, "change", (latest) => setScrolled(latest > 50))
+  useMotionValueEvent(scrollY, "change", (latest) => setScrolled(latest > 50));
 
-  const atTop = !scrolled
+  const atTop = !scrolled;
   // Once scrolled at all, the navbar always settles into a dark glass card with light text —
   // that reads correctly over any section color behind it. Only at the very top of the page
   // does it adapt to what's actually behind it (the dark hero vs. every other page's white top).
-  const dark = atTop ? heroVariant === "dark" : true
+  const dark = atTop ? heroVariant === "dark" : true;
 
   const openMenu = (key: string) => {
-    if (closeTimer.current) clearTimeout(closeTimer.current)
-    setActiveMenu(key)
-  }
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setActiveMenu(key);
+  };
   const scheduleClose = () => {
-    closeTimer.current = setTimeout(() => setActiveMenu(null), 180)
-  }
+    closeTimer.current = setTimeout(() => setActiveMenu(null), 180);
+  };
   const cancelClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current)
-  }
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
 
   return (
     <>
@@ -77,11 +86,17 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
                   <button
                     onMouseEnter={() => openMenu(group.key)}
                     onFocus={() => openMenu(group.key)}
-                    onClick={() => (activeMenu === group.key ? setActiveMenu(null) : openMenu(group.key))}
+                    onClick={() =>
+                      activeMenu === group.key
+                        ? setActiveMenu(null)
+                        : openMenu(group.key)
+                    }
                     aria-haspopup="true"
                     aria-expanded={activeMenu === group.key}
                     className={`group relative px-4 py-2 text-[13.5px] font-medium rounded-full transition-colors ${
-                      dark ? "text-white/75 hover:text-white" : "text-foreground/70 hover:text-foreground"
+                      dark
+                        ? "text-white/75 hover:text-white"
+                        : "text-foreground/70 hover:text-foreground"
                     }`}
                   >
                     {group.label}
@@ -92,14 +107,18 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
                     />
                   </button>
                   <AnimatePresence>
-                    {activeMenu === group.key && <MegaMenu group={group} dark={dark} />}
+                    {activeMenu === group.key && (
+                      <MegaMenu group={group} dark={dark} />
+                    )}
                   </AnimatePresence>
                 </div>
               ))}
               <Link
                 href="/pricing"
                 className={`px-4 py-2 text-[13.5px] font-medium rounded-full transition-colors ${
-                  dark ? "text-white/75 hover:text-white" : "text-foreground/70 hover:text-foreground"
+                  dark
+                    ? "text-white/75 hover:text-white"
+                    : "text-foreground/70 hover:text-foreground"
                 }`}
               >
                 Pricing
@@ -112,7 +131,9 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
                 onClick={() => setSearchOpen(true)}
                 aria-label="Search"
                 className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center transition-colors ${
-                  dark ? "hover:bg-white/10 text-white/70" : "hover:bg-black/5 text-foreground/70"
+                  dark
+                    ? "hover:bg-white/10 text-white/70"
+                    : "hover:bg-black/5 text-foreground/70"
                 }`}
               >
                 <Search className="w-4 h-4" />
@@ -123,20 +144,22 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
               <Link
                 href="/login"
                 className={`hidden md:block px-3.5 py-2 text-[13.5px] font-medium transition-colors ${
-                  dark ? "text-white/75 hover:text-white" : "text-foreground/70 hover:text-foreground"
+                  dark
+                    ? "text-white/75 hover:text-white"
+                    : "text-foreground/70 hover:text-foreground"
                 }`}
               >
                 Log in
               </Link>
 
-              <button
+              {/* <button
                 onClick={() => router.push("/register")}
                 className={`hidden sm:inline-flex h-9 px-4 rounded-full text-[13px] font-medium items-center transition-colors ${
                   dark ? "bg-white/10 text-white hover:bg-white/15 border border-white/15" : "bg-black/5 text-foreground hover:bg-black/10 border border-black/5"
                 }`}
               >
                 Book Demo
-              </button>
+              </button> */}
 
               <button
                 onClick={() => router.push("/register")}
@@ -150,7 +173,9 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open menu"
                 className={`lg:hidden w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  dark ? "text-white/80 hover:bg-white/10" : "text-foreground/80 hover:bg-black/5"
+                  dark
+                    ? "text-white/80 hover:bg-white/10"
+                    : "text-foreground/80 hover:bg-black/5"
                 }`}
               >
                 <Menu className="w-5 h-5" />
@@ -163,5 +188,5 @@ export function Navbar({ heroVariant = "light" }: { heroVariant?: "dark" | "ligh
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
-  )
+  );
 }

@@ -72,16 +72,16 @@ function GlassPanels() {
         <Float key={i} speed={1.2 + i * 0.3} rotationIntensity={0.25} floatIntensity={0.8}>
           <mesh position={p.pos} rotation={p.rot}>
             <boxGeometry args={p.size} />
-            <meshPhysicalMaterial
+            {/* `transmission` looks great but forces an extra full-scene render pass per
+                panel per frame — the single biggest GPU cost in this scene. A plain
+                translucent material reads almost identically once blurred behind the
+                glass overlay, at a fraction of the cost. */}
+            <meshStandardMaterial
               color="#c7d2fe"
-              transmission={0.92}
-              thickness={0.4}
-              roughness={0.12}
-              metalness={0}
-              clearcoat={1}
-              ior={1.3}
+              roughness={0.15}
+              metalness={0.1}
               transparent
-              opacity={0.5}
+              opacity={0.22}
             />
           </mesh>
         </Float>
@@ -103,9 +103,9 @@ function MouseParallaxRig() {
 export function HeroScene({ frameloop = "always" }: { frameloop?: "always" | "never" }) {
   return (
     <Canvas
-      dpr={[1, 1.5]}
+      dpr={[1, 1]}
       camera={{ position: [0, 0, 7.5], fov: 45 }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: false, alpha: true, powerPreference: "low-power" }}
       frameloop={frameloop}
       className="!absolute inset-0"
     >
@@ -113,7 +113,7 @@ export function HeroScene({ frameloop = "always" }: { frameloop?: "always" | "ne
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 5, 5]} intensity={40} color="#818cf8" />
         <pointLight position={[-5, -3, 2]} intensity={25} color="#a855f7" />
-        <AmbientParticles count={450} radius={8} />
+        <AmbientParticles count={280} radius={8} />
         <NeuralGraph />
         <GlassPanels />
         <MouseParallaxRig />

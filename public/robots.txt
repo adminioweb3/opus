@@ -1,0 +1,77 @@
+# ============================================================
+# robots.txt — https://citationly.ai
+# Enterprise AI Search Intelligence Platform
+# Maintained by: Technical SEO
+# Last updated: 2026-07-21
+#
+# Notes for maintainers:
+#   - robots.txt controls CRAWLING, not INDEXING.
+#     Use <meta name="robots" content="noindex"> or auth-gating
+#     for pages that must never appear in results.
+#   - Public pages are crawlable by DEFAULT. The Allow block
+#     below is explicit documentation of intent + a safety net;
+#     it is not required for these pages to be crawled.
+#   - Do NOT add broad asset (CSS/JS/img) Disallow rules —
+#     Google needs them to render and rank pages.
+# ============================================================
+
+User-agent: *
+
+# ---- Public pages — explicitly crawlable (navigation) ----
+Allow: /$
+Allow: /about
+Allow: /pricing
+Allow: /contact
+Allow: /features
+Allow: /solutions
+Allow: /resources
+Allow: /blog
+Allow: /case-studies
+Allow: /academy
+Allow: /docs
+Allow: /api
+Allow: /integrations
+Allow: /security
+Allow: /changelog
+Allow: /roadmap
+
+# ---- Authentication & account flows (no ranking value) ----
+Disallow: /login
+Disallow: /register
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify
+Disallow: /verify-email
+Disallow: /two-factor-auth
+Disallow: /auth/
+
+# ---- User account & billing areas ----
+Disallow: /dashboard
+Disallow: /account
+Disallow: /profile
+Disallow: /settings
+Disallow: /billing
+Disallow: /subscription
+Disallow: /notifications
+Disallow: /checkout
+Disallow: /onboarding
+
+# ---- Administrative & transient areas ----
+Disallow: /admin
+Disallow: /preview/
+Disallow: /*-preview$
+
+# ---- Authenticated API endpoints (NOT public API docs) ----
+# Confirm URL structure before enabling — must not block /api docs.
+# Disallow: /api/
+
+# ---- Duplicate-URL / session parameters ----
+# session= retained (clear duplicate source).
+# utm_ / ref= optional — rel=canonical also handles these.
+Disallow: /*?*session=
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+
+# ---- Sitemap ----
+Sitemap: https://citationly.ai/sitemap.xml

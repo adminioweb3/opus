@@ -30,11 +30,10 @@ const NOTIF_CHANNELS: Array<{ key: "email" | "inapp" | "slack"; label: string }>
 ]
 
 export default function OrganizationSection() {
-  const { organizationName, websiteDomain, planType } = useOrganizationStore()
+  const { organizationName, websiteDomain, planType, industry } = useOrganizationStore()
 
   // Real fields (from backend sync) vs. richer profile fields with no backend support yet —
   // kept as local state per the agreed "design now, wire backend per-section later" scope.
-  const [industry, setIndustry] = useState("")
   const [size, setSize] = useState("")
   const [description, setDescription] = useState("")
 

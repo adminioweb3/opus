@@ -18,21 +18,23 @@ interface Section {
 
 const SECTIONS: Section[] = [
   {
-    id: "who-we-are",
-    title: "1. Who we are",
+    id: "introduction",
+    title: "1. Introduction",
     body: (
       <>
         <p>
-          Citationly (&ldquo;Citationly,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates
-          the Citationly AI visibility intelligence platform, including our website, dashboard, and related
-          services (together, the &ldquo;Service&rdquo;). This Privacy Policy explains what information we
-          collect when you use the Service, how we use and share it, and the choices and rights available to you.
+          This Privacy Policy explains how Citationly (&ldquo;Citationly,&rdquo; &ldquo;we,&rdquo;
+          &ldquo;us&rdquo;) collects, uses, shares, and protects personal information when you use
+          the Citationly AI visibility platform, visit our website, or communicate with us. We have
+          written this policy to be readable. By using our services, you acknowledge the practices
+          described here.
         </p>
         <p>
-          This policy applies to visitors to our marketing site, registered users of the Citationly dashboard,
-          and the organizations (&ldquo;Customers&rdquo;) that subscribe to Citationly on behalf of their teams.
-          If you are a Customer, your organization&apos;s admin controls certain settings — such as team
-          membership and integrations — described in your organization&apos;s agreement with us.
+          This policy applies to visitors to our marketing site, registered users of the Citationly
+          dashboard, and the organizations (&ldquo;Customers&rdquo;) that subscribe to Citationly on
+          behalf of their teams. If you are a Customer, your organization&apos;s administrator
+          controls certain workspace settings, such as team membership and integrations, as
+          described in your organization&apos;s agreement with us.
         </p>
       </>
     ),
@@ -42,32 +44,61 @@ const SECTIONS: Section[] = [
     title: "2. Information we collect",
     body: (
       <>
-        <p>We collect information in four categories:</p>
+        <p>
+          <span className="font-medium text-foreground">Information you provide.</span> This
+          includes:
+        </p>
         <ul className="list-disc pl-5 space-y-3 marker:text-indigo-400">
           <li>
-            <span className="font-medium text-foreground">Account information.</span> When you sign in with
-            Google, we receive your name, email address, and profile image from Google. We do not receive your
-            Google password, and we only request the minimum scopes needed to authenticate you.
+            <span className="font-medium text-foreground">Account information.</span> When you sign
+            in with Google, we receive your name, email address, and profile picture from Google.
+            We do not receive your Google password, and we request only the minimum scopes needed
+            to authenticate you.
           </li>
           <li>
-            <span className="font-medium text-foreground">Organization and website details you provide.</span>{" "}
-            This includes your company name, the domains and pages you ask us to analyze, competitor names you
-            add to Competitor Watch, brand terms you configure for Brand Pulse, and any content, prompts, or
-            documents you upload to the Knowledge Vault.
+            <span className="font-medium text-foreground">Billing information.</span> If you
+            subscribe to a paid plan, our payment processor collects your billing details, such as
+            payment method and billing address, to process the transaction. Citationly does not
+            store full payment card numbers.
           </li>
           <li>
-            <span className="font-medium text-foreground">Scan and analysis data we generate.</span> To power
-            Visibility Radar, Citation Intelligence, the GEO Optimizer, and the Answer Simulator, we crawl your
-            public website and query AI platforms with prompts relevant to your industry, then store the
-            resulting scores, citations, and recommendations in your account.
+            <span className="font-medium text-foreground">Platform configuration.</span> The
+            brands, competitors, topics, and questions you set up for monitoring, along with any
+            content or documents you upload for analysis.
           </li>
           <li>
-            <span className="font-medium text-foreground">Usage analytics and cookies.</span> We collect
-            standard technical data — IP address, browser and device type, pages visited, and feature usage —
-            through first-party analytics and functional cookies, so we can secure the Service, remember your
-            preferences, and understand which features are useful.
+            <span className="font-medium text-foreground">Communications.</span> Messages you send
+            us through the contact form, support requests, or email, including their content and
+            any attachments.
           </li>
         </ul>
+        <p>
+          <span className="font-medium text-foreground">Information collected automatically.</span>{" "}
+          This includes:
+        </p>
+        <ul className="list-disc pl-5 space-y-3 marker:text-indigo-400">
+          <li>
+            <span className="font-medium text-foreground">Usage data.</span> Which features you
+            use, pages you visit, and how you interact with the platform.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Device and connection data.</span> Your
+            IP address, browser and device type, and similar technical identifiers, collected
+            automatically when you use the Service.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Cookies.</span> Data collected through
+            cookies and similar technologies, described in the Cookies section below.
+          </li>
+        </ul>
+        <p>
+          <span className="font-medium text-foreground">Information from platform monitoring.</span>{" "}
+          The core function of the platform is querying public AI engines and analyzing their
+          answers. This monitoring data consists of AI-generated responses about brands, products,
+          and topics. It is business information rather than personal information in most cases,
+          but where an AI answer happens to mention an individual, for example a company executive,
+          that mention is stored as part of the collected answer.
+        </p>
       </>
     ),
   },
@@ -78,117 +109,189 @@ const SECTIONS: Section[] = [
       <>
         <p>We use the information described above to:</p>
         <ul className="list-disc pl-5 space-y-2.5 marker:text-indigo-400">
-          <li>Run the scans, scores, and recommendations that power every module of the Service — Command Center, Visibility Radar, Citation Intelligence, Brand Pulse, Competitor Watch, Opportunity Finder, and the GEO Optimizer.</li>
-          <li>Maintain, secure, and improve the Service, including diagnosing bugs, monitoring performance, and preventing abuse.</li>
-          <li>Send you transactional and account communications — scan alerts, weekly digests, billing notices — and, where you&apos;ve opted in, product updates.</li>
-          <li>Detect, investigate, and prevent fraud, unauthorized access, and violations of our Terms of Service.</li>
+          <li>
+            <span className="font-medium text-foreground">Provide the service.</span> Run the
+            monitoring, analysis, and reporting that power the platform, including querying AI
+            engines and generating your visibility results.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Support you.</span> Respond to support
+            requests, troubleshoot issues, and help you get value from your account.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Improve the platform.</span> Understand
+            how the platform is used so we can fix problems, refine features, and build what
+            customers need next.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Communicate.</span> Send you
+            transactional and account communications, such as scan alerts, weekly digests, and
+            billing notices, plus product updates if you have opted in to receive them.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Protect the service.</span> Detect,
+            investigate, and prevent fraud, abuse, unauthorized access, and violations of our Terms
+            of Service.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Meet legal obligations.</span> Comply
+            with applicable law, respond to lawful requests, and enforce our agreements.
+          </li>
         </ul>
-        <p>
-          We do not use your account information or the content you provide to sell you to advertisers, and we
-          do not run third-party ad networks on the Service.
-        </p>
+        <p>We do not sell personal information, and we never will.</p>
+      </>
+    ),
+  },
+  {
+    id: "cookies",
+    title: "4. Cookies and similar technologies",
+    body: (
+      <>
+        <ul className="list-disc pl-5 space-y-2.5 marker:text-indigo-400">
+          <li>
+            <span className="font-medium text-foreground">Essential cookies.</span> Required for
+            the platform to function, such as keeping you signed in and maintaining security.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Preference cookies.</span> Remember
+            settings and choices so you do not have to re-enter them on each visit.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Analytics cookies.</span> Help us
+            understand how the platform is used in aggregate, so we can improve it.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Marketing cookies.</span> Used on our
+            marketing site to measure the effectiveness of campaigns.
+          </li>
+        </ul>
+        <p>You can control non-essential cookies through your browser settings.</p>
       </>
     ),
   },
   {
     id: "ai-processing",
-    title: "4. AI processing",
+    title: "5. AI processing",
     body: (
-      <>
-        <p>
-          Citationly&apos;s scans work by analyzing your public web content and querying AI platforms on your
-          behalf. To do this, we send publicly available web content, your configured prompts, and relevant
-          inputs you&apos;ve provided to third-party AI providers — such as OpenAI — solely to generate your
-          analyses, scores, and recommendations.
-        </p>
-        <p>
-          These providers process your data under contractual terms that prohibit them from using it to train
-          their own foundation models, and we do not use your account content to train any AI models ourselves.
-          Data sent for analysis is used exclusively to produce the outputs shown back to you inside your
-          Citationly account.
-        </p>
-      </>
+      <p>
+        Because Citationly is a platform for measuring AI systems, we want to be explicit about our
+        own use of AI. The platform uses automated and AI-assisted processing to extract mentions,
+        citations, sentiment, and topics from collected AI engine answers. Customer data, including
+        your account information, brand configurations, and monitoring results, is not used to
+        train AI models, whether our own or third parties&apos;. Where third-party AI services are
+        used in processing, they act as service providers under contractual restrictions.
+      </p>
     ),
   },
   {
-    id: "sharing",
-    title: "5. Sharing",
+    id: "third-party-services",
+    title: "6. Third-party services",
     body: (
-      <>
-        <p>
-          We do not sell your personal information, and we never will. We share information only with the
-          following categories of subprocessors, each bound by a data processing agreement:
-        </p>
-        <ul className="list-disc pl-5 space-y-2.5 marker:text-indigo-400">
-          <li><span className="font-medium text-foreground">Cloud hosting and infrastructure providers</span> that store your account data and power our application.</li>
-          <li><span className="font-medium text-foreground">AI providers</span> (such as OpenAI) engaged to generate the analyses described in Section 4.</li>
-          <li><span className="font-medium text-foreground">Email and communications providers</span> used to deliver transactional and marketing messages.</li>
-        </ul>
-        <p>
-          We may also disclose information if required by law, to enforce our agreements, or to protect the
-          rights, property, or safety of Citationly, our customers, or the public. If Citationly is involved in
-          a merger, acquisition, or asset sale, your information may be transferred as part of that transaction,
-          subject to this policy.
-        </p>
-      </>
+      <p>
+        We share personal information only with service providers that help us operate:
+        infrastructure and hosting providers, payment processors, communication tools, analytics
+        providers, and AI service providers used in answer processing. Each provider is bound by
+        contractual obligations covering confidentiality and data protection. We may also disclose
+        information if required by law, to enforce our agreements, or to protect the rights,
+        property, or safety of Citationly, our customers, or the public.
+      </p>
     ),
   },
   {
     id: "data-retention",
-    title: "6. Data retention",
+    title: "7. Data retention",
     body: (
-      <p>
-        We retain your account information and scan history for as long as your account remains active, so
-        that Command Center trendlines and historical scans stay meaningful over time. If you close your
-        account or request deletion, we delete your personal data and associated scan data within 30 days,
-        except where we are required to retain limited records for legal, tax, or security purposes.
-      </p>
+      <ul className="list-disc pl-5 space-y-2.5 marker:text-indigo-400">
+        <li>
+          <span className="font-medium text-foreground">Account and configuration data.</span>{" "}
+          Retained for as long as your account is active, so your workspace and monitoring setup
+          remain intact.
+        </li>
+        <li>
+          <span className="font-medium text-foreground">Monitoring history.</span> Retained for the
+          life of the account, since historical trends are central to the value of the platform. If
+          you close your account or request deletion, we delete your personal data and associated
+          monitoring data from production systems within 30 days.
+        </li>
+        <li>
+          <span className="font-medium text-foreground">Billing records.</span> Retained for as
+          long as required to meet tax, accounting, and legal obligations, even after an account
+          closes.
+        </li>
+        <li>
+          <span className="font-medium text-foreground">Support communications.</span> Retained for
+          a limited period after resolution, so we can handle follow-up questions and improve
+          support quality.
+        </li>
+        <li>
+          <span className="font-medium text-foreground">Backups.</span> Deleted data is removed
+          from backups on their normal rotation schedule, shortly after the production deletion
+          window closes.
+        </li>
+      </ul>
     ),
   },
   {
     id: "your-rights",
-    title: "7. Your rights",
+    title: "8. Your rights",
     body: (
       <>
         <p>
-          Depending on where you live, you may have rights under laws such as the GDPR (European Economic Area
-          and UK) or the CCPA (California) with respect to your personal information, including the right to:
+          Depending on where you live, you may have rights under laws such as the GDPR (European
+          Economic Area and UK) or the CCPA (California) with respect to your personal information,
+          including the right to:
         </p>
         <ul className="list-disc pl-5 space-y-2.5 marker:text-indigo-400">
-          <li>Access the personal information we hold about you.</li>
-          <li>Export your data in a portable format, including scan history and reports.</li>
-          <li>Correct inaccurate or incomplete information.</li>
-          <li>Request deletion of your personal information, subject to the retention terms in Section 6.</li>
-          <li>Opt out of non-essential communications at any time.</li>
+          <li>
+            <span className="font-medium text-foreground">Access.</span> Request access to the
+            personal information we hold about you.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Correction.</span> Ask us to correct
+            inaccurate or incomplete information.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Deletion.</span> Request deletion of your
+            personal information, subject to the retention terms in Section 7.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Portability.</span> Export your data in a
+            portable format, including monitoring history and reports.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Objection and restriction.</span> Object
+            to, or request that we restrict, certain processing of your information.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Consent withdrawal.</span> Withdraw
+            consent at any time where we rely on consent to process your information.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Complaint.</span> Lodge a complaint with
+            your local data protection authority if you believe we have not handled your
+            information properly.
+          </li>
         </ul>
         <p>
-          To exercise any of these rights, email <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">privacy@citationly.io</a>. We will respond within the timeframe required by applicable law, and we will never charge a fee to process a valid request.
+          To exercise any of these rights, email{" "}
+          <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">
+            privacy@citationly.io
+          </a>
+          . We will respond within the timeframe required by applicable law, and we will never
+          charge a fee to process a valid request.
         </p>
       </>
     ),
   },
   {
-    id: "security",
-    title: "8. Security",
-    body: (
-      <p>
-        We use industry-standard technical and organizational safeguards — including encryption in transit,
-        access controls, and continuous monitoring — to protect your information. No system is completely
-        secure, but we design and audit the Service to meet the standard our customers depend on. Details on
-        our security practices, certifications, and how to report a vulnerability are available on our{" "}
-        <Link href="/security" className="text-indigo-600 font-medium hover:underline">Security page</Link>.
-      </p>
-    ),
-  },
-  {
     id: "international-transfers",
-    title: "9. International transfers",
+    title: "9. International data transfers",
     body: (
       <p>
-        Citationly and our subprocessors operate globally, which means your information may be transferred to,
-        stored, and processed in countries other than the one in which you reside — including the United
-        States. Where required, we rely on appropriate safeguards, such as Standard Contractual Clauses, to
-        ensure your information receives an adequate level of protection wherever it is processed.
+        Citationly operates internationally, and your information may be processed in countries
+        other than your own, including the United States. Where personal information is
+        transferred across borders, we rely on recognized safeguards, such as Standard Contractual
+        Clauses, to protect it.
       </p>
     ),
   },
@@ -197,30 +300,60 @@ const SECTIONS: Section[] = [
     title: "10. Children",
     body: (
       <p>
-        The Service is intended for business use and is not directed to individuals under 16 years of age. We
-        do not knowingly collect personal information from anyone under 16. If you believe a child has provided
-        us with personal information, please contact us at{" "}
-        <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">privacy@citationly.io</a> and we will delete it promptly.
+        The Citationly platform is a business tool intended for professional use. It is not
+        directed at children, and we do not knowingly collect personal information from anyone
+        under 18. If you believe a child has provided us with personal information, please contact
+        us at{" "}
+        <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">
+          privacy@citationly.io
+        </a>{" "}
+        and we will delete it promptly.
       </p>
     ),
   },
   {
-    id: "changes-contact",
-    title: "11. Changes & contact",
+    id: "security",
+    title: "11. Security",
     body: (
-      <>
-        <p>
-          We may update this Privacy Policy from time to time to reflect changes in our practices or for legal
-          or operational reasons. If we make material changes, we&apos;ll notify active account holders by
-          email or an in-app notice before the changes take effect. The &ldquo;Last updated&rdquo; date at the
-          top of this page always reflects the most recent version.
-        </p>
-        <p>
-          Questions about this policy or how we handle your data? Contact our privacy team at{" "}
-          <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">privacy@citationly.io</a>, or reach out through our{" "}
-          <Link href="/contact" className="text-indigo-600 font-medium hover:underline">contact page</Link>.
-        </p>
-      </>
+      <p>
+        We protect personal information using the technical and organizational measures described
+        on our{" "}
+        <Link href="/security" className="text-indigo-600 font-medium hover:underline">
+          Security page
+        </Link>
+        , including encryption in transit and at rest, access controls, and tenant isolation. No
+        system is completely secure, but we design and audit the Service to meet the standard our
+        customers depend on.
+      </p>
+    ),
+  },
+  {
+    id: "changes",
+    title: "12. Changes to this policy",
+    body: (
+      <p>
+        We may update this policy as our practices or legal requirements change. Material changes
+        will be communicated through the platform or by email before they take effect. The
+        &ldquo;Last updated&rdquo; date at the top of this page always reflects the most recent
+        version.
+      </p>
+    ),
+  },
+  {
+    id: "contact",
+    title: "13. Contact us",
+    body: (
+      <p>
+        Questions about this policy or how we handle your data? Contact our privacy team at{" "}
+        <a href="mailto:privacy@citationly.io" className="text-indigo-600 font-medium hover:underline">
+          privacy@citationly.io
+        </a>
+        , or reach out through our{" "}
+        <Link href="/contact" className="text-indigo-600 font-medium hover:underline">
+          contact page
+        </Link>
+        .
+      </p>
     ),
   },
 ]

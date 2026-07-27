@@ -9,6 +9,7 @@ interface OrganizationState {
   planType: string;
   trialEndsAt: string | null;
   isTrialExpired: boolean;
+  industry: string | null;
   setOrganizationId: (id: string) => void;
   setSyncResult: (result: {
     organizationId: string;
@@ -18,6 +19,7 @@ interface OrganizationState {
     planType: string;
     trialEndsAt: string | null;
     isTrialExpired: boolean;
+    industry?: string | null;
   }) => void;
 }
 
@@ -34,6 +36,7 @@ export const useOrganizationStore = create<OrganizationState>()(
       planType: 'Trial',
       trialEndsAt: null,
       isTrialExpired: false,
+      industry: null,
       setOrganizationId: (id: string) => set({ organizationId: id }),
       setSyncResult: (result) =>
         set({
@@ -44,6 +47,7 @@ export const useOrganizationStore = create<OrganizationState>()(
           planType: result.planType,
           trialEndsAt: result.trialEndsAt,
           isTrialExpired: result.isTrialExpired,
+          industry: result.industry ?? null,
         }),
     }),
     {

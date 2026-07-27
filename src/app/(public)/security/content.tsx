@@ -1,24 +1,13 @@
 "use client"
 
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import {
-  Lock,
   KeyRound,
-  Layers,
-  Users,
   Server,
-  Database,
-  ShieldCheck,
-  GitBranch,
-  ScanSearch,
-  RotateCcw,
-  ClipboardList,
-  Filter,
-  AlertTriangle,
-  FileCheck2,
-  Scale,
-  Clock,
-  Building2,
+  Eye,
+  ArrowRight,
   Mail,
   type LucideIcon,
 } from "lucide-react"
@@ -26,126 +15,141 @@ import { PageHero } from "@/components/features/public/PageHero"
 import { CtaBand } from "@/components/features/public/CtaBand"
 import { SectionLabel } from "@/components/features/landing/primitives/SectionLabel"
 import { RevealText } from "@/components/features/landing/primitives/RevealText"
+import { MagneticButton } from "@/components/features/landing/primitives/MagneticButton"
 
 /* ------------------------------------------------------------------ */
 /* Fixed content data                                                  */
 /* ------------------------------------------------------------------ */
 
-const PILLARS: {
+const PRINCIPLES: {
   icon: LucideIcon
   title: string
   desc: string
 }[] = [
-  {
-    icon: Lock,
-    title: "Encryption",
-    desc: "All traffic between your browser and Citationly runs over TLS 1.2 or higher. Data at rest — your account, your scans, your reports — is encrypted with AES-256.",
-  },
   {
     icon: KeyRound,
-    title: "Authentication",
-    desc: "Sign-in is handled by Google-backed identity through Firebase Authentication. Every API request carries a token, and every token is verified on the server before any data moves.",
+    title: "Least access, always.",
+    desc: "Employees and systems get the minimum access required to do their job, granted deliberately rather than by default, and nothing more.",
   },
-  {
-    icon: Layers,
-    title: "Tenant isolation",
-    desc: "Every scan, score, report, and knowledge base entry is scoped to your organization at the data layer. One tenant’s records are never queryable from another’s session.",
-  },
-  {
-    icon: Users,
-    title: "Least-privilege access",
-    desc: "Team members get role-based permissions — viewer, editor, admin — so people only see and change what their role in your organization requires.",
-  },
-]
-
-const INFRA_STEPS: {
-  icon: LucideIcon
-  title: string
-  desc: string
-}[] = [
   {
     icon: Server,
-    title: "Managed cloud hosting",
-    desc: "Application servers run on managed cloud infrastructure with encrypted disks, network-level isolation, and provider-managed patching.",
+    title: "Boring, proven choices.",
+    desc: "We build on established, widely used infrastructure and well-understood security patterns rather than novel, unproven approaches.",
   },
   {
-    icon: Database,
-    title: "PostgreSQL, encrypted at rest",
-    desc: "Your organization’s data lives in PostgreSQL with encrypted storage volumes and automated, encrypted backups.",
-  },
-  {
-    icon: ScanSearch,
-    title: "Isolated background workers",
-    desc: "Visibility Radar scans and deep Opportunity Finder crawls run on separate worker processes, sandboxed away from the web application tier.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Your data is not training data",
-    desc: "AI model calls are used only to generate your analyses — citations, scores, and content drafts. Your private data is never used to train third-party AI models.",
+    icon: Eye,
+    title: "Honesty over theater.",
+    desc: "This page claims only what is true. Where a control is planned rather than implemented, we say which.",
   },
 ]
 
-const PRACTICES: {
-  icon: LucideIcon
+interface DocSection {
+  id: string
   title: string
-  desc: string
-}[] = [
-  {
-    icon: GitBranch,
-    title: "Code review on every change",
-    desc: "Every change to the platform is reviewed by a second engineer before it ships to production.",
-  },
-  {
-    icon: ScanSearch,
-    title: "Dependency scanning",
-    desc: "Automated scanning flags known vulnerabilities in third-party libraries so patches ship before they’re exploited.",
-  },
-  {
-    icon: RotateCcw,
-    title: "Backups and recovery",
-    desc: "Encrypted, automated backups run on a regular schedule with tested recovery procedures behind them.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Audit logging",
-    desc: "Authentication events and sensitive account actions are logged, giving us — and, on request, you — a record to investigate.",
-  },
-  {
-    icon: Filter,
-    title: "Data minimization",
-    desc: "We collect what the product needs to generate your visibility scores and nothing beyond it.",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Incident response",
-    desc: "A documented process for triaging, containing, and disclosing security incidents to affected customers without delay.",
-  },
-]
+  body: React.ReactNode
+}
 
-const COMPLIANCE: {
-  icon: LucideIcon
-  title: string
-  desc: string
-}[] = [
+const DOC_SECTIONS: DocSection[] = [
   {
-    icon: FileCheck2,
-    title: "SOC 2-aligned controls",
-    desc: "Our internal controls are aligned to SOC 2 Trust Services Criteria. A formal third-party audit is in progress — we’ll publish the report the moment it’s issued, and we won’t claim certification before then.",
+    id: "infrastructure",
+    title: "Where and how the platform runs",
+    body: (
+      <>
+        <p>
+          Citationly runs on established cloud infrastructure with data centers that maintain
+          industry-standard physical and environmental controls. Production systems are isolated
+          from development and testing environments. The platform is architected for tenant
+          isolation: each customer&apos;s monitoring data, competitive sets, and reports are
+          logically separated.
+        </p>
+        <p>
+          Application servers run on managed cloud hosting, and your organization&apos;s data lives
+          in PostgreSQL on encrypted storage volumes, backed by automated, encrypted backups. The
+          background workers that run scans and analysis operate separately from the web
+          application tier, so heavy analysis work never has direct access to the systems serving
+          your dashboard.
+        </p>
+      </>
+    ),
   },
   {
-    icon: Scale,
-    title: "GDPR-aligned data rights",
-    desc: "We honor GDPR-aligned rights for every customer, regardless of region: request an export of your data, or request deletion, and we’ll act on it.",
+    id: "encryption",
+    title: "How data is protected in transit and at rest",
+    body: (
+      <p>
+        All data moving between your browser and the platform is encrypted in transit using TLS
+        1.2 or higher. Data stored within the platform is encrypted at rest using AES-256.
+        Encryption keys are managed through the infrastructure provider&apos;s key management
+        service, not handled manually by application code.
+      </p>
+    ),
   },
   {
-    icon: Clock,
-    title: "Data retention",
-    desc: "Active account data is retained for as long as your subscription is active. On account closure, data is deleted from production systems within 30 days, and from backups on their normal expiry cycle.",
+    id: "authentication",
+    title: "How access to your account is verified",
+    body: (
+      <p>
+        Citationly accounts are protected by standard credential security, including enforced
+        password requirements, and sign-in can also be handled through Google-backed identity via
+        Firebase Authentication. Multi-factor authentication is available and recommended for all
+        accounts. For <Link href="/pricing" className="text-indigo-600 font-medium hover:underline">Enterprise</Link> customers,
+        single sign-on through your existing identity provider allows your organization&apos;s own
+        authentication policies to govern access.
+      </p>
+    ),
   },
   {
-    icon: Building2,
-    title: "Subprocessors",
-    desc: "We use a small set of subprocessors to run the service: our managed cloud hosting provider for infrastructure, and OpenAI for generating your analyses. No subprocessor receives more data than its function requires.",
+    id: "access-control",
+    title: "Who can see what, inside your organization and ours",
+    body: (
+      <p>
+        Within your workspace, role-based access control lets administrators define what each
+        team member can view and change. Within Citationly, employee access to customer data is
+        restricted to roles that require it, granted on a least-privilege basis, and logged.
+      </p>
+    ),
+  },
+  {
+    id: "ai-approach",
+    title: "How we approach AI in the platform",
+    body: (
+      <p>
+        Citationly&apos;s business is observing AI systems, and we apply the same scrutiny to our
+        own use of them. Your data is not training material. Analytical AI is bounded, operating
+        on collected answer data under our methodology. Engine querying is honest: the platform
+        queries public AI engines the way a user would.
+      </p>
+    ),
+  },
+  {
+    id: "retention",
+    title: "Retention, deletion, and your control over data",
+    body: (
+      <p>
+        Customer data belongs to the customer. Monitoring history is retained for the life of the
+        account because historical baselines are central to the service&apos;s value, but account
+        closure triggers deletion of customer data from production systems within 30 days, with
+        backups clearing on their normal expiry cycle afterward. For details on what personal
+        information we collect, see the{" "}
+        <Link href="/privacy" className="text-indigo-600 font-medium hover:underline">
+          Privacy Policy
+        </Link>
+        .
+      </p>
+    ),
+  },
+  {
+    id: "attestations",
+    title: "Where we stand on formal attestations",
+    body: (
+      <p>
+        Our internal security controls are aligned to the SOC 2 Trust Services Criteria. A formal
+        third-party audit is in progress. We will publish the report as soon as it is issued, and
+        we do not claim certification before then. Security documentation, including questionnaire
+        responses for procurement processes, is available to evaluating enterprises on request
+        through the security contact below.
+      </p>
+    ),
   },
 ]
 
@@ -154,46 +158,68 @@ const COMPLIANCE: {
 /* ------------------------------------------------------------------ */
 
 export function Content() {
+  const router = useRouter()
+
   return (
     <div className="bg-background">
       <PageHero
         eyebrow="Security"
-        title="Your data, protected by default."
-        gradientWords={["protected"]}
-        description="Citationly reads your brand's public footprint and the AI answers about it — never anything you haven't shared with us. Here is exactly how we encrypt it, isolate it, and limit who can touch it."
-      />
+        title="Security, explained plainly."
+        gradientWords={["plainly"]}
+        description="This page describes how Citationly protects customer data: the architecture, the controls, and the practices. It is written for the security teams and procurement reviewers who will read it closely, so it favors facts over reassurance."
+      >
+        <MagneticButton
+          onClick={() => router.push("/contact")}
+          className="group h-12 px-7 rounded-full font-medium text-[15px] text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-violet-500 shadow-[0_10px_30px_-8px_rgba(91,91,255,0.5)] hover:shadow-[0_14px_40px_-8px_rgba(91,91,255,0.65)] transition-shadow inline-flex items-center gap-2"
+        >
+          Contact Security Team
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </MagneticButton>
+        <Link
+          href="/contact"
+          className="h-12 px-7 rounded-full font-medium text-[15px] text-foreground border border-black/10 bg-white/70 hover:bg-black/5 transition-colors inline-flex items-center gap-2"
+        >
+          Book a Demo
+        </Link>
+      </PageHero>
 
       {/* ---------------------------------------------------------- */}
-      {/* Section 1 — Four pillars                                     */}
+      {/* Section 1: How we think about security                      */}
       {/* ---------------------------------------------------------- */}
       <section className="py-20 md:py-24">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-14">
             <div className="flex justify-center">
-              <SectionLabel dark={false}>The fundamentals</SectionLabel>
+              <SectionLabel dark={false}>Our approach</SectionLabel>
             </div>
             <RevealText
               as="h2"
-              text="Four controls that hold no matter what."
-              gradientWords={["hold"]}
-              className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-4"
+              text="How we think about security"
+              gradientWords={["security"]}
+              className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-6"
             />
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-muted-foreground max-w-xl mx-auto"
+              className="text-muted-foreground max-w-2xl mx-auto leading-relaxed"
             >
-              These aren&apos;t aspirations for a future release. They&apos;re how the platform is built
-              today.
+              Citationly&apos;s{" "}
+              <Link href="/features/brand-monitoring" className="text-indigo-600 font-medium hover:underline">
+                AI brand monitoring
+              </Link>{" "}
+              holds data that customers consider competitively sensitive: how AI engines describe
+              their brands, where their visibility is weak, and what their optimization plans
+              target. That data may not be regulated the way health records are, but a competitor
+              gaining access to it would be a genuine business harm.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PILLARS.map((pillar, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+            {PRINCIPLES.map((principle, i) => (
               <motion.div
-                key={pillar.title}
+                key={principle.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -201,10 +227,10 @@ export function Content() {
                 className="rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-7"
               >
                 <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-5">
-                  <pillar.icon className="w-5 h-5" />
+                  <principle.icon className="w-5 h-5" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">{pillar.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{pillar.desc}</p>
+                <h3 className="font-semibold text-foreground mb-2">{principle.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{principle.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -212,231 +238,79 @@ export function Content() {
       </section>
 
       {/* ---------------------------------------------------------- */}
-      {/* Section 2 — Infrastructure                                   */}
+      {/* Sections 2 through 8: the document body                     */}
       {/* ---------------------------------------------------------- */}
-      <section className="py-20 md:py-24 bg-indigo-50/40 border-y border-black/5">
+      <section className="pb-20 md:pb-24">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
-            <div>
-              <SectionLabel dark={false}>Infrastructure</SectionLabel>
-              <RevealText
-                as="h2"
-                text="Built on infrastructure that isolates by design."
-                gradientWords={["isolates"]}
-                className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-6"
-              />
+          <div className="max-w-3xl mx-auto">
+            {DOC_SECTIONS.map((section, i) => (
               <motion.div
-                initial={{ opacity: 0, y: 16 }}
+                key={section.id}
+                id={section.id}
+                initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className="space-y-5 text-muted-foreground leading-relaxed text-[15px] md:text-base max-w-xl"
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5, delay: i === 0 ? 0 : 0.05 }}
+                className="scroll-mt-32 pb-10 mb-10 border-b border-black/5 last:border-b-0 last:pb-0 last:mb-0"
               >
-                <p>
-                  Citationly runs on managed cloud hosting rather than hand-rolled servers, so the
-                  underlying network, patching, and physical security are handled by infrastructure
-                  built for exactly this. Your organization&apos;s data lives in PostgreSQL with
-                  encrypted storage — the same database, the same encryption, whether you&apos;re on
-                  Starter or Enterprise.
-                </p>
-                <p>
-                  The scans that power Visibility Radar and the deep crawls behind Opportunity Finder run
-                  on background workers that are isolated from the web application tier, so a heavy scan
-                  never competes with — or has direct access to — the systems serving your dashboard.
-                </p>
-                <p>
-                  When Citationly calls an AI model to generate a citation analysis, a visibility score,
-                  or a content draft, that call exists to produce your result. Your private data is never
-                  used to train a third-party AI model.
-                </p>
+                <h2 className="text-xl md:text-2xl font-semibold tracking-[-0.01em] text-foreground mb-4">
+                  {section.title}
+                </h2>
+                <div className="space-y-4 text-muted-foreground leading-relaxed text-[15px] md:text-base">
+                  {section.body}
+                </div>
               </motion.div>
-            </div>
+            ))}
 
+            {/* ------------------------------------------------ */}
+            {/* Closing: Ask us the hard questions                 */}
+            {/* ------------------------------------------------ */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-6 md:p-7"
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-indigo-50/50 px-8 py-12 md:px-12"
             >
-              <div className="text-[11px] font-semibold tracking-[0.14em] uppercase text-muted-foreground/70 mb-5 px-1">
-                Request path
-              </div>
-              <div className="space-y-0">
-                {INFRA_STEPS.map((step, i) => (
-                  <div key={step.title} className="relative pl-11 pb-7 last:pb-0">
-                    {i < INFRA_STEPS.length - 1 && (
-                      <span className="absolute left-4.5 top-9 bottom-0 w-px bg-linear-to-b from-indigo-200 to-black/5" />
-                    )}
-                    <span className="absolute left-0 top-0 w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
-                      <step.icon className="w-4 h-4" />
-                    </span>
-                    <h4 className="font-semibold text-foreground text-[15px] mb-1">{step.title}</h4>
-                    <p className="text-[13px] text-muted-foreground leading-relaxed">{step.desc}</p>
-                  </div>
-                ))}
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(50% 70% at 50% -10%, rgba(91,91,255,0.10), transparent), radial-gradient(35% 50% at 90% 100%, rgba(168,85,247,0.07), transparent)",
+                }}
+              />
+              <div className="relative flex flex-col md:flex-row items-start gap-8">
+                <div className="shrink-0 w-14 h-14 rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] flex items-center justify-center text-indigo-600">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-semibold tracking-[-0.02em] text-foreground mb-3">
+                    Ask us the hard questions
+                  </h3>
+                  <p className="text-muted-foreground max-w-2xl leading-relaxed">
+                    Security reviews are welcome here. Send your questionnaire, request our
+                    documentation, or put your security team in a room with ours, at{" "}
+                    <a
+                      href="mailto:security@citationly.io"
+                      className="text-indigo-600 font-medium underline underline-offset-2"
+                    >
+                      security@citationly.io
+                    </a>
+                    .
+                  </p>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ---------------------------------------------------------- */}
-      {/* Section 3 — Practices (dark accent)                          */}
-      {/* ---------------------------------------------------------- */}
-      <section className="py-20 md:py-24">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-[2rem] bg-[#050508] px-8 py-16 md:px-14 md:py-20"
-          >
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(45% 55% at 15% 10%, rgba(91,91,255,0.22), transparent 70%), radial-gradient(40% 50% at 90% 20%, rgba(168,85,247,0.14), transparent 70%), radial-gradient(55% 60% at 50% 110%, rgba(59,130,246,0.10), transparent 70%)",
-              }}
-            />
-            <div className="landing-noise" />
-
-            <div className="relative">
-              <div className="text-center mb-14">
-                <div className="flex justify-center">
-                  <SectionLabel>Day-to-day practices</SectionLabel>
-                </div>
-                <RevealText
-                  as="h2"
-                  text="Security is a routine, not a launch event."
-                  className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
-                {PRACTICES.map((practice, i) => (
-                  <motion.div
-                    key={practice.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.55, delay: 0.08 + i * 0.08 }}
-                    className="flex gap-4"
-                  >
-                    <div className="shrink-0 w-11 h-11 rounded-xl bg-indigo-500/15 border border-white/10 text-indigo-300 flex items-center justify-center">
-                      <practice.icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-white font-semibold text-[15px] mb-1.5">{practice.title}</h3>
-                      <p className="text-white/55 text-sm leading-relaxed">{practice.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------- */}
-      {/* Section 4 — Compliance & data rights                         */}
-      {/* ---------------------------------------------------------- */}
-      <section className="py-20 md:py-24">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-14">
-            <div className="flex justify-center">
-              <SectionLabel dark={false}>Compliance & data rights</SectionLabel>
-            </div>
-            <RevealText
-              as="h2"
-              text="Where we stand, stated plainly."
-              gradientWords={["plainly"]}
-              className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-foreground mb-4"
-            />
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-muted-foreground max-w-xl mx-auto"
-            >
-              No inflated badges. Here is exactly where our compliance posture is today, and what
-              you&apos;re entitled to ask of us.
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {COMPLIANCE.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
-                className="rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] p-7"
-              >
-                <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-5">
-                  <item.icon className="w-5 h-5" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------- */}
-      {/* Section 5 — Responsible disclosure                           */}
-      {/* ---------------------------------------------------------- */}
-      <section className="pt-4 pb-20 md:pb-24">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-indigo-50/50 px-8 py-14 md:px-16"
-          >
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(50% 70% at 50% -10%, rgba(91,91,255,0.10), transparent), radial-gradient(35% 50% at 90% 100%, rgba(168,85,247,0.07), transparent)",
-              }}
-            />
-            <div className="relative flex flex-col md:flex-row items-center gap-10 md:gap-14">
-              <div className="shrink-0 w-16 h-16 rounded-2xl bg-white border border-black/5 shadow-[0_1px_3px_rgba(15,15,35,0.05)] flex items-center justify-center text-indigo-600">
-                <Mail className="w-7 h-7" />
-              </div>
-              <div className="text-center md:text-left">
-                <h3 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em] text-foreground mb-3">
-                  Found a vulnerability? Tell us first.
-                </h3>
-                <p className="text-muted-foreground max-w-2xl mb-4 leading-relaxed">
-                  Email{" "}
-                  <a href="mailto:security@citationly.io" className="text-indigo-600 font-medium underline underline-offset-2">
-                    security@citationly.io
-                  </a>{" "}
-                  with what you found and how to reproduce it. Researchers who report in good faith and
-                  give us a fair chance to fix an issue before disclosing it publicly won&apos;t face
-                  legal action from us for that research.
-                </p>
-                <p className="text-sm text-muted-foreground/80 max-w-2xl">
-                  We aim to acknowledge every report within 2 business days and work toward coordinated
-                  disclosure within 90 days of confirmation.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       <CtaBand
-        title="Questions about how we handle your data?"
-        description="Our team can walk your security or procurement group through the details directly."
-        secondaryLabel="Ask a security question"
+        title="Ready to put us to the test?"
+        description="Our security team can walk your procurement or InfoSec group through any part of this document."
+        primaryLabel="Contact Security Team"
+        primaryHref="/contact"
+        secondaryLabel="Book a Demo"
         secondaryHref="/contact"
       />
     </div>

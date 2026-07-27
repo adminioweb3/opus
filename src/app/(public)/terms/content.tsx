@@ -207,8 +207,8 @@ export function Content() {
               <LegalSection id="service" number="02" title="The Service">
                 <p>
                   Citationly is an AI visibility intelligence platform. We scan your public web presence
-                  and simulate the questions real buyers ask AI assistants — ChatGPT, Gemini, Claude,
-                  Perplexity, Copilot, and Grok — to measure how those platforms discover, describe,
+                  and simulate the questions real buyers ask AI assistants (ChatGPT, Gemini, Claude,
+                  Perplexity, Copilot, and Grok) to measure how those platforms discover, describe,
                   recommend, and cite your brand. We then surface prioritized opportunities and tools to
                   improve that visibility, including page-level fixes, content generation, and publishing
                   workflows.
@@ -231,7 +231,7 @@ export function Content() {
                 <p>
                   You can create a Workspace using a Google account or another supported sign-in method.
                   You agree to provide accurate, current information during signup and to keep it up to
-                  date — including the brand and domain information used to run scans on your behalf.
+                  date, including the brand and domain information used to run scans on your behalf.
                 </p>
                 <p>
                   The person who creates a Workspace is its <strong>owner</strong> by default and is
@@ -254,7 +254,7 @@ export function Content() {
               <LegalSection id="trial" number="04" title="Free Trial">
                 <p>
                   Every new Workspace starts with a 7-day free trial with full access to every plan
-                  feature — Visibility Radar, Citation Intelligence, Brand Pulse, Competitor Watch,
+                  feature: Visibility Radar, Citation Intelligence, Brand Pulse, Competitor Watch,
                   Opportunity Finder, GEO Optimizer, Answer Simulator, and the rest of the platform. No
                   credit card is required to start a trial.
                 </p>
@@ -273,7 +273,7 @@ export function Content() {
 
               <LegalSection id="billing" number="05" title="Subscriptions & Billing">
                 <p>
-                  Paid plans — Starter, Professional, and Enterprise — are billed monthly or annually in
+                  Paid plans (Starter, Professional, and Enterprise) are billed monthly or annually in
                   advance, based on the billing cycle you select at checkout. Annual plans are billed once
                   per year at the discounted annual rate and are non-refundable for partial periods except
                   as described below or as required by law.
@@ -308,7 +308,7 @@ export function Content() {
                     </>,
                     <>
                       Run Visibility Radar, Competitor Watch, or Brand Pulse monitoring against brands,
-                      domains, or individuals you have no legitimate business interest in monitoring — for
+                      domains, or individuals you have no legitimate business interest in monitoring, for
                       example, to build unsolicited profiles of unrelated third parties;
                     </>,
                     <>
@@ -336,15 +336,15 @@ export function Content() {
               <LegalSection id="ai-disclaimer" number="07" title="AI-Generated Content Disclaimer">
                 <p>
                   Visibility scores, citation findings, simulated answers, and generated content within
-                  Citationly — including outputs from Visibility Radar, Answer Simulator, GEO Optimizer, and
-                  Content Generator — are AI-assisted estimates built from sampled interactions with
+                  Citationly (including outputs from Visibility Radar, Answer Simulator, GEO Optimizer, and
+                  Content Generator) are AI-assisted estimates built from sampled interactions with
                   third-party AI platforms. They are <strong>not guarantees</strong> of how any AI platform
                   will behave for a given user, prompt, or point in time.
                 </p>
                 <p>
                   AI platforms are non-deterministic and change frequently and without notice. A finding
                   that was accurate at the time of a scan may not hold true days or even hours later. You
-                  should independently verify any analysis before relying on it for high-stakes decisions —
+                  should independently verify any analysis before relying on it for high-stakes decisions,
                   including public claims, investor communications, competitive statements, or legal or
                   compliance matters.
                 </p>
@@ -358,12 +358,12 @@ export function Content() {
               <LegalSection id="ip" number="08" title="Intellectual Property">
                 <p>
                   <strong>Your data stays yours.</strong> As between you and Citationly, you own Your
-                  Content — your brand information, source material, and the reports and configurations you
+                  Content: your brand information, source material, and the reports and configurations you
                   create. You grant us a limited license to host, process, and analyze Your Content solely
                   to provide and improve the Service to you.
                 </p>
                 <p>
-                  <strong>Our platform stays ours.</strong> Citationly owns the Service itself — the
+                  <strong>Our platform stays ours.</strong> Citationly owns the Service itself: the
                   software, scoring methodology, scan infrastructure, user interface, and all underlying
                   technology, along with any improvements we make from aggregated, de-identified usage data
                   that cannot be traced back to a specific Workspace. We grant you a limited, non-exclusive,
@@ -378,8 +378,8 @@ export function Content() {
 
               <LegalSection id="confidentiality" number="09" title="Confidentiality">
                 <p>
-                  Each party may access non-public information of the other — including Your Content,
-                  usage data, security practices, and pricing not otherwise made public — that a reasonable
+                  Each party may access non-public information of the other (including Your Content,
+                  usage data, security practices, and pricing not otherwise made public) that a reasonable
                   person would understand to be confidential (&ldquo;Confidential Information&rdquo;). Each
                   party agrees to use the other&apos;s Confidential Information only to perform its
                   obligations under these Terms, and to protect it with the same degree of care it uses for
@@ -431,8 +431,8 @@ export function Content() {
                   need through Reports before this window closes.
                 </p>
                 <p>
-                  Sections that by their nature should survive termination — including Intellectual
-                  Property, Confidentiality, Disclaimers & Limitation of Liability, and Governing Law — will
+                  Sections that by their nature should survive termination (including Intellectual
+                  Property, Confidentiality, Disclaimers & Limitation of Liability, and Governing Law) will
                   survive.
                 </p>
               </LegalSection>

@@ -3,16 +3,15 @@
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { Globe, Bot, Gauge, Swords, Lightbulb, Radar } from "lucide-react"
+import { Target, Bot, Gauge, Lightbulb, TrendingUp } from "lucide-react"
 import { SectionLabel } from "./primitives/SectionLabel"
 
 const STEPS = [
-  { icon: Globe, title: "Website analysis", desc: "We crawl your site and extract the entities, claims, and structured data AI models actually read." },
-  { icon: Bot, title: "AI crawling", desc: "Real prompts are run against every major AI platform to see exactly how they describe your brand today." },
-  { icon: Gauge, title: "Visibility score", desc: "Every mention, citation, and omission rolls up into one real, trackable visibility score." },
-  { icon: Swords, title: "Competitor comparison", desc: "See exactly who's winning the answers you should be winning, and by how much." },
-  { icon: Lightbulb, title: "Recommendations", desc: "Get concrete, prioritized fixes — not generic SEO advice — ranked by real impact and effort." },
-  { icon: Radar, title: "Daily monitoring", desc: "Every platform, every week, automatically — so you find out about a drop before your CEO does." },
+  { icon: Target, title: "Define your brand space", desc: "Add your brand, your competitors, and the topics that matter to your market. Setup takes minutes." },
+  { icon: Bot, title: "Citationly scans the engines", desc: "The platform runs your market's real questions through ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok, continuously." },
+  { icon: Gauge, title: "Your baseline appears", desc: "Visibility scores, citation counts, Share of Voice, and competitor benchmarks populate your dashboards." },
+  { icon: Lightbulb, title: "Recommendations arrive", desc: "The platform converts findings into a prioritized optimization plan for your content and SEO teams." },
+  { icon: TrendingUp, title: "Improvement gets measured", desc: "Every content change is tracked against engine responses, so lift is visible, attributable, and reportable." },
 ]
 
 export function HowItWorks() {
@@ -66,7 +65,7 @@ export function HowItWorks() {
             <SectionLabel dark={false}>How it works</SectionLabel>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
-            From invisible to unavoidable, <span className="text-primary">in six steps.</span>
+            From setup to first insight <span className="text-primary">in one session.</span>
           </h2>
         </div>
 

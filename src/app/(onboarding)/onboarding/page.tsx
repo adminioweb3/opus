@@ -22,6 +22,7 @@ export default function JourneyOnboardingPage() {
     targetAudience,
     products,
     keywords,
+    customIndustry,
     updateOnboardingData,
     setState,
   } = useJourneyStore();
@@ -72,6 +73,23 @@ export default function JourneyOnboardingPage() {
 
         setScrapeProgress(100);
         await new Promise((resolve) => setTimeout(resolve, 500));
+        
+        // Auto-fill business name from domain if it's currently empty
+        if (!businessName) {
+          try {
+            const urlObj = new URL(formattedUrl);
+            let domainName = urlObj.hostname.replace(/^www\./, '');
+            // Capitalize first letter and split by dots
+            domainName = domainName.split('.')[0];
+            domainName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+            if (domainName) {
+              updateOnboardingData({ businessName: domainName });
+            }
+          } catch (e) {
+            // Ignore URL parsing errors
+          }
+        }
+
         setCurrentStep(2);
       } catch (err) {
         console.error("Failed to start scraping or scraping timed out/failed", err);
@@ -95,6 +113,7 @@ export default function JourneyOnboardingPage() {
     businessName,
     websiteUrl,
     industry,
+    customIndustry,
     country,
     targetAudience,
     products,
@@ -131,7 +150,7 @@ export default function JourneyOnboardingPage() {
             : {
                 label: "Generate AI Visibility Report",
                 onClick: finish,
-                disabled: !businessName,
+                disabled: !businessName || (keywords ? keywords.split(",").filter(k => k.trim()).length < 5 : true),
               }
         }
       >

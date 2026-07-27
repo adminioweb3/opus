@@ -75,17 +75,7 @@ function DashboardHeader() {
     <header className="h-16 border-b flex items-center px-4 shrink-0 bg-card gap-4">
       <SidebarTrigger />
 
-      {/* Search Bar */}
-      <button
-        onClick={() => setCommandPaletteOpen(true)}
-        className="hidden md:flex items-center gap-2 h-9 px-4 rounded-lg border border-border bg-muted/50 text-sm text-muted-foreground hover:bg-muted transition-colors flex-1 max-w-md"
-      >
-        <Search className="w-4 h-4" />
-        <span>Search pages, competitors, team...</span>
-        <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border border-border font-mono">
-          &#8984;K
-        </kbd>
-      </button>
+
 
       <div className="flex-1" />
 

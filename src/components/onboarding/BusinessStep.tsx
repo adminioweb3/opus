@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { ChevronDown, Globe, X, Sparkles, Building2, Landmark, Package } from "lucide-react"
+import { ChevronDown, Globe, X, Sparkles, Building2, Landmark, Package, Loader2, AlertCircle } from "lucide-react"
 import {
   Command,
   CommandInput,
@@ -14,6 +14,8 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { INDUSTRIES } from "@/lib/data/industries"
 import { COUNTRIES, flagImageUrl } from "@/lib/data/countries"
+import { KeywordInput } from "./KeywordInput"
+import { suggestKeywordsFromWebsite, detectIndustryFromWebsite } from "@/lib/api/onboardingPrefillApi"
 
 const AUDIENCE_OPTIONS = ["CEO", "CMO", "Marketing Manager", "Agency", "Startup", "Enterprise", "Developer"]
 
@@ -42,9 +44,10 @@ function FieldLabel({ icon: Icon, children }: { icon: React.ElementType<{ classN
   )
 }
 
-function IndustryCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function IndustryCombobox({ value, onChange, suggestion }: { value: string; onChange: (v: string) => void; suggestion?: string }) {
   const [open, setOpen] = useState(false)
   const ref = useOutsideClose<HTMLDivElement>(open, () => setOpen(false))
+  const showSuggestion = suggestion && !value
 
   return (
     <div className="relative" ref={ref}>
@@ -53,9 +56,16 @@ function IndustryCombobox({ value, onChange }: { value: string; onChange: (v: st
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="w-full h-11 rounded-lg border border-black/10 bg-white px-3.5 flex items-center justify-between text-[13.5px] font-medium transition-colors hover:border-black/20 focus:outline-none focus:border-[#5B5CEB] focus:ring-4 focus:ring-[#5B5CEB]/10"
+        className={`w-full h-11 rounded-lg border px-3.5 flex items-center justify-between text-[13.5px] font-medium transition-colors focus:outline-none focus:ring-4 ${
+          showSuggestion
+            ? "border-primary/30 bg-primary/5 focus:border-[#5B5CEB] focus:ring-[#5B5CEB]/10"
+            : "border-black/10 bg-white hover:border-black/20 focus:border-[#5B5CEB] focus:ring-[#5B5CEB]/10"
+        }`}
       >
-        <span className={value ? "text-foreground" : "text-muted-foreground"}>{value || "Select industry"}</span>
+        <div className="flex items-center gap-2">
+          <span className={value ? "text-foreground" : "text-muted-foreground"}>{value || suggestion || "Select industry"}</span>
+          {showSuggestion && <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-semibold">AI Suggested</span>}
+        </div>
         <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
@@ -142,12 +152,24 @@ function CountrySelect({ value, onChange }: { value: string; onChange: (v: strin
 }
 
 function AudienceMultiSelect({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const [draft, setDraft] = useState("")
+
   const toggle = (opt: string) => {
     onChange(value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt])
   }
+  
+  const commit = () => {
+    const tag = draft.trim()
+    if (tag && !value.includes(tag)) onChange([...value, tag])
+    setDraft("")
+  }
+
+  // Combine predefined options with any custom ones that were selected
+  const displayOptions = Array.from(new Set([...AUDIENCE_OPTIONS, ...value]))
+
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label="Target audience">
-      {AUDIENCE_OPTIONS.map((opt) => {
+      {displayOptions.map((opt) => {
         const active = value.includes(opt)
         return (
           <button
@@ -165,61 +187,20 @@ function AudienceMultiSelect({ value, onChange }: { value: string[]; onChange: (
           </button>
         )
       })}
-    </div>
-  )
-}
-
-function KeywordTagInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
-  const [draft, setDraft] = useState("")
-
-  const commit = () => {
-    const tag = draft.trim()
-    if (tag && !value.includes(tag)) onChange([...value, tag])
-    setDraft("")
-  }
-
-  return (
-    <div
-      className="min-h-11 w-full rounded-lg border border-black/10 bg-white px-2.5 py-1.5 flex flex-wrap items-center gap-1.5 transition-colors focus-within:border-[#5B5CEB] focus-within:ring-4 focus-within:ring-[#5B5CEB]/10"
-      onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}
-    >
-      {value.map((tag) => (
-        <span
-          key={tag}
-          className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#5B5CEB]/8 text-[#5B5CEB] text-[12.5px] font-medium"
-        >
-          {tag}
-          <button
-            type="button"
-            aria-label={`Remove ${tag}`}
-            onClick={() => onChange(value.filter((t) => t !== tag))}
-            className="rounded-full hover:bg-[#5B5CEB]/15 p-0.5"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        </span>
-      ))}
+      
       <input
+        type="text"
         value={draft}
-        onChange={(e) => {
-          if (e.target.value.endsWith(",")) {
-            setDraft(e.target.value.slice(0, -1))
-            commit()
-          } else {
-            setDraft(e.target.value)
-          }
-        }}
+        onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" || e.key === ",") {
             e.preventDefault()
             commit()
-          } else if (e.key === "Backspace" && !draft && value.length > 0) {
-            onChange(value.slice(0, -1))
           }
         }}
         onBlur={commit}
-        placeholder={value.length === 0 ? "Type a keyword and press Enter..." : ""}
-        className="flex-1 min-w-24 h-7 bg-transparent text-[13.5px] outline-none placeholder:text-muted-foreground/50"
+        placeholder="+ Add custom..."
+        className="px-3 py-1.5 rounded-full text-[12px] font-medium bg-white text-foreground ring-1 ring-black/10 outline-none focus:ring-[#5B5CEB] min-w-[120px] transition-all"
       />
     </div>
   )
@@ -229,6 +210,7 @@ export interface BusinessStepData {
   businessName: string
   websiteUrl: string
   industry: string
+  customIndustry: string
   country: string
   targetAudience: string
   products: string
@@ -241,10 +223,12 @@ interface BusinessStepProps {
   onSubmit: () => void
 }
 
-// Step 2: sectioned business-details form (Company / Market / Offerings) instead of one
-// long stacked list. Audience + keywords are stored as comma-joined strings on the shared
-// journey-store field (unchanged shape for downstream consumers) while presented as chips/tags.
+// Step 2: sectioned business-details form with AI prefilling
 export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
+  const [suggestions, setSuggestions] = useState<{ industry?: string; keywords: string[] }>({ keywords: [] })
+  const [loading, setLoading] = useState(false)
+  const suggestionsLoadedRef = useRef(false)
+
   const audienceList = useMemo(
     () => (data.targetAudience ? data.targetAudience.split(",").map((s) => s.trim()).filter(Boolean) : []),
     [data.targetAudience]
@@ -254,7 +238,35 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
     [data.keywords]
   )
 
-  const valid = data.businessName.trim().length > 0
+  // Fetch prefilling suggestions on mount
+  useEffect(() => {
+    if (suggestionsLoadedRef.current || !data.websiteUrl || !data.businessName) return
+    suggestionsLoadedRef.current = true
+
+    const fetchSuggestions = async () => {
+      try {
+        setLoading(true)
+        const [keywordSuggestions, industrySuggestion] = await Promise.all([
+          suggestKeywordsFromWebsite(data.websiteUrl, data.businessName, data.industry),
+          detectIndustryFromWebsite(data.websiteUrl, data.businessName)
+        ])
+        setSuggestions({
+          industry: industrySuggestion.industry,
+          keywords: keywordSuggestions
+        })
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSuggestions()
+  }, [data.websiteUrl, data.businessName])
+
+  const isIndustryValid = data.industry !== "Other" || (data.industry === "Other" && data.customIndustry.trim().length > 0)
+  const isKeywordsValid = keywordList.length >= 5
+  const valid = data.businessName.trim().length > 0 && isIndustryValid && isKeywordsValid
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -312,13 +324,25 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
             <div>
               <FieldLabel icon={Landmark}>Industry</FieldLabel>
-              <IndustryCombobox value={data.industry} onChange={(v) => onChange("industry", v)} />
+              <IndustryCombobox value={data.industry} onChange={(v) => onChange("industry", v)} suggestion={suggestions.industry} />
             </div>
             <div>
               <FieldLabel icon={Globe}>Country</FieldLabel>
               <CountrySelect value={data.country} onChange={(v) => onChange("country", v)} />
             </div>
           </div>
+          {data.industry === "Other" && (
+            <div className="mb-3">
+              <Textarea
+                value={data.customIndustry}
+                onChange={(e) => onChange("customIndustry", e.target.value)}
+                placeholder="Describe your industry in a few words"
+                rows={2}
+                required
+                className="w-full text-[13px] rounded-lg border-black/10 focus-visible:border-[#5B5CEB] focus-visible:ring-[#5B5CEB]/10"
+              />
+            </div>
+          )}
           <div>
             <FieldLabel icon={Sparkles}>Target audience</FieldLabel>
             <AudienceMultiSelect
@@ -348,11 +372,20 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
               />
             </div>
             <div>
-              <FieldLabel icon={Sparkles}>Keywords</FieldLabel>
-              <KeywordTagInput
-                value={keywordList}
-                onChange={(list) => onChange("keywords", list.join(", "))}
+              <div className="flex items-center gap-2 mb-2">
+                <FieldLabel icon={Sparkles}>Keywords</FieldLabel>
+                {loading && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
+              </div>
+              <KeywordInput
+                value={data.keywords}
+                onChange={(val) => onChange("keywords", val)}
+                minKeywords={5}
+                maxKeywords={10}
+                suggestions={suggestions.keywords}
               />
+              <p className="text-[11.5px] text-muted-foreground mt-1.5 leading-snug">
+                The more precise your keywords, the better we track your buyers' real questions.
+              </p>
             </div>
           </div>
         </section>

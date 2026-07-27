@@ -1,83 +1,85 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Eye, Quote, Swords, Wand2, ShieldCheck, LucideIcon } from "lucide-react"
+import { Eye, Quote, Swords, Wand2, PieChart, Search as SearchIcon, ArrowRight, LucideIcon } from "lucide-react"
 import { SectionLabel } from "./primitives/SectionLabel"
 
-interface Category {
+interface Feature {
   key: string
   icon: LucideIcon
   title: string
   desc: string
-  features: string[]
-  metric: { label: string; value: string }
+  href: string
 }
 
-const CATEGORIES: Category[] = [
+const FEATURES: Feature[] = [
   {
-    key: "visibility",
-    icon: Eye,
-    title: "Visibility & Monitoring",
-    desc: "Track exactly how often, and how favorably, AI engines surface your brand — across every prompt that matters to your business.",
-    features: ["AI Visibility Score", "Brand Monitoring", "Prompt Monitoring", "Share of Voice"],
-    metric: { label: "Prompts tracked per org", value: "300+" },
+    key: "citation-tracking",
+    icon: Quote,
+    title: "AI Citation Tracking",
+    desc: "Citationly records every citation AI engines attach to answers in your category. You see which of your pages earn references, which engines trust them, and how citation frequency moves week over week.",
+    href: "/features/citation-tracking",
   },
   {
-    key: "citations",
-    icon: Quote,
-    title: "Citations & Content",
-    desc: "See which sources AI models actually cite, then close the exact content gaps keeping you out of the answer.",
-    features: ["AI Citation Tracking", "Content Recommendations", "SERP Intelligence"],
-    metric: { label: "Avg. new citations / mo", value: "+38%" },
+    key: "brand-monitoring",
+    icon: Eye,
+    title: "Brand Monitoring",
+    desc: "The platform continuously checks how engines describe your company, products, and pricing. When an answer gets your positioning wrong, you find out from a dashboard alert instead of a confused prospect on a sales call.",
+    href: "/features/brand-monitoring",
+  },
+  {
+    key: "competitor-intelligence",
+    icon: Swords,
+    title: "Competitor Intelligence",
+    desc: "Track competitor visibility across every monitored engine. See which questions they win, which sources power their citations, and where their presence is growing or fading.",
+    href: "/features/competitor-intelligence",
+  },
+  {
+    key: "share-of-voice",
+    icon: PieChart,
+    title: "Share of Voice Analytics",
+    desc: "Measures the percentage of relevant AI answers that mention your brand versus competitors, calculated per engine, per topic, and per time period.",
+    href: "/features/share-of-voice",
   },
   {
     key: "optimization",
     icon: Wand2,
-    title: "GEO, AEO & SEO",
-    desc: "One unified optimization score spanning classic SEO, answer-engine readiness, and generative-engine optimization.",
-    features: ["GEO Score", "AEO Readiness", "Technical SEO Health"],
-    metric: { label: "Faster to first citation", value: "3.2x" },
+    title: "Optimization Recommendations",
+    desc: "Data becomes a to-do list. Citationly generates prioritized recommendations covering which questions to answer, which pages to restructure, and which citation gaps to close first.",
+    href: "/generative-engine-optimization",
   },
   {
-    key: "competitive",
-    icon: Swords,
-    title: "Competitive Intelligence",
-    desc: "Real-time rank tracking against every competitor already winning the AI answers you should own.",
-    features: ["Competitor Intelligence", "Threat Detection", "Rank Benchmarking"],
-    metric: { label: "Competitors tracked", value: "Unlimited" },
-  },
-  {
-    key: "enterprise",
-    icon: ShieldCheck,
-    title: "Enterprise Ready",
-    desc: "Executive-ready reporting, SOC 2-aligned security, and an API built for teams that need to plug visibility data into everything else.",
-    features: ["Executive Reports", "Enterprise Security", "REST API", "Integrations"],
-    metric: { label: "Uptime SLA", value: "99.9%" },
+    key: "prompt-research",
+    icon: SearchIcon,
+    title: "Question and Prompt Research",
+    desc: "Discover the real questions buyers ask AI engines about your category, mapped against your current coverage.",
+    href: "/features/ai-search-analytics",
   },
 ]
 
 export function FeatureShowcase() {
   const [active, setActive] = useState(0)
-  const current = CATEGORIES[active]
+  const current = FEATURES[active]
 
   return (
     <section className="relative py-32 bg-background">
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="text-center mb-16">
           <div className="flex justify-center">
-            <SectionLabel dark={false}>Everything, in one platform</SectionLabel>
+            <SectionLabel dark={false}>Core features</SectionLabel>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
-            Built for how AI actually <span className="text-primary">recommends brands.</span>
+            The capabilities behind <span className="text-primary">the platform.</span>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
           <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
-            {CATEGORIES.map((cat, i) => (
+            {FEATURES.map((feature, i) => (
               <button
-                key={cat.key}
+                key={feature.key}
                 onClick={() => setActive(i)}
                 className={`flex items-center gap-3.5 text-left px-5 py-4 rounded-2xl transition-all shrink-0 lg:shrink w-64 lg:w-auto ${
                   active === i
@@ -86,9 +88,9 @@ export function FeatureShowcase() {
                 }`}
               >
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${active === i ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
-                  <cat.icon className="w-4.5 h-4.5" />
+                  <feature.icon className="w-4.5 h-4.5" />
                 </div>
-                <span className={`text-sm font-semibold ${active === i ? "text-foreground" : "text-muted-foreground"}`}>{cat.title}</span>
+                <span className={`text-sm font-semibold ${active === i ? "text-foreground" : "text-muted-foreground"}`}>{feature.title}</span>
               </button>
             ))}
           </div>
@@ -110,18 +112,13 @@ export function FeatureShowcase() {
                 <h3 className="text-3xl font-semibold text-foreground mb-4">{current.title}</h3>
                 <p className="text-muted-foreground leading-relaxed max-w-xl mb-8 text-[15px]">{current.desc}</p>
 
-                <div className="flex flex-wrap gap-2 mb-10">
-                  {current.features.map((f) => (
-                    <span key={f} className="px-3.5 py-1.5 rounded-full bg-muted text-[13px] font-medium text-foreground/80 border border-border/70">
-                      {f}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-primary/5 border border-primary/15">
-                  <span className="text-2xl font-semibold text-primary">{current.metric.value}</span>
-                  <span className="text-[13px] text-muted-foreground">{current.metric.label}</span>
-                </div>
+                <Link
+                  href={current.href}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all"
+                >
+                  Learn more
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </motion.div>
             </AnimatePresence>
           </div>

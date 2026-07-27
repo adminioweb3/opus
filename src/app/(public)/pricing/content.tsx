@@ -118,7 +118,7 @@ const COMPARISON: CompareGroup[] = [
     rows: [
       { label: "AI Visibility Score", starter: "Basic score", professional: "Platform breakdown", enterprise: "Platform breakdown" },
       { label: "Citation Intelligence (sources cited instead of you)", starter: false, professional: true, enterprise: true },
-      { label: "Competitor Watch — share of voice", starter: false, professional: "5 competitors", enterprise: "Unlimited" },
+      { label: "Competitor Watch: share of voice", starter: false, professional: "5 competitors", enterprise: "Unlimited" },
       { label: "Opportunity Finder deep scans", starter: false, professional: "10 / month", enterprise: "Unlimited" },
       { label: "Answer Simulator", starter: false, professional: true, enterprise: true },
     ],
@@ -158,15 +158,15 @@ const COMPARISON: CompareGroup[] = [
 const FAQS = [
   {
     q: "How does the 7-day free trial work?",
-    a: "Every plan starts with a real 7-day free trial — no credit card required. During the trial you get full Professional-tier access: all 9 AI platforms, daily Visibility Radar scans, Citation Intelligence, Competitor Watch, and the GEO Optimizer. When the trial ends, you pick the plan that fits and continue where you left off — your scan history, scores, and reports are all preserved. If you decide not to continue, nothing is charged and your account simply pauses.",
+    a: "Every plan starts with a real 7-day free trial, no credit card required. During the trial you get full Professional-tier access: all 9 AI platforms, daily Visibility Radar scans, Citation Intelligence, Competitor Watch, and the GEO Optimizer. When the trial ends, you pick the plan that fits and continue where you left off. Your scan history, scores, and reports are all preserved. If you decide not to continue, nothing is charged and your account simply pauses.",
   },
   {
     q: "Can I switch plans later?",
-    a: "Yes, anytime. Upgrades take effect immediately and we prorate the difference, so you only ever pay for what you use. Downgrades apply at the start of your next billing cycle. Your historical data — visibility scores, citation records, competitor benchmarks — carries across plans in both directions.",
+    a: "Yes, anytime. Upgrades take effect immediately and we prorate the difference, so you only ever pay for what you use. Downgrades apply at the start of your next billing cycle. Your historical data, including visibility scores, citation records, and competitor benchmarks, carries across plans in both directions.",
   },
   {
     q: "How does annual billing work?",
-    a: "Annual plans are billed once per year at the equivalent of 10 monthly payments — roughly two months free. You can move from monthly to annual at any point from your billing settings, and the switch is prorated against your current period. Annual invoices fit standard procurement flows, and Enterprise customers can pay by invoice.",
+    a: "Annual plans are billed once per year at the equivalent of 10 monthly payments, roughly two months free. You can move from monthly to annual at any point from your billing settings, and the switch is prorated against your current period. Annual invoices fit standard procurement flows, and Enterprise customers can pay by invoice.",
   },
   {
     q: "We're an agency managing multiple client sites. Which plan fits?",
@@ -174,11 +174,11 @@ const FAQS = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Yes. Cancel self-serve from your billing settings — no email chain, no retention call. You keep full access through the end of your paid period, and you can export your reports and data before the account closes. If you come back later, your workspace history is restored.",
+    a: "Yes. Cancel self-serve from your billing settings, no email chain, no retention call. You keep full access through the end of your paid period, and you can export your reports and data before the account closes. If you come back later, your workspace history is restored.",
   },
   {
     q: "What payment methods do you accept?",
-    a: "All major credit and debit cards — Visa, Mastercard, and American Express — processed securely through Stripe. Enterprise plans can also pay by ACH, wire transfer, or invoice with net-30 terms. Prices are in USD; applicable taxes are calculated at checkout based on your billing address.",
+    a: "All major credit and debit cards (Visa, Mastercard, and American Express) are processed securely through Stripe. Enterprise plans can also pay by ACH, wire transfer, or invoice with net-30 terms. Prices are in USD; applicable taxes are calculated at checkout based on your billing address.",
   },
 ]
 
@@ -217,7 +217,7 @@ function BillingToggle({ annual, onChange }: { annual: boolean; onChange: (v: bo
           annual ? "text-emerald-600" : "text-muted-foreground/60"
         }`}
       >
-        Annual billing saves 2 months — the equivalent of 10 monthly payments
+        Annual billing saves 2 months, the equivalent of 10 monthly payments
       </span>
     </div>
   )
@@ -240,12 +240,12 @@ function TierCard({ tier, annual, index }: { tier: Tier; annual: boolean; index:
         <span className="text-sm text-muted-foreground">/mo</span>
       </div>
       <p className="mt-2 mb-6 text-[12px] text-muted-foreground min-h-4">
-        {annual ? `Billed ${tier.annualTotal}/year — 2 months free` : "Billed monthly"}
+        {annual ? `Billed ${tier.annualTotal}/year, 2 months free` : "Billed monthly"}
       </p>
 
       <div className="mb-6 inline-flex items-center gap-2 self-start rounded-full bg-indigo-500/5 border border-indigo-500/15 px-3 py-1.5">
         <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-        <span className="text-[12px] font-medium text-indigo-600">7-day free trial — no credit card</span>
+        <span className="text-[12px] font-medium text-indigo-600">7-day free trial, no credit card</span>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 mb-8">
@@ -462,7 +462,7 @@ export default function Content() {
         eyebrow="Pricing"
         title="Simple pricing that scales with your visibility."
         gradientWords={["visibility"]}
-        description="Three plans, one platform. Every plan starts with a real 7-day free trial — full Professional features, no credit card required."
+        description="Three plans, one platform. Every plan starts with a real 7-day free trial with full Professional features, no credit card required."
       />
 
       {/* Tier cards */}
@@ -524,8 +524,8 @@ export default function Content() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="mx-auto max-w-2xl text-muted-foreground"
             >
-              Every trial runs on full Professional features, so you can evaluate the whole platform — from
-              Visibility Radar to Citation Intelligence — before you pick a tier.
+              Every trial runs on full Professional features, so you can evaluate the whole platform, from
+              Visibility Radar to Citation Intelligence, before you pick a tier.
             </motion.p>
           </div>
 
@@ -578,7 +578,7 @@ export default function Content() {
 
       <CtaBand
         title="Start your 7-day free trial."
-        description="Full Professional features for 7 days. No credit card, no sales call — just your brand's real AI visibility."
+        description="Full Professional features for 7 days. No credit card, no sales call, just your brand's real AI visibility."
         primaryLabel="Start free trial"
       />
     </main>

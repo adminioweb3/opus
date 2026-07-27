@@ -54,7 +54,7 @@ const TESTIMONIALS: {
     role: "VP Marketing",
     company: "Northwind Cloud",
     quote:
-      "Visibility Radar gave us the first real trendline for AI presence. We watched our Perplexity score climb for eight straight weeks after we shipped the fixes it recommended — the board finally had a number to believe in.",
+      "Visibility Radar gave us the first real trendline for AI presence. We watched our Perplexity score climb for eight straight weeks after we shipped the fixes it recommended; the board finally had a number to believe in.",
     module: "Visibility Radar",
     gradient: "from-indigo-500 to-violet-500",
   },
@@ -148,7 +148,7 @@ export function Content() {
         eyebrow="Customers"
         title="Teams that own their AI answers."
         gradientWords={["AI"]}
-        description="Marketing, growth, and SEO teams at companies large and small run their AI visibility program on Citationly — from the first weekly scan to the board-ready report."
+        description="Marketing, growth, and SEO teams at companies large and small run their AI visibility program on Citationly, from the first weekly scan to the board-ready report."
       />
 
       {/* ---------------------------------------------------------- */}
@@ -238,7 +238,7 @@ export function Content() {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="text-muted-foreground max-w-xl mx-auto"
             >
-              Real teams, real product modules, real outcomes — no composite quotes.
+              Real teams, real product modules, real outcomes: no composite quotes.
             </motion.p>
           </div>
 

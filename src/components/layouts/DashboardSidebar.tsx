@@ -38,6 +38,7 @@ import {
   Command,
   Eye,
   User,
+  Compass,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -90,6 +91,13 @@ const menuCategories = [
     tag: "NEW",
   },
   {
+    title: "Answer Atlas",
+    icon: Compass,
+    url: "/dashboard/answer-atlas",
+    permission: "dashboard.view",
+    tag: "NEW",
+  },
+  {
     title: "GEO engine",
     icon: Globe,
     items: [
@@ -124,11 +132,11 @@ const menuCategories = [
         url: "/dashboard/citation-intelligence",
         permission: "dashboard.view",
       },
-      {
-        title: "Brand intelligence",
-        url: "/dashboard/brand-pulse",
-        permission: "dashboard.view",
-      },
+      // {
+      //   title: "Brand intelligence",
+      //   url: "/dashboard/brand-pulse",
+      //   permission: "dashboard.view",
+      // },
       {
         title: "Competitor watch",
         url: "/dashboard/competitor-watch",
@@ -257,7 +265,8 @@ function CollapsibleMenu({
   // Filter items by permission
   const visibleItems = category.items
     ? category.items.filter(
-        (item: MenuItem) => !item.permission || hasPermission(role, item.permission),
+        (item: MenuItem) =>
+          !item.permission || hasPermission(role, item.permission),
       )
     : [];
 
@@ -290,55 +299,61 @@ function CollapsibleMenu({
 
   if (!category.url && visibleItems.length === 0) return null;
 
-    if (category.url) {
-      return (
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            render={<Link href={category.url} />}
-            isActive={hasActive}
-            className="hover:bg-muted/50 w-full"
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <category.icon className="w-4 h-4 text-muted-foreground" />
-                <span className="font-medium">{category.title}</span>
-              </div>
-              {category.tag && (
-                <Badge variant="secondary" className="px-1.5 py-0 h-5 text-[10px] font-bold text-indigo-600 bg-indigo-50 border-indigo-100 uppercase tracking-wider">
-                  {category.tag}
-                </Badge>
-              )}
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      );
-    }
-  
+  if (category.url) {
     return (
       <SidebarMenuItem>
         <SidebarMenuButton
-          onClick={() => setIsOpen(!isOpen)}
+          render={<Link href={category.url} />}
           isActive={hasActive}
-          className="justify-between hover:bg-muted/50 w-full"
+          className="hover:bg-muted/50 w-full"
         >
-          <div className="flex items-center gap-2">
-            <category.icon className="w-4 h-4 text-muted-foreground" />
-            <span className="font-medium">{category.title}</span>
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <category.icon className="w-4 h-4 text-muted-foreground" />
+              <span className="font-medium">{category.title}</span>
+            </div>
             {category.tag && (
-              <Badge variant="secondary" className="px-1.5 py-0 h-5 text-[10px] font-bold text-indigo-600 bg-indigo-50 border-indigo-100 uppercase tracking-wider">
+              <Badge
+                variant="secondary"
+                className="px-1.5 py-0 h-5 text-[10px] font-bold text-indigo-600 bg-indigo-50 border-indigo-100 uppercase tracking-wider"
+              >
                 {category.tag}
               </Badge>
             )}
-            <ChevronRight
-              className={cn(
-                "w-4 h-4 text-muted-foreground transition-transform duration-200",
-                isOpen && "rotate-90",
-              )}
-            />
           </div>
         </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        onClick={() => setIsOpen(!isOpen)}
+        isActive={hasActive}
+        className="justify-between hover:bg-muted/50 w-full"
+      >
+        <div className="flex items-center gap-2">
+          <category.icon className="w-4 h-4 text-muted-foreground" />
+          <span className="font-medium">{category.title}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {category.tag && (
+            <Badge
+              variant="secondary"
+              className="px-1.5 py-0 h-5 text-[10px] font-bold text-indigo-600 bg-indigo-50 border-indigo-100 uppercase tracking-wider"
+            >
+              {category.tag}
+            </Badge>
+          )}
+          <ChevronRight
+            className={cn(
+              "w-4 h-4 text-muted-foreground transition-transform duration-200",
+              isOpen && "rotate-90",
+            )}
+          />
+        </div>
+      </SidebarMenuButton>
 
       {isOpen && (
         <SidebarMenuSub>
@@ -393,7 +408,12 @@ export function DashboardSidebar() {
     if (planType !== "Trial") return `${plan} plan`;
     if (isTrialExpired) return "Trial expired";
     if (!trialEndsAt) return "Trial";
-    const daysLeft = Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+    const daysLeft = Math.max(
+      0,
+      Math.ceil(
+        (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+      ),
+    );
     return `Trial · ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
   })();
 
@@ -491,16 +511,56 @@ export function DashboardSidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=profile" />} className="cursor-pointer w-full"><User className="mr-2 h-4 w-4" /> Profile</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=security" />} className="cursor-pointer w-full"><Lock className="mr-2 h-4 w-4" /> Security</DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=profile" />}
+              className="cursor-pointer w-full"
+            >
+              <User className="mr-2 h-4 w-4" /> Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=security" />}
+              className="cursor-pointer w-full"
+            >
+              <Lock className="mr-2 h-4 w-4" /> Security
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Organization</DropdownMenuLabel>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=organization" />} className="cursor-pointer w-full"><Settings className="mr-2 h-4 w-4" /> General</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/team" />} className="cursor-pointer w-full"><Users className="mr-2 h-4 w-4" /> Team Management</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=websites" />} className="cursor-pointer w-full"><Globe className="mr-2 h-4 w-4" /> Websites</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/integrations" />} className="cursor-pointer w-full"><Plug className="mr-2 h-4 w-4" /> Integrations</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=api-keys" />} className="cursor-pointer w-full"><Key className="mr-2 h-4 w-4" /> API Keys</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/settings?tab=billing" />} className="cursor-pointer w-full"><CreditCard className="mr-2 h-4 w-4" /> Billing</DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=organization" />}
+              className="cursor-pointer w-full"
+            >
+              <Settings className="mr-2 h-4 w-4" /> General
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/team" />}
+              className="cursor-pointer w-full"
+            >
+              <Users className="mr-2 h-4 w-4" /> Team Management
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=websites" />}
+              className="cursor-pointer w-full"
+            >
+              <Globe className="mr-2 h-4 w-4" /> Websites
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/integrations" />}
+              className="cursor-pointer w-full"
+            >
+              <Plug className="mr-2 h-4 w-4" /> Integrations
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=api-keys" />}
+              className="cursor-pointer w-full"
+            >
+              <Key className="mr-2 h-4 w-4" /> API Keys
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/dashboard/settings?tab=billing" />}
+              className="cursor-pointer w-full"
+            >
+              <CreditCard className="mr-2 h-4 w-4" /> Billing
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600 cursor-pointer">
               Log out

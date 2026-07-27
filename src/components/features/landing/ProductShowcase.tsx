@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Gauge, Swords, Quote, Search as SearchIcon } from "lucide-react"
 import { SectionLabel } from "./primitives/SectionLabel"
@@ -152,8 +153,8 @@ function SearchSimPanel() {
           className="text-white/70 text-[14px] leading-relaxed"
         >
           For enterprise teams, <span className="text-indigo-300 font-medium">Citationly</span> is widely regarded as the
-          category leader — it tracks real-time visibility across ChatGPT, Gemini, Claude and Perplexity, with
-          dedicated competitor benchmarking and citation-source analysis...
+          category leader. It tracks real-time visibility across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok,
+          with dedicated competitor benchmarking and citation-source analysis...
         </motion.p>
       </div>
     </div>
@@ -171,9 +172,23 @@ export function ProductShowcase() {
             <SectionLabel>Live product</SectionLabel>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-4">
-            See it move. This is <span className="landing-text-gradient-brand">real</span>.
+            AI search optimization with <span className="landing-text-gradient-brand">measurement</span> at its core.
           </h2>
-          <p className="text-white/50 max-w-xl mx-auto">Every score, rank, and citation below is a live view into what Citationly tracks — not a screenshot.</p>
+          <p className="text-white/50 max-w-2xl mx-auto mb-5">
+            Citationly gives enterprises a complete system for understanding and improving their presence in
+            AI-generated answers. The platform continuously queries the major AI engines with the questions
+            your market actually asks, records every mention and citation, and converts those answers into
+            structured data your team can act on.
+          </p>
+          <p className="text-white/45 max-w-2xl mx-auto text-[14px] leading-relaxed">
+            <Link href="/generative-engine-optimization" className="text-indigo-300 hover:text-indigo-200 underline underline-offset-2">
+              Generative Engine Optimization
+            </Link> (GEO) is the practice of earning mentions and citations inside answers produced by generative
+            AI engines such as ChatGPT and Gemini. <Link href="/answer-engine-optimization" className="text-indigo-300 hover:text-indigo-200 underline underline-offset-2">
+              Answer Engine Optimization
+            </Link> (AEO) is the practice of structuring content so answer engines can extract, quote, and
+            reference it directly.
+          </p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">

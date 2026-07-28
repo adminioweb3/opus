@@ -70,7 +70,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
   // Combine your company with competitors
   const allCompanies = yourCompany ? [yourCompany, ...parsedCompetitors] : parsedCompetitors;
 
-  const chartData = allCompanies.slice(0, 10).map(c => ({
+  const chartData = allCompanies.slice(0, 11).map(c => ({
     name: c.name.substring(0, 15) + (c.name.length > 15 ? '...' : ''),
     similarity: c.similarityScore,
     isYourCompany: c.isYourCompany
@@ -106,7 +106,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {allCompanies.slice(0, 8).map((c, i) => (
+                {allCompanies.slice(0, 21).map((c, i) => (
                   <tr key={i} className={`transition-colors ${c.isYourCompany ? 'bg-blue-50 hover:bg-blue-50' : 'hover:bg-slate-50/50'}`}>
                     <td className={`px-6 py-4 font-medium ${c.isYourCompany ? 'text-blue-900' : 'text-slate-900'}`}>
                       {c.name}

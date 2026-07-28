@@ -1,12 +1,13 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons"
 import { Divider } from "@/components/auth/Divider"
 import { PasswordInput } from "@/components/auth/PasswordInput"
@@ -28,22 +29,27 @@ function RegisterForm() {
   const [email, setEmail] = useState(() => searchParams.get("email") || "")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const { register, isLoading, error, clearError } = useAuthStore()
+  const { register, isLoading, error, clearError, isAuthenticated } = useAuthStore()
   const router = useRouter()
+
+  // Watch for successful auth (handles both email and social registration)
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      // New registrations always need onboarding
+      router.push("/onboarding")
+    }
+  }, [isAuthenticated, isLoading, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (password !== confirmPassword) {
       return
     }
 
     const success = await register(name, email, password)
     if (success) {
-      // New registrations always need onboarding. We redirect unconditionally
-      // because reading needsOnboarding from the store right here is a race —
-      // the async setSyncResult inside `register` may not have settled yet.
-      router.push("/onboarding")
+      // useEffect will handle the redirect via isAuthenticated state
     }
   }
 

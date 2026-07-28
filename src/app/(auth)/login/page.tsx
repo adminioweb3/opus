@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -16,8 +16,17 @@ import { Loader2 } from "lucide-react"
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login, isLoading, error, clearError } = useAuthStore()
+  const { login, loginWithGoogle, loginWithGithub, isLoading, error, clearError, isAuthenticated } = useAuthStore()
+  const { needsOnboarding } = useOrganizationStore()
   const router = useRouter()
+
+  // Watch for successful auth and redirect
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const { needsOnboarding: orgNeedsOnboarding } = useOrganizationStore.getState()
+      router.push(orgNeedsOnboarding ? "/onboarding" : "/dashboard")
+    }
+  }, [isAuthenticated, isLoading, router])
 
   // Read fresh from the store rather than a destructured value — auth-store's login
   // functions update this store asynchronously via setSyncResult, and by the time the

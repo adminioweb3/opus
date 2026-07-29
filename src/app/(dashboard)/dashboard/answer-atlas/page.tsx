@@ -373,6 +373,7 @@ export default function AnswerAtlasPage() {
           onOpenDesigner={() => setShowDesigner(true)}
           onOpenHistory={setHistoryQuestionId}
           summary={summary}
+          onAnalyzed={fetchSummary}
         />
       )}
       {tab === "fanouts" && <QueryFanoutsTab topics={topics} topicsLoaded={topicsLoaded} onOpenDesigner={() => setShowDesigner(true)} />}
@@ -786,12 +787,14 @@ function PromptsTab({
   onOpenDesigner,
   onOpenHistory,
   summary,
+  onAnalyzed,
 }: {
   topics: PromptTopic[];
   topicsLoaded: boolean;
   onOpenDesigner: () => void;
   onOpenHistory: (questionId: string) => void;
   summary: VisibilitySummaryResponse | null;
+  onAnalyzed: () => Promise<void>;
 }) {
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
   const [questionsByTopic, setQuestionsByTopic] = useState<Record<string, QuestionWithLatest[]>>({});
@@ -852,7 +855,10 @@ function PromptsTab({
         }
       });
       toast.success("Analysis complete");
-      await reloadTopic(topicId);
+      // reloadTopic refreshes this one topic's per-question rows; the score/rank rollup shown
+      // in "Visibility Rankings By Topic" comes from a separate summary fetch owned by the
+      // parent, which otherwise stays stale until the date range changes or the page reloads.
+      await Promise.all([reloadTopic(topicId), onAnalyzed()]);
     } catch (err) {
       console.error(err);
       toast.error("Analysis failed to run");
@@ -899,7 +905,7 @@ function PromptsTab({
       ["Topic", "Visibility Rank", "Visibility Score", "Share of Voice", "Average Position", "Citation Share", "Prompts"],
       ...filteredTopics.map((t) => {
         const s = summaryByTopicId[t.id];
-        return [t.name, s ? `#${s.rank}` : "–", s?.score ?? "–", s?.shareOfVoice ?? "–", s?.averagePosition ?? "–", s?.citationShare ?? "–", (questionsByTopic[t.id] ?? []).length];
+        return [t.name, s?.rank ? `#${s.rank}` : "–", s?.score ?? "–", s?.shareOfVoice ?? "–", s?.averagePosition ?? "–", s?.citationShare ?? "–", (questionsByTopic[t.id] ?? []).length];
       }),
     ];
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -1066,7 +1072,7 @@ function PromptsTab({
                         </div>
                         <div className="text-[11px] text-slate-400 mt-0.5 pl-6">{(questionsByTopic[topic.id] ?? []).length} prompts</div>
                       </TableCell>
-                      {visibleCols.rank && <TableCell className="p-4 font-mono text-[13.5px] text-slate-700">{s ? `#${s.rank}` : "–"}</TableCell>}
+                      {visibleCols.rank && <TableCell className="p-4 font-mono text-[13.5px] text-slate-700">{s?.rank ? `#${s.rank}` : "–"}</TableCell>}
                       {visibleCols.score && <TableCell className="p-4 font-mono font-medium text-[13.5px] text-slate-700">{s ? `${s.score}%` : "–"}</TableCell>}
                       {visibleCols.sov && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? `${s.shareOfVoice}%` : "–"}</TableCell>}
                       {visibleCols.pos && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? s.averagePosition : "–"}</TableCell>}

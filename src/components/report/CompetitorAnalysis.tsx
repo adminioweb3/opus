@@ -106,7 +106,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {allCompanies.slice(0, 21).map((c, i) => (
+                {allCompanies.slice(0, 41).map((c, i) => (
                   <tr key={i} className={`transition-colors ${c.isYourCompany ? 'bg-blue-50 hover:bg-blue-50' : 'hover:bg-slate-50/50'}`}>
                     <td className={`px-6 py-4 font-medium ${c.isYourCompany ? 'text-blue-900' : 'text-slate-900'}`}>
                       {c.name}

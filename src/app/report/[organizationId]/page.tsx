@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useParams, useSearchParams } from "next/navigation"
 import { getFullReport, FullReportData } from "@/lib/api/reportApi"
 import { Loader2 } from "lucide-react"
 
@@ -19,10 +19,25 @@ import RegionAnalysis from "@/components/report/RegionAnalysis"
 import RecommendationsKanban from "@/components/report/RecommendationsKanban"
 import FinalScorecard from "@/components/report/FinalScorecard"
 import ReportFooter from "@/components/report/ReportFooter"
+import SubscribeModal from "@/components/report/SubscribeModal"
 
 export default function ReportPage() {
+  return (
+    <Suspense>
+      <ReportPageContent />
+    </Suspense>
+  )
+}
+
+function ReportPageContent() {
   const params = useParams()
   const organizationId = params.organizationId as string
+
+  // Only the post-onboarding hop (analysis/page.tsx) appends this — the Command Center
+  // "Reports" button links here with no query string, so existing dashboard users never
+  // see the paywall on a report they already have full access to.
+  const searchParams = useSearchParams()
+  const showPaywall = searchParams.get("source") === "onboarding"
 
   const [reportData, setReportData] = useState<FullReportData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -85,17 +100,20 @@ export default function ReportPage() {
         <ExecutiveKPIs data={reportData} />
         <ExecutiveSummarySection data={reportData} />
         
-        <div className="space-y-16">
-          <WebsiteIntelligence data={reportData} />
-          <CompetitorAnalysis data={reportData} />
-          <AIVisibilityOverview data={reportData} />
-          <PromptAnalysis data={reportData} />
-          <PlatformAnalysis data={reportData} />
-          <CitationAnalysis data={reportData} />
-          <PersonaAnalysis data={reportData} />
-          <RegionAnalysis data={reportData} />
-          <RecommendationsKanban data={reportData} />
-          <FinalScorecard data={reportData} />
+        <div className="relative">
+          {showPaywall && <SubscribeModal organizationId={organizationId} />}
+          <div className={showPaywall ? "space-y-16 opacity-20 select-none pointer-events-none blur-[3px]" : "space-y-16"}>
+            <WebsiteIntelligence data={reportData} />
+            <CompetitorAnalysis data={reportData} />
+            <AIVisibilityOverview data={reportData} />
+            <PromptAnalysis data={reportData} />
+            <PlatformAnalysis data={reportData} />
+            <CitationAnalysis data={reportData} />
+            <PersonaAnalysis data={reportData} />
+            <RegionAnalysis data={reportData} />
+            <RecommendationsKanban data={reportData} />
+            <FinalScorecard data={reportData} />
+          </div>
         </div>
       </main>
 

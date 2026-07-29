@@ -7,7 +7,10 @@ export interface ScoreHistoryPoint {
 }
 
 export interface TopicRanking {
-  rank: number;
+  // null when the topic has no measured visibility yet (score is 0) — a topic that has never
+  // once had its brand mentioned shouldn't be assigned a numbered rank or "Leader" badge just
+  // because it sorts first among other zero-score topics.
+  rank: number | null;
   topicId: string;
   topicName: string;
   promptCount: number;

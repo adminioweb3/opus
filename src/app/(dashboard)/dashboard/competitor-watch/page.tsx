@@ -20,6 +20,7 @@ import { LogoAvatar } from "@/components/ui/logo-avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const OPPS = [
   {ic: Versions, tint:'text-red-600', bg:'bg-red-50', t:'Publish comparison pages vs Profound', why:'They just took 3 "vs" queries you ranked for on Perplexity.', impact:'+$28k'},
@@ -49,7 +50,7 @@ const LEADERBOARD_PAGE_SIZE = 10;
 export default function CompetitorWatch() {
   const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [showAllCompetitors, setShowAllCompetitors] = useState(false);
+  const [isAllModalOpen, setIsAllModalOpen] = useState(false);
   const [range, setRange] = useState('30D');
   
   const { organizationId } = useOrganizationStore();
@@ -145,15 +146,14 @@ export default function CompetitorWatch() {
   const gap = YOU.vis - L.vis;
   const activeThreats = COMPS.filter(c => c.threat === 'high' || (c.threat === 'med' && c.sovChg > 0)).length;
 
-  // With dozens of real tracked competitors, rendering every row unconditionally makes the
-  // page unusably long — show a manageable top slice by default (always including "you" even
-  // if your rank falls outside it), and let "Show all" reveal the complete list on demand.
+  // With dozens of real tracked competitors, rendering every row (and every chart line)
+  // unconditionally makes the page unusably long/cluttered — show a manageable top slice here
+  // (always including "you" even if your rank falls outside it); the full list is available via
+  // the "More" modal below, in its own scrollable view rather than expanding this page.
   const topSlice = competitors.slice(0, LEADERBOARD_PAGE_SIZE);
-  const visibleCompetitors = showAllCompetitors
-    ? competitors
-    : topSlice.some(c => c.you)
-      ? topSlice
-      : [...topSlice.slice(0, LEADERBOARD_PAGE_SIZE - 1), YOU].sort((a, b) => a.rank - b.rank);
+  const visibleCompetitors = topSlice.some(c => c.you)
+    ? topSlice
+    : [...topSlice.slice(0, LEADERBOARD_PAGE_SIZE - 1), YOU].sort((a, b) => a.rank - b.rank);
 
   const chartData = Array.from({length: 12}).map((_, i) => {
     const point: any = { name: `Wk ${i+1}` };
@@ -369,14 +369,55 @@ export default function CompetitorWatch() {
             </div>
             {competitors.length > LEADERBOARD_PAGE_SIZE && (
               <button
-                onClick={() => setShowAllCompetitors((v) => !v)}
-                className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100"
+                onClick={() => setIsAllModalOpen(true)}
+                className="w-full p-3 text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 bg-slate-50 border-t border-slate-100 flex items-center justify-center gap-1"
               >
-                {showAllCompetitors ? 'Show top 10 only' : `Show all ${competitors.length} competitors`}
+                More <ChevronDown className="w-3.5 h-3.5" />
               </button>
             )}
           </Card>
         </div>
+
+        <Dialog open={isAllModalOpen} onOpenChange={setIsAllModalOpen}>
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
+            <DialogHeader className="p-6 pb-4 border-b border-slate-100">
+              <DialogTitle>All tracked competitors</DialogTitle>
+              <DialogDescription>{competitors.length} brands ranked by share of voice in AI answers.</DialogDescription>
+            </DialogHeader>
+            <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
+              {competitors.map((c) => (
+                <div key={c.id} className={`flex items-center gap-4 p-4 ${c.you ? 'bg-indigo-50/30' : ''}`}>
+                  <div className="w-6 text-center text-[13px] font-bold text-slate-400 shrink-0">{c.rank}</div>
+                  <LogoAvatar
+                    logoUrl={getDomainLogoUrl(c.websiteUrl)}
+                    fallbackInitial={c.logo}
+                    fallbackColor={c.color}
+                    className="rounded-md text-[15px]"
+                    size={32}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-bold text-slate-900 flex items-center gap-2 truncate">
+                      {c.name} {c.you && <Badge className="bg-indigo-100 text-indigo-700 text-[10px] font-bold">YOU</Badge>}
+                    </div>
+                    <div className="text-[12px] text-slate-500 truncate">{c.tagline}</div>
+                  </div>
+                  <div className="w-16 shrink-0 text-right">
+                    <div className="text-[13.5px] font-bold text-slate-900">{c.sov}%</div>
+                    <div className={`text-[11px] font-semibold ${c.sovChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                      {c.sovChg >= 0 ? '+' : ''}{c.sovChg}%
+                    </div>
+                  </div>
+                  <div className="w-14 shrink-0 text-right hidden sm:block">
+                    <div className="text-[13.5px] font-bold text-slate-900">{c.vis}</div>
+                  </div>
+                  <Badge className={`text-[10px] uppercase font-bold tracking-wider shrink-0 ${c.threat === 'high' ? 'bg-red-50 text-red-600' : c.threat === 'med' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
+                    {c.threat}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* AI VISIBILITY SNAPSHOT */}
         <div>

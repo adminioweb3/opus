@@ -23,6 +23,9 @@ export default function JourneyOnboardingPage() {
     products,
     keywords,
     customIndustry,
+    whoDoYouSellTo,
+    knownCompetitors,
+    mainOffering,
     updateOnboardingData,
     setState,
   } = useJourneyStore();
@@ -118,6 +121,9 @@ export default function JourneyOnboardingPage() {
     targetAudience,
     products,
     keywords,
+    whoDoYouSellTo,
+    knownCompetitors,
+    mainOffering,
   };
 
   const handleBusinessChange = (field: keyof BusinessStepData, value: string) => {

@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { INDUSTRIES } from "@/lib/data/industries"
 import { COUNTRIES, flagImageUrl } from "@/lib/data/countries"
 import { KeywordInput } from "./KeywordInput"
-import { suggestKeywordsFromWebsite, detectIndustryFromWebsite } from "@/lib/api/onboardingPrefillApi"
+import { suggestKeywordsFromWebsite, detectIndustryFromWebsite, detectOfferingFromWebsite } from "@/lib/api/onboardingPrefillApi"
 
 const AUDIENCE_OPTIONS = ["CEO", "CMO", "Marketing Manager", "Agency", "Startup", "Enterprise", "Developer"]
 
@@ -92,6 +92,30 @@ function IndustryCombobox({ value, onChange, suggestion }: { value: string; onCh
             </CommandList>
           </Command>
         </div>
+      )}
+    </div>
+  )
+}
+
+// Same "AI Suggested" prefill pattern as IndustryCombobox (badge shows only while the field is
+// still empty), but a plain text input since there's no fixed list of offerings to pick from.
+function OfferingInput({ value, onChange, suggestion }: { value: string; onChange: (v: string) => void; suggestion?: string }) {
+  const showSuggestion = suggestion && !value
+
+  return (
+    <div className="relative">
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={suggestion || "The one thing you're best known for selling"}
+        className={`w-full h-10 rounded-lg border px-3 text-[13px] font-medium outline-none transition-colors focus:border-[#5B5CEB] focus:ring-4 focus:ring-[#5B5CEB]/10 ${
+          showSuggestion ? "border-primary/30 bg-primary/5" : "border-black/10 bg-white"
+        }`}
+      />
+      {showSuggestion && (
+        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-semibold pointer-events-none">
+          AI Suggested
+        </span>
       )}
     </div>
   )
@@ -215,6 +239,9 @@ export interface BusinessStepData {
   targetAudience: string
   products: string
   keywords: string
+  whoDoYouSellTo: string
+  knownCompetitors: string
+  mainOffering: string
 }
 
 interface BusinessStepProps {
@@ -225,7 +252,7 @@ interface BusinessStepProps {
 
 // Step 2: sectioned business-details form with AI prefilling
 export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
-  const [suggestions, setSuggestions] = useState<{ industry?: string; keywords: string[] }>({ keywords: [] })
+  const [suggestions, setSuggestions] = useState<{ industry?: string; keywords: string[]; offering?: string }>({ keywords: [] })
   const [loading, setLoading] = useState(false)
   const suggestionsLoadedRef = useRef(false)
 
@@ -246,13 +273,15 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
     const fetchSuggestions = async () => {
       try {
         setLoading(true)
-        const [keywordSuggestions, industrySuggestion] = await Promise.all([
+        const [keywordSuggestions, industrySuggestion, offeringSuggestion] = await Promise.all([
           suggestKeywordsFromWebsite(data.websiteUrl, data.businessName, data.industry),
-          detectIndustryFromWebsite(data.websiteUrl, data.businessName)
+          detectIndustryFromWebsite(data.websiteUrl, data.businessName),
+          detectOfferingFromWebsite(data.websiteUrl, data.businessName)
         ])
         setSuggestions({
           industry: industrySuggestion.industry,
-          keywords: keywordSuggestions
+          keywords: keywordSuggestions,
+          offering: offeringSuggestion.offering
         })
       } catch (error) {
         console.error("Failed to fetch suggestions:", error)
@@ -266,7 +295,9 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
 
   const isIndustryValid = data.industry !== "Other" || (data.industry === "Other" && data.customIndustry.trim().length > 0)
   const isKeywordsValid = keywordList.length >= 5
-  const valid = data.businessName.trim().length > 0 && isIndustryValid && isKeywordsValid
+  const isWhoDoYouSellToValid = data.whoDoYouSellTo.trim().length > 0
+  const isProductsValid = data.products.trim().length > 0
+  const valid = data.businessName.trim().length > 0 && isIndustryValid && isKeywordsValid && isWhoDoYouSellToValid && isProductsValid
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -343,12 +374,26 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
               />
             </div>
           )}
-          <div>
+          <div className="mb-3">
             <FieldLabel icon={Sparkles}>Target audience</FieldLabel>
             <AudienceMultiSelect
               value={audienceList}
               onChange={(list) => onChange("targetAudience", list.join(", "))}
             />
+          </div>
+          <div>
+            <FieldLabel icon={Sparkles}>Who do you sell to?</FieldLabel>
+            <Textarea
+              value={data.whoDoYouSellTo}
+              onChange={(e) => onChange("whoDoYouSellTo", e.target.value)}
+              placeholder="e.g. AI labs and robotics companies building autonomous systems"
+              rows={2}
+              required
+              className="rounded-lg border-black/10 text-[13px] py-2 min-h-0 focus-visible:border-[#5B5CEB] focus-visible:ring-[#5B5CEB]/10"
+            />
+            <p className="text-[11.5px] text-muted-foreground mt-1.5 leading-snug">
+              Describe your actual buyer, not just a job title — this is what makes your competitor list accurate.
+            </p>
           </div>
         </section>
 
@@ -362,11 +407,33 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
           </div>
           <div className="space-y-3">
             <div>
+              <FieldLabel icon={Package}>Your main offering</FieldLabel>
+              <OfferingInput
+                value={data.mainOffering}
+                onChange={(v) => onChange("mainOffering", v)}
+                suggestion={suggestions.offering}
+              />
+              <p className="text-[11.5px] text-muted-foreground mt-1.5 leading-snug">
+                The single thing you're best known for — if you sell several things, name the main one.
+              </p>
+            </div>
+            <div>
               <FieldLabel icon={Package}>Products / services</FieldLabel>
               <Textarea
                 value={data.products}
                 onChange={(e) => onChange("products", e.target.value)}
                 placeholder="Describe what you sell or offer..."
+                rows={2}
+                required
+                className="rounded-lg border-black/10 text-[13px] py-2 min-h-0 focus-visible:border-[#5B5CEB] focus-visible:ring-[#5B5CEB]/10"
+              />
+            </div>
+            <div>
+              <FieldLabel icon={Building2}>Competitors you already know of</FieldLabel>
+              <Textarea
+                value={data.knownCompetitors}
+                onChange={(e) => onChange("knownCompetitors", e.target.value)}
+                placeholder="Optional — comma-separated, e.g. Acme Inc, Beta Co"
                 rows={2}
                 className="rounded-lg border-black/10 text-[13px] py-2 min-h-0 focus-visible:border-[#5B5CEB] focus-visible:ring-[#5B5CEB]/10"
               />

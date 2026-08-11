@@ -45,7 +45,10 @@ export default function AnalysisSimulationPage() {
             businessName: storeState.businessName,
             industry: finalIndustry,
             targetAudience: storeState.targetAudience,
-            keywords: storeState.keywords
+            keywords: storeState.keywords,
+            whoDoYouSellTo: storeState.whoDoYouSellTo,
+            knownCompetitors: storeState.knownCompetitors,
+            mainOffering: storeState.mainOffering
           })
           storeState.setAnalysisResult(result)
 

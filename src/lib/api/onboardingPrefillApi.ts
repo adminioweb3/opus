@@ -59,3 +59,19 @@ export async function detectIndustryFromWebsite(
     return { industry: "", alternatives: [], confidence: 0 }
   }
 }
+
+export async function detectOfferingFromWebsite(
+  websiteUrl: string,
+  businessName: string
+): Promise<{ offering: string; confidence: number }> {
+  try {
+    const response = await apiClient.post("/onboarding/detect-offering", {
+      websiteUrl,
+      businessName,
+    })
+    return response.data
+  } catch (error) {
+    console.error("Failed to detect main offering:", error)
+    return { offering: "", confidence: 0 }
+  }
+}

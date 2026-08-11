@@ -7,6 +7,9 @@ export interface OnboardingPayload {
   industry: string;
   targetAudience: string;
   keywords: string;
+  whoDoYouSellTo: string;
+  knownCompetitors: string;
+  mainOffering: string;
 }
 
 export interface OnboardingAnalysisResult {

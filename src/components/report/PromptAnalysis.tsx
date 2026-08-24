@@ -28,7 +28,12 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
                 <th className="px-6 py-4">Visibility Score</th>
                 <th className="px-6 py-4">Share of Voice</th>
                 <th className="px-6 py-4">Mention %</th>
-                <th className="px-6 py-4">Commercial Value</th>
+                <th className="px-6 py-4">
+                  <span className="inline-flex items-center gap-1.5">
+                    Commercial Value
+                    <MetricProvenanceBadge kind="ai-inferred" />
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -70,13 +75,15 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
+                      {/* commercialValue is an LLM's 1-10 judgment score, not a percentage - scale
+                          the bar accordingly instead of rendering it against a 0-100 range. */}
                       <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${p.commercialValue >= 80 ? "bg-purple-500" : p.commercialValue >= 50 ? "bg-indigo-500" : "bg-slate-300"}`}
-                          style={{ width: `${p.commercialValue}%` }}
+                          className={`h-full ${p.commercialValue >= 8 ? "bg-purple-500" : p.commercialValue >= 5 ? "bg-indigo-500" : "bg-slate-300"}`}
+                          style={{ width: `${Math.min(100, p.commercialValue * 10)}%` }}
                         />
                       </div>
-                      <span className="text-slate-600 font-medium text-sm">{p.commercialValue}</span>
+                      <span className="text-slate-600 font-medium text-sm">{p.commercialValue}/10</span>
                     </div>
                   </td>
                 </tr>

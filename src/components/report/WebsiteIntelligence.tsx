@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Globe, Server, Users, Search } from "lucide-react"
 
 export default function WebsiteIntelligence({ data }: { data: FullReportData }) {
@@ -42,8 +43,9 @@ export default function WebsiteIntelligence({ data }: { data: FullReportData }) 
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-slate-900 mb-6 flex flex-wrap items-center gap-2">
         <Globe className="w-5 h-5 text-slate-400" /> Website Intelligence
+        <MetricProvenanceBadge kind="derived" />
       </h2>
       
       <div className="grid lg:grid-cols-3 gap-6">
@@ -107,6 +109,9 @@ export default function WebsiteIntelligence({ data }: { data: FullReportData }) 
                 <span className="text-3xl font-bold text-slate-900">{safeNumber(seoStrength.score) || 0}</span>
                 <span className="text-xs text-slate-400 font-medium">/ 100</span>
               </div>
+            </div>
+            <div className="mb-4 flex justify-center">
+              <MetricProvenanceBadge kind="derived" />
             </div>
             <p className="text-sm text-slate-600 line-clamp-3">{typeof seoStrength.analysis === 'string' ? seoStrength.analysis : renderItem(seoStrength.analysis)}</p>
           </div>

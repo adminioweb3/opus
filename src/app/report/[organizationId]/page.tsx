@@ -49,7 +49,7 @@ function ReportPageContent() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const data = await getFullReport(organizationId)
+        const data = await getFullReport()
         setReportData(data)
       } catch (err) {
         console.error("Failed to load report", err)

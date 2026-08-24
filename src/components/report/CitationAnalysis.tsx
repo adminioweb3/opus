@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Quote, ExternalLink } from "lucide-react"
 
 export default function CitationAnalysis({ data }: { data: FullReportData }) {
@@ -12,8 +13,9 @@ export default function CitationAnalysis({ data }: { data: FullReportData }) {
   return (
     <section>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-slate-900 flex flex-wrap items-center gap-2">
           <Quote className="w-5 h-5 text-slate-400" /> Citation Intelligence
+          <MetricProvenanceBadge kind="observed" />
         </h2>
         <div className="text-sm text-slate-500 font-medium">
           Authority Score: <span className="text-slate-900 font-bold">{summary?.averageAuthorityScore || 0}/100</span>

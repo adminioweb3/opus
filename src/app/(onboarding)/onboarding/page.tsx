@@ -44,7 +44,6 @@ export default function JourneyOnboardingPage() {
           ? websiteUrl
           : `https://${websiteUrl}`;
         const result = await startScraping({
-          organizationId: organizationId,
           url: formattedUrl,
           scrapeType: "Website",
           maxPages: 15,

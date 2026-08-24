@@ -7,6 +7,8 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { getFullReport, FullReportData } from "@/lib/api/reportApi"
+import { getExecutiveMetrics, ExecutiveMetricsResult } from "@/lib/api/dashboardApi"
+import { MetricProvenanceBadge, type MetricProvenanceKind } from "@/components/ui/metric-provenance-badge"
 
 const DEFAULT_SCORES = [
   { lab: 'AI Visibility Score', v: 78, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: '+5.2%', dir: 'up' },
@@ -45,6 +47,7 @@ function GeoDashboardContent() {
   const orgId = searchParams.get('orgId')
   const [timeframe, setTimeframe] = useState('30D')
   const [reportData, setReportData] = useState<FullReportData | null>(null)
+  const [executiveMetrics, setExecutiveMetrics] = useState<ExecutiveMetricsResult | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -54,8 +57,12 @@ function GeoDashboardContent() {
     }
     const fetchData = async () => {
       try {
-        const data = await getFullReport(orgId)
+        const [data, metrics] = await Promise.all([
+          getFullReport(),
+          getExecutiveMetrics()
+        ])
         setReportData(data)
+        setExecutiveMetrics(metrics)
       } catch (err) {
         console.error("Failed to load report", err)
       } finally {
@@ -66,8 +73,8 @@ function GeoDashboardContent() {
   }, [orgId])
 
   // Map Data
-  const visibilityScore = reportData?.visibilitySummary?.overallVisibilityScore || 0
-  const citationScore = reportData?.citationSummary?.averageAuthorityScore || 0
+  const visibilityScore = executiveMetrics?.visibilityScore ?? reportData?.visibilitySummary?.overallVisibilityScore ?? null
+  const citationScore = executiveMetrics?.citationScore ?? reportData?.citationSummary?.averageAuthorityScore ?? null
   
   // Try to parse competitors for SOV
   let topCompetitors: any[] = []
@@ -93,29 +100,34 @@ function GeoDashboardContent() {
   }
 
   const SCORES = [
-    { lab: 'AI Visibility Score', v: visibilityScore || DEFAULT_SCORES[0].v, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: '+5.2%', dir: 'up' },
-    { lab: 'Citation Score', v: citationScore || DEFAULT_SCORES[1].v, ic: Quote, c: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', chg: '+3.1%', dir: 'up' },
-    { lab: 'Sentiment Score', v: 85, ic: Smile, c: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', chg: '+1.2%', dir: 'up' },
-    { lab: 'Competitor Auth', v: competitorsScore || DEFAULT_SCORES[3].v, ic: Swords, c: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', chg: '+2.5%', dir: 'up' },
-    { lab: 'Hallucination Risk', v: 8, ic: AlertTriangle, c: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', chg: '-2%', dir: 'down' },
-    { lab: 'SEO Health', v: 91, ic: Globe, c: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-950/30', chg: '+0.5%', dir: 'up' },
-    { lab: 'AEO Readiness', v: 68, ic: Search, c: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', chg: '+8.4%', dir: 'up' },
-    { lab: 'GEO Readiness', v: parseInt(reportData?.recommendationSummary?.estimatedOverallImpact || "0") || DEFAULT_SCORES[7].v, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
+    { lab: 'AI Visibility Score', v: visibilityScore, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: visibilityScore === null ? 'Not available yet' : 'Real scans', dir: 'up' as const, provenance: (visibilityScore === null ? 'unavailable' : 'observed') as MetricProvenanceKind },
+    { lab: 'Citation Score', v: citationScore, ic: Quote, c: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', chg: citationScore === null ? 'Not available yet' : 'Real scans', dir: 'up' as const, provenance: (citationScore === null ? 'unavailable' : 'derived') as MetricProvenanceKind },
+    { lab: 'Sentiment Score', v: executiveMetrics?.sentimentScore ?? null, ic: Smile, c: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', chg: executiveMetrics ? 'Real scans' : 'Not available yet', dir: 'up' as const, provenance: (executiveMetrics ? 'observed' : 'unavailable') as MetricProvenanceKind },
+    { lab: 'Competitor Score', v: executiveMetrics?.competitorScore ?? null, ic: Swords, c: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', chg: executiveMetrics ? 'Real scans' : 'Not available yet', dir: 'up' as const, provenance: (executiveMetrics ? 'derived' : 'unavailable') as MetricProvenanceKind },
+    { lab: 'Hallucination Risk', v: null, ic: AlertTriangle, c: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', chg: 'Not available yet', dir: 'up' as const, provenance: 'unavailable' as MetricProvenanceKind },
+    { lab: 'SEO Health', v: null, ic: Globe, c: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-950/30', chg: 'Not available yet', dir: 'up' as const, provenance: 'unavailable' as MetricProvenanceKind },
+    { lab: 'AEO Readiness', v: null, ic: Search, c: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', chg: 'Not available yet', dir: 'up' as const, provenance: 'unavailable' as MetricProvenanceKind },
+    { lab: 'GEO Readiness', v: null, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: 'Not available yet', dir: 'up' as const, provenance: 'unavailable' as MetricProvenanceKind }
   ]
 
-  const TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
-    date: `Day ${i + 1}`,
-    score: Math.round(Math.max(0, (visibilityScore || 50) - 30 + i + (Math.random() * 5)))
-  }));
+  const TREND_DATA = (executiveMetrics?.trend || []).map((point, i) => ({
+    date: point.date,
+    score: point.citations,
+    day: i + 1
+  }))
 
   const brandName = reportData?.websiteProfile?.websiteUrl || 'Your Brand'
   
   const colors = ['hsl(var(--primary))', '#2563EB', '#7C3AED', '#16A34A', '#CBD5E1']
-  const SOV_DATA = topCompetitors.length > 0 ? [
-    { name: brandName, value: 40, color: colors[0] },
-    ...topCompetitors.map((c, i) => ({ name: c.name, value: Math.max(10, 30 - (i*5)), color: colors[i+1] })),
-    { name: 'Others', value: 10, color: colors[4] }
-  ] : DEFAULT_SOV_DATA;
+  const SOV_DATA = executiveMetrics?.shareOfVoice?.length
+    ? executiveMetrics.shareOfVoice
+    : topCompetitors.length > 0
+      ? [
+          { name: brandName, value: 40, color: colors[0] },
+          ...topCompetitors.map((c, i) => ({ name: c.name, value: Math.max(10, 30 - (i*5)), color: colors[i+1] })),
+          { name: 'Others', value: 10, color: colors[4] }
+        ]
+      : []
 
   const container = {
     hidden: { opacity: 0 },
@@ -164,6 +176,8 @@ function GeoDashboardContent() {
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {SCORES.map((s, i) => {
           const Icon = s.ic;
+          const hasValue = s.v !== null;
+          const good = s.dir === 'up';
           return (
             <motion.div key={i} variants={item}>
               <Card className="h-full hover:-translate-y-1 hover:shadow-md transition-all duration-200">
@@ -172,14 +186,17 @@ function GeoDashboardContent() {
                     <span className="text-xs font-semibold text-muted-foreground">{s.lab}</span>
                     <Icon className={`w-5 h-5 ${s.c} opacity-85`} />
                   </div>
+                  <div className="mb-2">
+                    <MetricProvenanceBadge kind={s.provenance} />
+                  </div>
                   <div>
                     <div className="text-3xl font-bold leading-none mb-2">
-                      {s.v}<span className="text-sm font-semibold text-muted-foreground ml-0.5">/100</span>
+                      {hasValue ? s.v : '—'}<span className="text-sm font-semibold text-muted-foreground ml-0.5">/100</span>
                     </div>
-                    <div className={`text-xs font-semibold flex items-center gap-1 ${s.dir === 'up' ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                      {s.dir === 'up' ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                    <div className={`text-xs font-semibold flex items-center gap-1 ${hasValue && good ? 'text-green-600 dark:text-green-500' : hasValue ? 'text-red-600 dark:text-red-500' : 'text-muted-foreground'}`}>
+                      {hasValue ? (good ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />) : null}
                       {s.chg}
-                      <span className="text-muted-foreground font-medium ml-1">vs last period</span>
+                      <span className="text-muted-foreground font-medium ml-1">{hasValue ? 'vs last period' : 'not available yet'}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -199,25 +216,31 @@ function GeoDashboardContent() {
             <p className="text-[12.5px] text-muted-foreground mt-0.5">Aggregate visibility score over the selected timeframe.</p>
           </div>
           <div className="flex-1 p-4 pb-2 w-full min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="geoColorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" opacity={0.15} />
-                <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{fontSize: 10, fill: 'hsl(var(--muted-foreground))'}} minTickGap={20} />
-                <YAxis tickLine={false} axisLine={false} tick={{fontSize: 11, fill: 'hsl(var(--muted-foreground))'}} />
-                <RechartsTooltip 
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '8px 12px' }}
-                  labelStyle={{ fontWeight: 'bold', color: 'hsl(var(--foreground))', fontSize: '12px', marginBottom: '4px' }}
-                  itemStyle={{ fontSize: '13px', color: 'hsl(var(--primary))', fontWeight: 600 }}
-                />
-                <Area type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2.5} fillOpacity={1} fill="url(#geoColorScore)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {TREND_DATA.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="geoColorScore" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" opacity={0.15} />
+                  <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{fontSize: 10, fill: 'hsl(var(--muted-foreground))'}} minTickGap={20} />
+                  <YAxis tickLine={false} axisLine={false} tick={{fontSize: 11, fill: 'hsl(var(--muted-foreground))'}} />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '8px 12px' }}
+                    labelStyle={{ fontWeight: 'bold', color: 'hsl(var(--foreground))', fontSize: '12px', marginBottom: '4px' }}
+                    itemStyle={{ fontSize: '13px', color: 'hsl(var(--primary))', fontWeight: 600 }}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2.5} fillOpacity={1} fill="url(#geoColorScore)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full rounded-xl border border-dashed border-border/60 text-sm text-muted-foreground">
+                No real trend data yet. Run more GEO scans to populate this chart.
+              </div>
+            )}
           </div>
         </Card>
 
@@ -254,15 +277,21 @@ function GeoDashboardContent() {
             </div>
             
             <div className="flex flex-col justify-center pl-6 flex-1 max-w-50">
-              {SOV_DATA.map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                    <span className="text-[13px] font-medium text-foreground truncate">{item.name}</span>
+              {SOV_DATA.length > 0 ? (
+                SOV_DATA.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                      <span className="text-[13px] font-medium text-foreground truncate">{item.name}</span>
+                    </div>
+                    <span className="text-[13px] font-bold text-muted-foreground pl-2">{item.value}%</span>
                   </div>
-                  <span className="text-[13px] font-bold text-muted-foreground pl-2">{item.value}%</span>
+                ))
+              ) : (
+                <div className="text-sm text-muted-foreground text-center py-4">
+                  No share-of-voice history yet.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </Card>

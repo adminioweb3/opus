@@ -20,9 +20,6 @@ export default function WebsitesSection() {
   const [newDomain, setNewDomain] = useState("")
   const [isAdding, setIsAdding] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  // AI-crawl allow/deny and robots.txt aren't backend-tracked per site yet — local UI state
-  // until that's wired up, consistent with the rest of this section using real site data.
-  const [crawlPrefs, setCrawlPrefs] = useState<Record<string, Record<string, boolean>>>({})
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -57,13 +54,6 @@ export default function WebsitesSection() {
     }
   }
 
-  const toggleCrawler = (siteId: string, crawler: string) => {
-    setCrawlPrefs((prev) => ({
-      ...prev,
-      [siteId]: { ...prev[siteId], [crawler]: !(prev[siteId]?.[crawler] ?? true) },
-    }))
-  }
-
   return (
     <div className="space-y-5">
       <Card>
@@ -90,7 +80,6 @@ export default function WebsitesSection() {
             <div className="space-y-2">
               {sites.map((site) => {
                 const isOpen = expandedId === site.id
-                const prefs = crawlPrefs[site.id] ?? {}
                 return (
                   <div key={site.id} className="rounded-lg border border-border/60 overflow-hidden">
                     <button
@@ -125,12 +114,18 @@ export default function WebsitesSection() {
                     {isOpen && (
                       <div className="p-4 border-t border-border/60 bg-muted/20 space-y-4">
                         <div>
-                          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">AI crawl preferences</div>
+                          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center justify-between">
+                            <span>AI crawl preferences</span>
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Coming soon</span>
+                          </div>
                           <div className="grid grid-cols-2 gap-2">
                             {AI_CRAWLERS.map((crawler) => (
                               <div key={crawler} className="flex items-center justify-between p-2 rounded-md bg-background border border-border/60">
                                 <span className="text-sm">{crawler}</span>
-                                <Switch checked={prefs[crawler] ?? true} onCheckedChange={() => toggleCrawler(site.id, crawler)} />
+                                <div className="flex items-center gap-2">
+                                  <Switch checked={true} disabled />
+                                  <span className="text-xs text-muted-foreground">Coming soon</span>
+                                </div>
                               </div>
                             ))}
                           </div>

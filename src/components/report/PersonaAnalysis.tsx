@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Users, FileText } from "lucide-react"
 
 export default function PersonaAnalysis({ data }: { data: FullReportData }) {
@@ -20,8 +21,9 @@ export default function PersonaAnalysis({ data }: { data: FullReportData }) {
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-slate-900 mb-6 flex flex-wrap items-center gap-2">
         <Users className="w-5 h-5 text-slate-400" /> Buyer Persona Visibility
+        <MetricProvenanceBadge kind="estimated" />
       </h2>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -29,11 +31,12 @@ export default function PersonaAnalysis({ data }: { data: FullReportData }) {
           <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] flex flex-col">
             <div className="flex justify-between items-start mb-4">
               <h3 className="font-bold text-slate-900 text-lg">{p.personaName}</h3>
-              <div className="flex flex-col items-end">
+              <div className="flex flex-col items-end gap-2">
                 <span className={`text-xl font-black ${p.visibilityScore >= 70 ? 'text-emerald-600' : p.visibilityScore >= 40 ? 'text-amber-600' : 'text-rose-600'}`}>
                   {p.visibilityScore}
                 </span>
                 <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Visibility</span>
+                <MetricProvenanceBadge kind="estimated" />
               </div>
             </div>
 
@@ -41,6 +44,9 @@ export default function PersonaAnalysis({ data }: { data: FullReportData }) {
               <div className="flex justify-between text-xs text-slate-500 mb-1">
                 <span>Share of Voice</span>
                 <span className="font-medium text-slate-700">{p.shareOfVoice}%</span>
+              </div>
+              <div className="mb-2">
+                <MetricProvenanceBadge kind="estimated" />
               </div>
               <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${p.shareOfVoice}%` }} />

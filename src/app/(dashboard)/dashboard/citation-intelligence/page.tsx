@@ -99,7 +99,7 @@ export default function CitationIntelligencePage() {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getCitationIntelligence(organizationId, range);
+      const res = await getCitationIntelligence(range);
       setData(res);
     } catch (err) {
       console.error(err);

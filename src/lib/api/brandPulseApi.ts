@@ -60,9 +60,9 @@ export interface BrandPulseResponse {
   lastScanDate: string;
 }
 
-export async function getBrandPulse(organizationId: string, range: '7D' | '30D' | '90D'): Promise<BrandPulseResponse> {
+export async function getBrandPulse(range: '7D' | '30D' | '90D'): Promise<BrandPulseResponse> {
   const response = await apiClient.get<BrandPulseResponse>('/Dashboard/brand-pulse', {
-    params: { organizationId, range },
+    params: { range },
   });
   return response.data;
 }

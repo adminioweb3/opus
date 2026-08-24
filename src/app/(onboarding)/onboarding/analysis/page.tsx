@@ -40,7 +40,6 @@ export default function AnalysisSimulationPage() {
             : storeState.industry;
             
           const result = await analyzeOnboardingData({
-            organizationId: orgId,
             websiteUrl: storeState.websiteUrl,
             businessName: storeState.businessName,
             industry: finalIndustry,
@@ -56,38 +55,38 @@ export default function AnalysisSimulationPage() {
             // STEP 1: Competitors
             setActiveStepIndex(1)
             setProgress(20)
-            await analyzeCompetitors({ organizationId: orgId })
+            await analyzeCompetitors()
             
             // STEP 2: Prompts
             setActiveStepIndex(2)
             setProgress(35)
-            await analyzeAiSearchPrompts({ organizationId: orgId })
+            await analyzeAiSearchPrompts()
 
             // STEP 3: Visibility & Platforms
             setActiveStepIndex(3)
             setProgress(50)
-            await analyzeVisibility({ organizationId: orgId })
+            await analyzeVisibility()
             setProgress(60)
-            await analyzePlatformVisibility({ organizationId: orgId })
+            await analyzePlatformVisibility()
 
             // STEP 4: Citations
             setActiveStepIndex(4)
             setProgress(70)
-            await analyzeCitations({ organizationId: orgId })
+            await analyzeCitations()
 
             // STEP 5: Personas & Regions
             setActiveStepIndex(5)
             setProgress(80)
-            await analyzePersonas({ organizationId: orgId })
+            await analyzePersonas()
             setProgress(85)
-            await analyzeRegions({ organizationId: orgId })
+            await analyzeRegions()
 
             // STEP 6: Recommendations & Executive Summary
             setActiveStepIndex(6)
             setProgress(90)
-            await generateRecommendations({ organizationId: orgId })
+            await generateRecommendations()
             setProgress(95)
-            await generateExecutiveSummary({ organizationId: orgId })
+            await generateExecutiveSummary()
           }
           
           setProgress(100)

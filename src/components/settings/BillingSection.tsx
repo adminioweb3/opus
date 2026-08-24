@@ -28,6 +28,9 @@ export default function BillingSection() {
       <Card>
         <CardContent className="pt-6">
           <SectionHead title="Current plan" />
+          <div className="mb-4 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            Preview — mocked billing workspace
+          </div>
           <div className="flex items-center justify-between p-4 rounded-lg border border-border/60 bg-muted/20">
             <div>
               <div className="text-lg font-bold">{planType || "Trial"} Plan</div>

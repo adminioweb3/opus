@@ -56,7 +56,7 @@ export default function BrandPulsePage() {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getBrandPulse(organizationId, range);
+      const res = await getBrandPulse(range);
       setData(res);
     } catch (err) {
       console.error(err);

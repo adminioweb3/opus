@@ -48,9 +48,9 @@ export interface CitationIntelligenceResponse {
   opportunities: CitationOpportunity[];
 }
 
-export async function getCitationIntelligence(organizationId: string, range: '7D' | '30D' | '90D'): Promise<CitationIntelligenceResponse> {
+export async function getCitationIntelligence(range: '7D' | '30D' | '90D'): Promise<CitationIntelligenceResponse> {
   const response = await apiClient.get<CitationIntelligenceResponse>('/Dashboard/citation-intelligence', {
-    params: { organizationId, range },
+    params: { range },
   });
   return response.data;
 }

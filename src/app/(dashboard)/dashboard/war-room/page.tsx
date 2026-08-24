@@ -90,7 +90,7 @@ function WarRoomContent() {
         setIsLoading(true);
         const [snapData, repData] = await Promise.all([
           getLatestSnapshot(),
-          getFullReport(orgId),
+          getFullReport(),
         ]);
         if (isMounted) {
           if (snapData) setSnapshot(snapData);

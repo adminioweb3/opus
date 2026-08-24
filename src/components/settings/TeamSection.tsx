@@ -113,6 +113,9 @@ export default function TeamSection() {
       <Card>
         <CardContent className="pt-6">
           <SectionHead title="Members" sub={isLoading ? "Loading…" : `${members.length} member${members.length === 1 ? "" : "s"} in this organization`} />
+          <div className="mb-4 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            Preview — mocked team workspace
+          </div>
           <div className="space-y-2">
             {members.map((m) => (
               <div key={m.id} className="flex items-center justify-between p-3 rounded-lg border border-border/60">

@@ -47,18 +47,17 @@ export interface OpportunityFinderResponse {
   forecast: OpportunityForecast;
 }
 
-export async function getOpportunityFinder(organizationId: string, range: '7D' | '30D' | '90D'): Promise<OpportunityFinderResponse> {
+export async function getOpportunityFinder(range: '7D' | '30D' | '90D'): Promise<OpportunityFinderResponse> {
   const response = await apiClient.get<OpportunityFinderResponse>('/Dashboard/opportunity-finder', {
-    params: { organizationId, range },
+    params: { range },
   });
   return response.data;
 }
 
-export async function runOpportunityDeepScan(organizationId: string): Promise<OpportunityFinderResponse> {
+export async function runOpportunityDeepScan(): Promise<OpportunityFinderResponse> {
   const response = await apiClient.post<OpportunityFinderResponse>(
     '/Dashboard/opportunity-finder/deep-scan',
     null,
-    { params: { organizationId } },
   );
   return response.data;
 }

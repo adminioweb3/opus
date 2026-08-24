@@ -141,7 +141,7 @@ export default function VisibilityRadarPage() {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getVisibilityRadar(organizationId, range);
+      const res = await getVisibilityRadar(range);
       setData(res);
     } catch (err) {
       console.error(err);

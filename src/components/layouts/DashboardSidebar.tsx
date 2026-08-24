@@ -204,7 +204,7 @@ const menuCategories = [
         permission: "settings.view",
       },
       {
-        title: "Team Management",
+        title: "Team Management (Preview)",
         url: "/dashboard/team",
         permission: "team.view",
       },
@@ -214,12 +214,12 @@ const menuCategories = [
         permission: "settings.view",
       },
       {
-        title: "Integrations",
+        title: "Integrations (Preview)",
         url: "/dashboard/integrations",
         permission: "integrations.view",
       },
       {
-        title: "Billing",
+        title: "Billing (Preview)",
         url: "/dashboard/settings?tab=billing",
         permission: "settings.view",
       },
@@ -535,7 +535,7 @@ export function DashboardSidebar() {
               render={<Link href="/dashboard/team" />}
               className="cursor-pointer w-full"
             >
-              <Users className="mr-2 h-4 w-4" /> Team Management
+              <Users className="mr-2 h-4 w-4" /> Team Management (Preview)
             </DropdownMenuItem>
             <DropdownMenuItem
               render={<Link href="/dashboard/settings?tab=websites" />}
@@ -547,7 +547,7 @@ export function DashboardSidebar() {
               render={<Link href="/dashboard/integrations" />}
               className="cursor-pointer w-full"
             >
-              <Plug className="mr-2 h-4 w-4" /> Integrations
+              <Plug className="mr-2 h-4 w-4" /> Integrations (Preview)
             </DropdownMenuItem>
             <DropdownMenuItem
               render={<Link href="/dashboard/settings?tab=api-keys" />}
@@ -559,7 +559,7 @@ export function DashboardSidebar() {
               render={<Link href="/dashboard/settings?tab=billing" />}
               className="cursor-pointer w-full"
             >
-              <CreditCard className="mr-2 h-4 w-4" /> Billing
+              <CreditCard className="mr-2 h-4 w-4" /> Billing (Preview)
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600 cursor-pointer">

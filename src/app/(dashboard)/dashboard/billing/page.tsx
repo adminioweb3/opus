@@ -23,6 +23,9 @@ export default function BillingPage() {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Billing & Subscription</h2>
         <p className="text-muted-foreground">Manage your plan, payment methods, and invoices.</p>
+        <div className="mt-3 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+          Preview — billing UI only
+        </div>
       </div>
 
       <Tabs defaultValue="plan">

@@ -127,7 +127,7 @@ export default function KnowledgeVaultPage() {
         const [folders, jobs] = await Promise.all([
           getSourceFolders(kbId).catch(() => [] as SourceFolderDto[]),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          getScrapeJobs(organizationId, kbId).catch(() => [] as any[]),
+          getScrapeJobs(kbId).catch(() => [] as any[]),
         ]);
         if (cancelled) return;
         setKbFolders(folders);
@@ -370,7 +370,6 @@ export default function KnowledgeVaultPage() {
       }
 
       const data = await startScrapeJob({
-        organizationId,
         knowledgeBaseId: kbId,
         folderId,
         url: scrapeUrl,
@@ -420,7 +419,6 @@ export default function KnowledgeVaultPage() {
     const type: "Single" | "Website" = source.type === 'Crawl' ? 'Website' : 'Single';
     try {
       const data = await startScrapeJob({
-        organizationId,
         knowledgeBaseId: kbId,
         folderId: source.folderId,
         url: source.url,

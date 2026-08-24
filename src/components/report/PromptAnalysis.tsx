@@ -1,19 +1,20 @@
 import { FullReportData } from "@/lib/api/reportApi"
-import { MessageSquare, ArrowRight } from "lucide-react"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
+import { MessageSquare } from "lucide-react"
 
 export default function PromptAnalysis({ data }: { data: FullReportData }) {
   const prompts = data.prompts || []
   if (prompts.length === 0) return null
 
-  // Sort by commercial value
   const sortedPrompts = [...prompts].sort((a, b) => b.commercialValue - a.commercialValue).slice(0, 15)
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-slate-900 mb-6 flex flex-wrap items-center gap-2">
         <MessageSquare className="w-5 h-5 text-slate-400" /> High-Value Prompt Coverage
+        <MetricProvenanceBadge kind="estimated" />
       </h2>
-      
+
       <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-slate-50/50">
           <h3 className="text-sm font-semibold text-slate-700">Top Queries Identified ({prompts.length})</h3>
@@ -37,19 +38,22 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
                     <p className="font-medium text-slate-900 mb-1 text-sm">{p.queryString}</p>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                      {p.estimatedRank || '—'}
-                    </span>
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                        {p.estimatedRank || "—"}
+                      </span>
+                      <MetricProvenanceBadge kind="estimated" />
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${(p.visibilityScore || 0) >= 70 ? 'bg-emerald-500' : (p.visibilityScore || 0) >= 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                          className={`h-full ${(p.visibilityScore || 0) >= 70 ? "bg-emerald-500" : (p.visibilityScore || 0) >= 40 ? "bg-amber-500" : "bg-rose-500"}`}
                           style={{ width: `${p.visibilityScore || 0}%` }}
                         />
                       </div>
-                      <span className={`font-semibold text-sm ${(p.visibilityScore || 0) >= 70 ? 'text-emerald-600' : (p.visibilityScore || 0) >= 40 ? 'text-amber-600' : 'text-rose-600'}`}>
+                      <span className={`font-semibold text-sm ${(p.visibilityScore || 0) >= 70 ? "text-emerald-600" : (p.visibilityScore || 0) >= 40 ? "text-amber-600" : "text-rose-600"}`}>
                         {p.visibilityScore || 0}%
                       </span>
                     </div>
@@ -68,7 +72,7 @@ export default function PromptAnalysis({ data }: { data: FullReportData }) {
                     <div className="flex items-center gap-2">
                       <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${p.commercialValue >= 80 ? 'bg-purple-500' : p.commercialValue >= 50 ? 'bg-indigo-500' : 'bg-slate-300'}`}
+                          className={`h-full ${p.commercialValue >= 80 ? "bg-purple-500" : p.commercialValue >= 50 ? "bg-indigo-500" : "bg-slate-300"}`}
                           style={{ width: `${p.commercialValue}%` }}
                         />
                       </div>

@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Award, CheckCircle2 } from "lucide-react"
 
 export default function FinalScorecard({ data }: { data: FullReportData }) {
@@ -51,8 +52,9 @@ export default function FinalScorecard({ data }: { data: FullReportData }) {
       
       <div className="relative z-10 grid lg:grid-cols-2 gap-16">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight mb-4 flex items-center gap-3">
+          <h2 className="text-3xl font-extrabold tracking-tight mb-4 flex flex-wrap items-center gap-3">
             <Award className="w-8 h-8 text-blue-400" /> Executive Scorecard
+            <MetricProvenanceBadge kind="derived" className="ml-1" />
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed mb-10">
             A high-level summary of your Generative Engine Optimization readiness and strategic next steps.
@@ -79,6 +81,9 @@ export default function FinalScorecard({ data }: { data: FullReportData }) {
             <div className="flex items-end justify-center gap-2">
               <span className="text-6xl font-black text-white">{exec.overallGEOScore}</span>
               <span className="text-2xl text-slate-500 font-medium pb-1">/100</span>
+            </div>
+            <div className="mt-3 flex justify-center">
+              <MetricProvenanceBadge kind="derived" />
             </div>
             <div className="mt-4 inline-flex items-center rounded-full bg-blue-500/20 px-3 py-1 text-sm font-medium text-blue-300 ring-1 ring-inset ring-blue-500/30">
               {exec.overallGEOScore >= 80 ? 'Excellent Position' : exec.overallGEOScore >= 50 ? 'Moderate Opportunity' : 'Critical Action Required'}

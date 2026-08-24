@@ -12,7 +12,6 @@ export interface SearchResult {
 }
 
 export interface SimulatorSearchRequest {
-  organizationId: string;
   queryText: string;
   topK: number;
 }

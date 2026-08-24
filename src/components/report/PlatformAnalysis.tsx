@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Globe, ShieldAlert, CheckCircle2 } from "lucide-react"
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from "recharts"
 
@@ -24,8 +25,9 @@ export default function PlatformAnalysis({ data }: { data: FullReportData }) {
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-slate-900 mb-6 flex flex-wrap items-center gap-2">
         <Globe className="w-5 h-5 text-slate-400" /> Platform Visibility
+        <MetricProvenanceBadge kind="derived" />
       </h2>
       
       <div className="grid lg:grid-cols-3 gap-6 mb-6">
@@ -49,9 +51,14 @@ export default function PlatformAnalysis({ data }: { data: FullReportData }) {
             <div key={i} className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm flex flex-col">
               <div className="flex justify-between items-start mb-3">
                 <span className="font-semibold text-slate-900">{p.platform}</span>
-                <span className={`text-sm font-bold ${p.visibilityScore >= 70 ? 'text-emerald-500' : p.visibilityScore >= 40 ? 'text-amber-500' : 'text-rose-500'}`}>
-                  {p.visibilityScore}/100
-                </span>
+                <div className="text-right">
+                  <span className={`text-sm font-bold ${p.visibilityScore >= 70 ? 'text-emerald-500' : p.visibilityScore >= 40 ? 'text-amber-500' : 'text-rose-500'}`}>
+                    {p.visibilityScore}/100
+                  </span>
+                  <div className="mt-2 flex justify-end">
+                    <MetricProvenanceBadge kind="derived" />
+                  </div>
+                </div>
               </div>
               
               <div className="mb-4">

@@ -1,6 +1,7 @@
 'use client'
 
 import { FullReportData, getUnifiedCompetitors, UnifiedCompetitor } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Target } from "lucide-react"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
 import { useEffect, useState } from "react"
@@ -15,7 +16,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
     const fetchUnified = async () => {
       if (!data.websiteProfile?.organizationId) return
       setLoading(true)
-      const result = await getUnifiedCompetitors(data.websiteProfile.organizationId)
+      const result = await getUnifiedCompetitors()
       if (result.success && result.competitors) {
         setUnifiedCompetitors(result.competitors)
         setIncludedOrgs(result.includedOrganizations || [])
@@ -79,8 +80,9 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
   return (
     <section>
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-slate-900 flex flex-wrap items-center gap-2">
           <Target className="w-5 h-5 text-slate-400" /> Competitor Intelligence
+          <MetricProvenanceBadge kind="derived" />
         </h2>
         {unifiedCompetitors.length > 0 && (
           <p className="text-xs text-slate-500 mt-2">
@@ -111,6 +113,7 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
                     <td className={`px-6 py-4 font-medium ${c.isYourCompany ? 'text-blue-900' : 'text-slate-900'}`}>
                       {c.name}
                       {c.isYourCompany && <span className="ml-2 text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded">YOUR COMPANY</span>}
+                      {!c.isYourCompany && <div className="mt-2"><MetricProvenanceBadge kind="estimated" /></div>}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
@@ -121,6 +124,9 @@ export default function CompetitorAnalysis({ data }: { data: FullReportData }) {
                           }} />
                         </div>
                         <span className="text-slate-500 text-xs">{c.similarityScore}%</span>
+                      </div>
+                      <div className="mt-2">
+                        <MetricProvenanceBadge kind="estimated" />
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600">{c.confidence}%</td>

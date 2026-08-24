@@ -185,7 +185,7 @@ export default function GeoDashboardPage() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const data: GeoDashboardData = await getGeoDashboard(organizationId as string, activeRange);
+        const data: GeoDashboardData = await getGeoDashboard(activeRange);
 
         setHasData(data.hasData);
 

@@ -39,9 +39,9 @@ export interface CommandCenterResponse {
   insights: string[];
 }
 
-export async function getCommandCenter(organizationId: string, range: '7D' | '30D' | '90D'): Promise<CommandCenterResponse> {
+export async function getCommandCenter(range: '7D' | '30D' | '90D'): Promise<CommandCenterResponse> {
   const response = await apiClient.get<CommandCenterResponse>('/Dashboard/command-center', {
-    params: { organizationId, range },
+    params: { range },
   });
   return response.data;
 }

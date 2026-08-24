@@ -73,7 +73,7 @@ export default function OpportunityFinderPage() {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getOpportunityFinder(organizationId, "30D");
+      const res = await getOpportunityFinder("30D");
       setData(res);
     } catch (err) {
       console.error(err);
@@ -91,7 +91,7 @@ export default function OpportunityFinderPage() {
     if (!organizationId || !data?.canRunDeepScan) return;
     setIsScanning(true);
     try {
-      const res = await runOpportunityDeepScan(organizationId);
+      const res = await runOpportunityDeepScan();
       setData(res);
       toast.success("Deep scan complete — opportunities refreshed");
     } catch (err: any) {

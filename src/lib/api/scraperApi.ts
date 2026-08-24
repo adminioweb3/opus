@@ -1,7 +1,6 @@
 import apiClient from '../apiClient';
 
 export interface StartScrapeRequest {
-  organizationId: string
   url: string
   scrapeType?: string
   maxPages?: number
@@ -16,7 +15,6 @@ export interface StartScrapeResponse {
 
 export async function startScraping(request: StartScrapeRequest): Promise<StartScrapeResponse> {
   const response = await apiClient.post<StartScrapeResponse>('/Scraper/start', {
-    organizationId: request.organizationId,
     knowledgeBaseId: request.knowledgeBaseId,
     folderId: request.folderId,
     url: request.url,
@@ -28,8 +26,8 @@ export async function startScraping(request: StartScrapeRequest): Promise<StartS
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getScrapeJobs(organizationId: string, knowledgeBaseId: string): Promise<any[]> {
-  const response = await apiClient.get<any[]>('/Scraper/jobs', { params: { organizationId, knowledgeBaseId } });
+export async function getScrapeJobs(knowledgeBaseId: string): Promise<any[]> {
+  const response = await apiClient.get<any[]>('/Scraper/jobs', { params: { knowledgeBaseId } });
   return response.data;
 }
 

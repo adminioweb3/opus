@@ -44,6 +44,9 @@ export default function BrandPage() {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Brand Intelligence</h2>
         <p className="text-muted-foreground">Monitor how AI platforms perceive and represent your brand.</p>
+        <div className="mt-3 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+          Preview — mock data only
+        </div>
       </div>
 
       <Tabs defaultValue="mentions">

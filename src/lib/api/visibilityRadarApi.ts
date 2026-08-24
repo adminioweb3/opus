@@ -28,9 +28,9 @@ export interface VisibilityRadarResponse {
   scoreHistory: ScoreHistoryPoint[];
 }
 
-export async function getVisibilityRadar(organizationId: string, range: '7D' | '30D' | '90D'): Promise<VisibilityRadarResponse> {
+export async function getVisibilityRadar(range: '7D' | '30D' | '90D'): Promise<VisibilityRadarResponse> {
   const response = await apiClient.get<VisibilityRadarResponse>('/Dashboard/visibility-radar', {
-    params: { organizationId, range },
+    params: { range },
   });
   return response.data;
 }

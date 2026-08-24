@@ -1,4 +1,5 @@
 import { FullReportData } from "@/lib/api/reportApi"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Activity, ShieldCheck, Target, Quote, TrendingUp } from "lucide-react"
 
 export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
@@ -13,7 +14,8 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       icon: Activity,
       color: "text-blue-600",
       bg: "bg-blue-50",
-      barColor: "bg-blue-600"
+      barColor: "bg-blue-600",
+      provenance: "derived" as const
     },
     {
       title: "SEO Strength",
@@ -22,7 +24,8 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       icon: TrendingUp,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
-      barColor: "bg-emerald-600"
+      barColor: "bg-emerald-600",
+      provenance: "derived" as const
     },
     {
       title: "Brand Authority",
@@ -31,7 +34,8 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       icon: ShieldCheck,
       color: "text-indigo-600",
       bg: "bg-indigo-50",
-      barColor: "bg-indigo-600"
+      barColor: "bg-indigo-600",
+      provenance: "derived" as const
     },
     {
       title: "Content Score",
@@ -40,7 +44,8 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       icon: Target,
       color: "text-amber-600",
       bg: "bg-amber-50",
-      barColor: "bg-amber-600"
+      barColor: "bg-amber-600",
+      provenance: "derived" as const
     },
     {
       title: "Citation Strength",
@@ -49,7 +54,8 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       icon: Quote,
       color: "text-rose-600",
       bg: "bg-rose-50",
-      barColor: "bg-rose-600"
+      barColor: "bg-rose-600",
+      provenance: "observed" as const
     },
     {
       title: "Share of Voice",
@@ -59,14 +65,16 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
       color: "text-cyan-600",
       bg: "bg-cyan-50",
       barColor: "bg-cyan-600",
-      suffix: "%"
+      suffix: "%",
+      provenance: "estimated" as const
     }
   ]
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-slate-900 mb-6 flex flex-wrap items-center gap-2">
         <Activity className="w-5 h-5 text-slate-400" /> Executive Metrics
+        <MetricProvenanceBadge kind="derived" />
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {kpis.map((kpi, index) => {
@@ -77,9 +85,14 @@ export default function ExecutiveKPIs({ data }: { data: FullReportData }) {
                 <div className={`p-3 rounded-xl ${kpi.bg}`}>
                   <Icon className={`w-6 h-6 ${kpi.color}`} />
                 </div>
-                <span className="text-3xl font-bold text-slate-900">
-                  {kpi.value}{kpi.suffix ? <span className="text-xl text-slate-400 ml-1">{kpi.suffix}</span> : null}
-                </span>
+                <div className="text-right">
+                  <span className="text-3xl font-bold text-slate-900">
+                    {kpi.value}{kpi.suffix ? <span className="text-xl text-slate-400 ml-1">{kpi.suffix}</span> : null}
+                  </span>
+                  <div className="mt-2 flex justify-end">
+                    <MetricProvenanceBadge kind={kpi.provenance} />
+                  </div>
+                </div>
               </div>
               <h3 className="font-semibold text-slate-800">{kpi.title}</h3>
               <p className="text-sm text-slate-500 mb-4">{kpi.description}</p>

@@ -196,8 +196,8 @@ export interface FullReportData {
   recommendations?: GeoRecommendation[];
 }
 
-export const getFullReport = async (organizationId: string): Promise<FullReportData> => {
-  const response = await apiClient.get<FullReportData>(`/report/${organizationId}`);
+export const getFullReport = async (): Promise<FullReportData> => {
+  const response = await apiClient.get<FullReportData>("/report");
   return response.data;
 };
 
@@ -218,10 +218,9 @@ export interface UnifiedCompetitorsResult {
   includedOrganizations?: string[];
 }
 
-export const getUnifiedCompetitors = async (organizationId: string): Promise<UnifiedCompetitorsResult> => {
+export const getUnifiedCompetitors = async (): Promise<UnifiedCompetitorsResult> => {
   try {
     const response = await apiClient.get<UnifiedCompetitorsResult>(`/onboarding/competitors/unified`, {
-      params: { organizationId }
     });
     return response.data;
   } catch (error) {

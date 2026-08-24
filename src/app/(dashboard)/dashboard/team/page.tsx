@@ -25,6 +25,9 @@ export default function TeamPage() {
           <p className="text-muted-foreground mt-1">
             Manage assignments, tasks, and recent activity across your enterprise.
           </p>
+          <div className="mt-3 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            Preview — mocked team UI
+          </div>
         </div>
         <div className="flex gap-2">
           <button className="inline-flex items-center gap-2 justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2">

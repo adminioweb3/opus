@@ -5,6 +5,7 @@ import { useJourneyStore } from "@/lib/stores/journey-store"
 import { LIMITED_REPORT } from "@/lib/mock-data/journey"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
 import { Lock, Eye, ShieldCheck, FileText, Quote, ChevronRight, Unlock } from "lucide-react"
 
 export default function PaywallReportPage() {
@@ -58,7 +59,10 @@ export default function PaywallReportPage() {
                   <div className={`p-2 rounded-lg bg-muted ${m.color}`}>
                     <m.icon className="w-5 h-5" />
                   </div>
-                  <span className={`text-xs font-bold px-2 py-1 rounded-full bg-muted ${m.color}`}>{m.status}</span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full bg-muted ${m.color}`}>{m.status}</span>
+                    <MetricProvenanceBadge kind="estimated" />
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">{m.label}</p>

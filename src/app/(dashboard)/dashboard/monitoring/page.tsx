@@ -83,6 +83,9 @@ export default function MonitoringPage() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">AI Monitoring</h2>
           <p className="text-muted-foreground">Track how AI platforms respond to key prompts about your brand.</p>
+          <div className="mt-3 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            Preview — mocked monitoring UI
+          </div>
         </div>
         {canCreate && (
           <Button onClick={() => setShowAddModal(true)}>

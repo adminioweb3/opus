@@ -153,7 +153,7 @@ export default function CommandCenterPage() {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getCommandCenter(organizationId, range);
+      const res = await getCommandCenter(range);
       setData(res);
     } catch (err) {
       console.error(err);

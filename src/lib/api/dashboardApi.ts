@@ -38,24 +38,18 @@ export interface CompetitorResult {
   industry: string;
 }
 
-export const getTopCompetitors = async (organizationId: string): Promise<CompetitorResult[]> => {
-  const response = await apiClient.get<CompetitorResult[]>('/Dashboard/top-competitors', {
-    params: { organizationId }
-  });
+export const getTopCompetitors = async (): Promise<CompetitorResult[]> => {
+  const response = await apiClient.get<CompetitorResult[]>('/Dashboard/top-competitors');
   return response.data;
 };
 
-export const getDailyMetrics = async (organizationId: string): Promise<DailyMetricsResult> => {
-  const response = await apiClient.get<DailyMetricsResult>('/metrics/daily', {
-    params: { organizationId }
-  });
+export const getDailyMetrics = async (): Promise<DailyMetricsResult> => {
+  const response = await apiClient.get<DailyMetricsResult>('/metrics/daily');
   return response.data;
 };
 
-export const getExecutiveMetrics = async (organizationId: string): Promise<ExecutiveMetricsResult> => {
-  const response = await apiClient.get<ExecutiveMetricsResult>('/metrics/executive', {
-    params: { organizationId }
-  });
+export const getExecutiveMetrics = async (): Promise<ExecutiveMetricsResult> => {
+  const response = await apiClient.get<ExecutiveMetricsResult>('/metrics/executive');
   return response.data;
 };
 
@@ -64,10 +58,8 @@ export interface RunScanResult {
   message: string;
 }
 
-export const runScan = async (organizationId: string): Promise<RunScanResult> => {
-  const response = await apiClient.post<RunScanResult>('/metrics/run-scan', null, {
-    params: { organizationId }
-  });
+export const runScan = async (): Promise<RunScanResult> => {
+  const response = await apiClient.post<RunScanResult>('/metrics/run-scan');
   return response.data;
 };
 
@@ -157,9 +149,9 @@ export interface GeoDashboardData {
   verifyInsight: GeoInsight;
 }
 
-export const getGeoDashboard = async (organizationId: string, range: string): Promise<GeoDashboardData> => {
+export const getGeoDashboard = async (range: string): Promise<GeoDashboardData> => {
   const response = await apiClient.get<GeoDashboardData>('/dashboard/geo-dashboard', {
-    params: { organizationId, range }
+    params: { range }
   });
   return response.data;
 };

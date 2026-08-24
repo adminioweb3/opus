@@ -1,7 +1,6 @@
 import apiClient from '../apiClient';
 
 export interface OnboardingPayload {
-  organizationId?: string;
   websiteUrl: string;
   businessName: string;
   industry: string;
@@ -93,7 +92,6 @@ export const completeOnboarding = async (payload: CompleteOnboardingPayload): Pr
 };
 
 export interface AnalyzeCompetitorsPayload {
-  organizationId: string;
 }
 
 export interface CompetitorAnalysisResult {
@@ -102,13 +100,12 @@ export interface CompetitorAnalysisResult {
   totalCompetitors: number;
 }
 
-export const analyzeCompetitors = async (payload: AnalyzeCompetitorsPayload): Promise<CompetitorAnalysisResult> => {
-  const response = await apiClient.post<CompetitorAnalysisResult>('/onboarding/analyze-competitors', payload);
+export const analyzeCompetitors = async (): Promise<CompetitorAnalysisResult> => {
+  const response = await apiClient.post<CompetitorAnalysisResult>('/onboarding/analyze-competitors');
   return response.data;
 };
 
 export interface AnalyzeAiSearchPromptsPayload {
-  organizationId: string;
 }
 
 export interface AiSearchPromptsAnalysisResult {
@@ -117,13 +114,12 @@ export interface AiSearchPromptsAnalysisResult {
   totalPrompts: number;
 }
 
-export const analyzeAiSearchPrompts = async (payload: AnalyzeAiSearchPromptsPayload): Promise<AiSearchPromptsAnalysisResult> => {
-  const response = await apiClient.post<AiSearchPromptsAnalysisResult>('/onboarding/analyze-prompts', payload);
+export const analyzeAiSearchPrompts = async (): Promise<AiSearchPromptsAnalysisResult> => {
+  const response = await apiClient.post<AiSearchPromptsAnalysisResult>('/onboarding/analyze-prompts');
   return response.data;
 };
 
 export interface AnalyzeVisibilityPayload {
-  organizationId: string;
 }
 
 export interface VisibilityAnalysisResult {
@@ -132,13 +128,12 @@ export interface VisibilityAnalysisResult {
   totalPromptsAnalyzed: number;
 }
 
-export const analyzeVisibility = async (payload: AnalyzeVisibilityPayload): Promise<VisibilityAnalysisResult> => {
-  const response = await apiClient.post<VisibilityAnalysisResult>('/onboarding/analyze-visibility', payload);
+export const analyzeVisibility = async (): Promise<VisibilityAnalysisResult> => {
+  const response = await apiClient.post<VisibilityAnalysisResult>('/onboarding/analyze-visibility');
   return response.data;
 };
 
 export interface AnalyzePlatformVisibilityPayload {
-  organizationId: string;
 }
 
 export interface PlatformVisibilityAnalysisResult {
@@ -147,13 +142,12 @@ export interface PlatformVisibilityAnalysisResult {
   platformsAnalyzed: number;
 }
 
-export const analyzePlatformVisibility = async (payload: AnalyzePlatformVisibilityPayload): Promise<PlatformVisibilityAnalysisResult> => {
-  const response = await apiClient.post<PlatformVisibilityAnalysisResult>('/onboarding/analyze-platform-visibility', payload);
+export const analyzePlatformVisibility = async (): Promise<PlatformVisibilityAnalysisResult> => {
+  const response = await apiClient.post<PlatformVisibilityAnalysisResult>('/onboarding/analyze-platform-visibility');
   return response.data;
 };
 
 export interface AnalyzeCitationsPayload {
-  organizationId: string;
 }
 
 export interface CitationAnalysisResult {
@@ -162,13 +156,12 @@ export interface CitationAnalysisResult {
   sourcesAnalyzed: number;
 }
 
-export const analyzeCitations = async (payload: AnalyzeCitationsPayload): Promise<CitationAnalysisResult> => {
-  const response = await apiClient.post<CitationAnalysisResult>('/onboarding/analyze-citations', payload);
+export const analyzeCitations = async (): Promise<CitationAnalysisResult> => {
+  const response = await apiClient.post<CitationAnalysisResult>('/onboarding/analyze-citations');
   return response.data;
 };
 
 export interface AnalyzePersonasPayload {
-  organizationId: string;
 }
 
 export interface PersonaAnalysisResult {
@@ -177,13 +170,12 @@ export interface PersonaAnalysisResult {
   personasAnalyzed: number;
 }
 
-export const analyzePersonas = async (payload: AnalyzePersonasPayload): Promise<PersonaAnalysisResult> => {
-  const response = await apiClient.post<PersonaAnalysisResult>('/onboarding/analyze-personas', payload);
+export const analyzePersonas = async (): Promise<PersonaAnalysisResult> => {
+  const response = await apiClient.post<PersonaAnalysisResult>('/onboarding/analyze-personas');
   return response.data;
 };
 
 export interface AnalyzeRegionsPayload {
-  organizationId: string;
 }
 
 export interface RegionAnalysisResult {
@@ -191,13 +183,12 @@ export interface RegionAnalysisResult {
   error?: string;
 }
 
-export const analyzeRegions = async (payload: AnalyzeRegionsPayload): Promise<RegionAnalysisResult> => {
-  const response = await apiClient.post<RegionAnalysisResult>('/onboarding/analyze-regions', payload);
+export const analyzeRegions = async (): Promise<RegionAnalysisResult> => {
+  const response = await apiClient.post<RegionAnalysisResult>('/onboarding/analyze-regions');
   return response.data;
 };
 
 export interface GenerateRecommendationsPayload {
-  organizationId: string;
 }
 
 export interface GenerateRecommendationsResult {
@@ -205,13 +196,12 @@ export interface GenerateRecommendationsResult {
   error?: string;
 }
 
-export const generateRecommendations = async (payload: GenerateRecommendationsPayload): Promise<GenerateRecommendationsResult> => {
-  const response = await apiClient.post<GenerateRecommendationsResult>('/onboarding/generate-recommendations', payload);
+export const generateRecommendations = async (): Promise<GenerateRecommendationsResult> => {
+  const response = await apiClient.post<GenerateRecommendationsResult>('/onboarding/generate-recommendations');
   return response.data;
 };
 
 export interface GenerateExecutiveSummaryPayload {
-  organizationId: string;
 }
 
 export interface GenerateExecutiveSummaryResult {
@@ -219,7 +209,7 @@ export interface GenerateExecutiveSummaryResult {
   error?: string;
 }
 
-export const generateExecutiveSummary = async (payload: GenerateExecutiveSummaryPayload): Promise<GenerateExecutiveSummaryResult> => {
-  const response = await apiClient.post<GenerateExecutiveSummaryResult>('/onboarding/generate-executive-summary', payload);
+export const generateExecutiveSummary = async (): Promise<GenerateExecutiveSummaryResult> => {
+  const response = await apiClient.post<GenerateExecutiveSummaryResult>('/onboarding/generate-executive-summary');
   return response.data;
 };

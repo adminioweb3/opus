@@ -1432,7 +1432,26 @@ function SentimentTab({ range }: { range: "7D" | "30D" | "90D" }) {
 // Citations tab — real domains extracted from captured AI responses.
 // ---------------------------------------------------------------------------
 
-const CATEGORY_COLORS: Record<string, string> = { Owned: "#6366F1", Social: "#F59E0B", Institution: "#10B981", Other: "#94A3B8" };
+// Expanded alongside CitationExtractorService's richer classification (Phase 3 C1) - unknown
+// keys still fall back to the shared grey below via the `?? "#94A3B8"` at each call site.
+const CATEGORY_COLORS: Record<string, string> = {
+  Owned: "#6366F1",
+  Competitor: "#EF4444",
+  Social: "#F59E0B",
+  Community: "#F97316",
+  ReviewPlatform: "#EC4899",
+  Directory: "#8B5CF6",
+  Marketplace: "#14B8A6",
+  Documentation: "#06B6D4",
+  EditorialMedia: "#3B82F6",
+  Academic: "#10B981",
+  Government: "#22C55E",
+  Reference: "#0EA5E9",
+  Unknown: "#94A3B8",
+  // Retained for any historical rows persisted under the old taxonomy before this change.
+  Institution: "#10B981",
+  Other: "#94A3B8",
+};
 
 function CitationsTab({ range }: { range: "7D" | "30D" | "90D" }) {
   const [isLoading, setIsLoading] = useState(true);

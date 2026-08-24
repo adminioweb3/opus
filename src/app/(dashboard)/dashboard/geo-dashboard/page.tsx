@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getGeoDashboard, GeoDashboardData } from "@/lib/api/dashboardApi";
+import { MetricProvenanceBadge, type MetricProvenanceKind } from "@/components/ui/metric-provenance-badge";
 import {
   Area,
   AreaChart,
@@ -33,14 +34,20 @@ interface ScoreCard {
   change: string;
   direction: "up" | "down";
   delay: number;
+  provenance: MetricProvenanceKind;
 }
 
+// provenance reflects the backend's Phase 3 A1 rework (RunScanCommand.cs): Visibility/Citation/
+// Sentiment/Competitor are now deterministic computations over real prompt-intelligence data;
+// the other four still have no real data source (pending Phase 4's technical GEO audit and
+// Phase 5's fact-accuracy monitor) and remain a single LLM's estimate.
 const SCORE_META: {
   label: string;
   icon: string;
   iconColor: string;
   delay: number;
   key: string;
+  provenance: MetricProvenanceKind;
 }[] = [
   {
     label: "AI Visibility Score",
@@ -48,6 +55,7 @@ const SCORE_META: {
     iconColor: "#6366F1",
     delay: 0,
     key: "visibilityScore",
+    provenance: "derived",
   },
   {
     label: "Citation Score",
@@ -55,6 +63,7 @@ const SCORE_META: {
     iconColor: "#16A34A",
     delay: 50,
     key: "citationScore",
+    provenance: "derived",
   },
   {
     label: "Sentiment Score",
@@ -62,6 +71,7 @@ const SCORE_META: {
     iconColor: "#2563EB",
     delay: 100,
     key: "sentimentScore",
+    provenance: "derived",
   },
   {
     label: "Competitor Score",
@@ -69,6 +79,7 @@ const SCORE_META: {
     iconColor: "#7C3AED",
     delay: 150,
     key: "competitorScore",
+    provenance: "derived",
   },
   {
     label: "Hallucination Risk",
@@ -76,6 +87,7 @@ const SCORE_META: {
     iconColor: "#B45309",
     delay: 200,
     key: "hallucinationRisk",
+    provenance: "ai-inferred",
   },
   {
     label: "SEO Health",
@@ -83,6 +95,7 @@ const SCORE_META: {
     iconColor: "#0EA5E9",
     delay: 250,
     key: "seoHealth",
+    provenance: "ai-inferred",
   },
   {
     label: "AEO Readiness",
@@ -90,6 +103,7 @@ const SCORE_META: {
     iconColor: "#DB2777",
     delay: 300,
     key: "aeoReadiness",
+    provenance: "ai-inferred",
   },
   {
     label: "GEO Readiness",
@@ -97,6 +111,7 @@ const SCORE_META: {
     iconColor: "#16A34A",
     delay: 350,
     key: "geoReadiness",
+    provenance: "ai-inferred",
   },
 ];
 
@@ -199,6 +214,7 @@ export default function GeoDashboardPage() {
             value: entry?.value ?? 0,
             change: entry?.change ?? "+0%",
             direction: entry?.direction ?? "up",
+            provenance: meta.provenance,
           };
         });
         setScoreCards(cards);
@@ -388,7 +404,10 @@ export default function GeoDashboardPage() {
               <Card key={card.label} className="cursor-pointer hover:border-primary/40 transition-all duration-300 group">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-[13px] font-semibold text-muted-foreground">{card.label}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[13px] font-semibold text-muted-foreground">{card.label}</span>
+                      <MetricProvenanceBadge kind={card.provenance} className="w-fit" />
+                    </div>
                     <div className="p-1.5 rounded-md shrink-0 transition-transform group-hover:scale-110" style={{ backgroundColor: soft(card.iconColor), color: card.iconColor }}>
                       <i className={`ti ${card.icon} text-sm`} />
                     </div>

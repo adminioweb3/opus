@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Building2, Users, Globe, Plug, CreditCard, Key, ShieldAlert } from "lucide-react"
+import { User, Building2, Users, Globe, Plug, CreditCard, Key, ShieldAlert, BriefcaseBusiness } from "lucide-react"
 
 export interface SettingsSection {
   id: string
@@ -17,6 +17,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
   { id: "integrations", label: "Integrations", icon: Plug, desc: "Connect analytics, CRM, CMS, infra and AI providers." },
   { id: "billing", label: "Billing", icon: CreditCard, desc: "Plan, seats, payment methods, invoices and usage." },
   { id: "apikeys", label: "API Keys", icon: Key, desc: "Keys, webhooks, environment variables and logs." },
+  { id: "agency", label: "Agency", icon: BriefcaseBusiness, desc: "Client workspaces, white-label branding and report sharing." },
   { id: "security", label: "Security", icon: ShieldAlert, desc: "MFA, SSO, password policy, devices and compliance." },
 ]
 

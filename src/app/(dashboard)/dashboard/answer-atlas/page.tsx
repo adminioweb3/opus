@@ -26,6 +26,8 @@ import {
   Wand2,
   ArrowUpRight,
   Search,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import {
   getVisibilitySummary,
@@ -53,6 +55,9 @@ import {
   getFanoutsOverview,
   generateTopicPrompts,
   getQuestionHistory,
+  getAnalysisResults,
+  markRecommendationImplemented,
+  processDueRecommendationImpacts,
   PlanGateError,
   VisibilitySummaryResponse,
   PlatformsSummaryResponse,
@@ -63,6 +68,7 @@ import {
   PromptFanout,
   FanoutOverviewRow,
   ExecutionHistoryRow,
+  AnalysisResultsResponse,
   RankBlock,
   TopicRanking,
   PromptTopic,
@@ -1493,6 +1499,9 @@ function CitationsTab({ range }: { range: "7D" | "30D" | "90D" }) {
   const allCategories = Array.from(new Set((data?.topDomains ?? []).map((d) => d.category)));
   const domains = (data?.topDomains ?? []).filter((d) => !categoryFilter || d.category === categoryFilter);
   const pages = (data?.topPages ?? []).filter((p) => !categoryFilter || p.category === categoryFilter);
+  const winners = data?.winners ?? [];
+  const losers = data?.losers ?? [];
+  const gaps = data?.gaps ?? [];
   // Simple real bubble layout (circles sized by citation share, arranged on a circle) in place
   // of a physics-based force graph — honest simplification of the visualization technique only,
   // the underlying share data is real.
@@ -1545,6 +1554,77 @@ function CitationsTab({ range }: { range: "7D" | "30D" | "90D" }) {
         <Link href="/dashboard/citation-intelligence" className="text-[12.5px] font-semibold text-indigo-600 hover:text-indigo-700 whitespace-nowrap">
           Open Citation intelligence →
         </Link>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <h3 className="text-[15px] font-bold text-slate-800">Citation winners</h3>
+          </div>
+          <div className="space-y-3">
+            {winners.length === 0 ? (
+              <p className="text-[13px] text-slate-500">No domains gained citation share versus the prior period.</p>
+            ) : (
+              winners.map((d) => (
+                <div key={d.domain} className="flex items-center gap-3 text-[13px]">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: CATEGORY_COLORS[d.category] ?? "#94A3B8" }} />
+                  <span className="text-slate-700 truncate flex-1">{d.domain}</span>
+                  <span className="font-mono text-emerald-600 shrink-0">{d.delta} pts</span>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingDown className="w-4 h-4 text-rose-600" />
+            <h3 className="text-[15px] font-bold text-slate-800">Citation losers</h3>
+          </div>
+          <div className="space-y-3">
+            {losers.length === 0 ? (
+              <p className="text-[13px] text-slate-500">No domains lost citation share versus the prior period.</p>
+            ) : (
+              losers.map((d) => (
+                <div key={d.domain} className="flex items-center gap-3 text-[13px]">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: CATEGORY_COLORS[d.category] ?? "#94A3B8" }} />
+                  <span className="text-slate-700 truncate flex-1">{d.domain}</span>
+                  <span className="font-mono text-rose-600 shrink-0">{d.delta} pts</span>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ShieldAlert className="w-4 h-4 text-amber-600" />
+            <h3 className="text-[15px] font-bold text-slate-800">Competitive citation gaps</h3>
+          </div>
+          <div className="space-y-3">
+            {gaps.length === 0 ? (
+              <p className="text-[13px] text-slate-500">No tracked competitors were cited in prompts where your domain was absent.</p>
+            ) : (
+              gaps.slice(0, 5).map((g) => (
+                <div key={`${g.domain}-${g.competitor}`} className="border border-slate-100 rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-[13px]">
+                    <span className="font-semibold text-slate-800 truncate flex-1">{g.competitor}</span>
+                    <span className="font-mono text-amber-700 shrink-0">{g.promptCount} prompts</span>
+                  </div>
+                  <div className="mt-1 text-[12px] text-slate-500 truncate">{g.domain}</div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {g.platforms.slice(0, 3).map((platform) => (
+                      <Badge key={platform} variant="secondary" className="text-[10.5px] px-1.5 py-0">
+                        {platform}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -1989,6 +2069,11 @@ function QueryFanoutsTab({
 function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; onClose: () => void }) {
   const [isLoading, setIsLoading] = useState(true);
   const [history, setHistory] = useState<ExecutionHistoryRow[]>([]);
+  const [openAnalysisId, setOpenAnalysisId] = useState<string | null>(null);
+  const [analysisDetails, setAnalysisDetails] = useState<Record<string, AnalysisResultsResponse>>({});
+  const [detailsLoadingId, setDetailsLoadingId] = useState<string | null>(null);
+  const [markingId, setMarkingId] = useState<string | null>(null);
+  const [processingImpacts, setProcessingImpacts] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -2001,15 +2086,82 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
       .finally(() => setIsLoading(false));
   }, [questionId]);
 
+  const toggleDetails = async (analysisId: string) => {
+    if (openAnalysisId === analysisId) {
+      setOpenAnalysisId(null);
+      return;
+    }
+
+    setOpenAnalysisId(analysisId);
+    if (analysisDetails[analysisId]) return;
+
+    setDetailsLoadingId(analysisId);
+    try {
+      const details = await getAnalysisResults(analysisId);
+      setAnalysisDetails((prev) => ({ ...prev, [analysisId]: details }));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load recommendations for this run");
+    } finally {
+      setDetailsLoadingId(null);
+    }
+  };
+
+  const markImplemented = async (analysisId: string, recommendationId: string) => {
+    setMarkingId(recommendationId);
+    try {
+      const implementation = await markRecommendationImplemented(recommendationId, 14);
+      setAnalysisDetails((prev) => {
+        const current = prev[analysisId];
+        if (!current) return prev;
+        return {
+          ...prev,
+          [analysisId]: {
+            ...current,
+            recommendationImplementations: [
+              ...current.recommendationImplementations.filter((item) => item.promptRecommendationId !== recommendationId),
+              implementation,
+            ],
+          },
+        };
+      });
+      toast.success("Marked implemented — impact will be measured after the monitoring window");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to mark recommendation implemented");
+    } finally {
+      setMarkingId(null);
+    }
+  };
+
+  const processDueImpacts = async () => {
+    setProcessingImpacts(true);
+    try {
+      const result = await processDueRecommendationImpacts();
+      toast.success(`Measured ${result.measured} due recommendation impact${result.measured === 1 ? "" : "s"}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to process due impacts");
+    } finally {
+      setProcessingImpacts(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto">
         <div className="p-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
           <h3 className="font-space-grotesk text-[16px] font-bold text-slate-900">Execution history</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" className="h-8 text-[12px]" disabled={processingImpacts} onClick={processDueImpacts}>
+              {processingImpacts ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <TrendingUp className="w-3.5 h-3.5" />}
+              Process due
+            </Button>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
         <div className="p-5">
           {isLoading ? (
@@ -2020,7 +2172,10 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
             <p className="text-sm text-slate-500 text-center py-12">No runs yet for this prompt.</p>
           ) : (
             <div className="space-y-3">
-              {history.map((h) => (
+              {history.map((h) => {
+                const details = analysisDetails[h.analysisId];
+                const implementations = details?.recommendationImplementations ?? [];
+                return (
                 <div key={h.analysisId} className="border border-slate-200 rounded-lg p-3.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-slate-800">{new Date(h.runAt).toLocaleString()}</span>
@@ -2043,8 +2198,64 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                       <span>Pos: {h.averagePosition}</span>
                     </div>
                   )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3 h-8 text-[12px]"
+                    disabled={h.status !== "Completed" || detailsLoadingId === h.analysisId}
+                    onClick={() => toggleDetails(h.analysisId)}
+                  >
+                    {detailsLoadingId === h.analysisId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ChevronRight className={`w-3.5 h-3.5 transition-transform ${openAnalysisId === h.analysisId ? "rotate-90" : ""}`} />}
+                    Recommendations
+                  </Button>
+                  {openAnalysisId === h.analysisId && (
+                    <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+                      {detailsLoadingId === h.analysisId ? (
+                        <div className="py-3 flex justify-center">
+                          <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                        </div>
+                      ) : (details?.recommendations ?? []).length === 0 ? (
+                        <p className="text-[12px] text-slate-500">No recommendations were generated for this run.</p>
+                      ) : (
+                        details!.recommendations.map((rec) => {
+                          const implementation = implementations.find((item) => item.promptRecommendationId === rec.id);
+                          return (
+                            <div key={rec.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <div className="text-[12.5px] font-bold text-slate-800">{rec.title}</div>
+                                  <p className="text-[11.5px] text-slate-500 mt-1 leading-relaxed">{rec.description}</p>
+                                </div>
+                                <Badge className="text-[10px] bg-indigo-50 text-indigo-700">{rec.priority}</Badge>
+                              </div>
+                              {implementation ? (
+                                <div className="mt-2 text-[11.5px] text-slate-600">
+                                  <span className="font-semibold">Impact:</span> {implementation.impactStatus}
+                                  {implementation.measuredAt
+                                    ? ` · Visibility ${implementation.deltaVisibilityScore ?? 0}, citations ${implementation.deltaCitationCount ?? 0}`
+                                    : ` · due ${new Date(implementation.measurementDueAt).toLocaleDateString()}`}
+                                </div>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  className="mt-2 h-7 text-[11.5px]"
+                                  disabled={markingId === rec.id}
+                                  onClick={() => markImplemented(h.analysisId, rec.id)}
+                                >
+                                  {markingId === rec.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <TrendingUp className="w-3 h-3" />}
+                                  I implemented this
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>

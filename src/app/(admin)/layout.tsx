@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/stores/auth-store"
-import { Loader2 } from "lucide-react"
+import { PageLoader } from "@/components/ui/loader"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -20,11 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [isAuthenticated, isLoading, user, router])
 
   if (isLoading || !isAuthenticated || (user as { role?: string })?.role !== "superadmin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <PageLoader className="min-h-screen" label="Checking admin access..." />
   }
 
   return (

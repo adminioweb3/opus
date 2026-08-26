@@ -67,6 +67,10 @@ export interface PromptTopic {
 export interface PromptQuestion {
   id: string;
   promptTopicId: string;
+  promptClusterId: string | null;
+  intentId: string | null;
+  personaId: string | null;
+  funnelStageId: string | null;
   promptText: string;
   isActive: boolean;
   region: string;
@@ -93,10 +97,74 @@ export interface PromptVisibility {
   competitorCount: number;
 }
 
+export interface PromptRecommendation {
+  id: string;
+  promptAnalysisId: string;
+  category: string;
+  title: string;
+  description: string;
+  priority: string;
+  difficulty: string;
+  estimatedVisibilityGain: number;
+}
+
+export interface RecommendationImplementation {
+  id: string;
+  organizationId: string;
+  promptRecommendationId: string;
+  promptAnalysisId: string;
+  promptQuestionId: string;
+  markedImplementedAt: string;
+  monitoringWindowDays: number;
+  baselineVisibilityScore: number;
+  baselineShareOfVoice: number;
+  baselineAveragePosition: number;
+  baselineCitationCount: number;
+  measurementDueAt: string;
+  measuredAt: string | null;
+  followupAnalysisId: string | null;
+  deltaVisibilityScore: number | null;
+  deltaShareOfVoice: number | null;
+  deltaAveragePosition: number | null;
+  deltaCitationCount: number | null;
+  impactStatus: 'Pending' | 'Improved' | 'Neutral' | 'Regressed';
+  evidenceJson: string;
+}
+
+export interface AnalysisResultsResponse {
+  visibility: PromptVisibility | null;
+  mentions: unknown[];
+  responses: unknown[];
+  recommendations: PromptRecommendation[];
+  recommendationImplementations: RecommendationImplementation[];
+  competitorComparisons: unknown[];
+}
+
 export interface QuestionWithLatest {
   question: PromptQuestion;
   latestAnalysis: PromptAnalysis | null;
   visibility: PromptVisibility | null;
+}
+
+export interface PromptTaxonomyGraphRow {
+  topicId: string;
+  topicName: string;
+  subtopicId: string | null;
+  subtopicName: string | null;
+  intentId: string | null;
+  intentName: string | null;
+  personaId: string | null;
+  personaName: string | null;
+  funnelStageId: string | null;
+  funnelStageName: string | null;
+  clusterId: string | null;
+  clusterName: string | null;
+  promptCount: number;
+}
+
+export interface PromptTaxonomyGraphResponse {
+  hasData: boolean;
+  nodes: PromptTaxonomyGraphRow[];
 }
 
 export async function getTopics(): Promise<PromptTopic[]> {
@@ -111,6 +179,32 @@ export async function createTopic(name: string, description: string): Promise<Pr
 
 export async function getQuestions(topicId: string): Promise<QuestionWithLatest[]> {
   const response = await apiClient.get<QuestionWithLatest[]>(`/PromptIntelligence/topics/${topicId}/questions`);
+  return response.data;
+}
+
+export async function getAnalysisResults(analysisId: string): Promise<AnalysisResultsResponse> {
+  const response = await apiClient.get<AnalysisResultsResponse>(`/PromptIntelligence/analyses/${analysisId}`);
+  return response.data;
+}
+
+export async function markRecommendationImplemented(
+  recommendationId: string,
+  monitoringWindowDays = 14
+): Promise<RecommendationImplementation> {
+  const response = await apiClient.post<RecommendationImplementation>(
+    `/PromptIntelligence/recommendations/${recommendationId}/implemented`,
+    { monitoringWindowDays }
+  );
+  return response.data;
+}
+
+export async function processDueRecommendationImpacts(): Promise<{ measured: number }> {
+  const response = await apiClient.post<{ measured: number }>('/PromptIntelligence/recommendations/impact/process-due');
+  return response.data;
+}
+
+export async function getPromptTaxonomyGraph(): Promise<PromptTaxonomyGraphResponse> {
+  const response = await apiClient.get<PromptTaxonomyGraphResponse>('/PromptIntelligence/taxonomy-graph');
   return response.data;
 }
 
@@ -314,11 +408,38 @@ export interface CitationPage {
   firstSeen: string;
 }
 
+export interface CitationMover {
+  domain: string;
+  category: string;
+  share: number;
+  priorShare: number;
+  delta: string;
+}
+
+export interface CitationGapExample {
+  url: string;
+  platform: string;
+  runAt: string;
+}
+
+export interface CitationGap {
+  competitor: string;
+  domain: string;
+  category: string;
+  promptCount: number;
+  platforms: string[];
+  examples: CitationGapExample[];
+  lastSeen: string;
+}
+
 export interface CitationsSummaryResponse {
   hasData: boolean;
   topDomains: CitationDomain[];
   categories: CitationCategory[];
   topPages: CitationPage[];
+  winners: CitationMover[];
+  losers: CitationMover[];
+  gaps: CitationGap[];
 }
 
 export async function getCitationsSummary(range: '7D' | '30D' | '90D'): Promise<CitationsSummaryResponse> {

@@ -36,7 +36,7 @@ function DashboardHeader() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { orgName } = useOrganizationStore();
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore();
+  const { notifications, unreadCount, loadNotifications, markAsRead, markAllAsRead } = useNotificationStore();
   const { setCommandPaletteOpen } = useUIStore();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -51,6 +51,10 @@ function DashboardHeader() {
       ? user.avatar
       : user.photoURL
     : "?";
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -118,11 +122,11 @@ function DashboardHeader() {
                       setNotificationsOpen(false);
                       if (n.actionUrl) router.push(n.actionUrl);
                     }}
-                    className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors border-b border-border/50 last:border-0 ${!n.read ? "bg-primary/5" : ""}`}
+                    className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors border-b border-border/50 last:border-0 ${!n.isRead ? "bg-primary/5" : ""}`}
                   >
                     <div className="flex items-start gap-2">
-                      {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />}
-                      <div className={`flex-1 min-w-0 ${n.read ? "ml-3.5" : ""}`}>
+                      {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />}
+                      <div className={`flex-1 min-w-0 ${n.isRead ? "ml-3.5" : ""}`}>
                         <div className="text-sm font-medium truncate">{n.title}</div>
                         <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{n.message}</div>
                         <div className="text-[11px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</div>

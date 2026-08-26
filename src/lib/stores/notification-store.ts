@@ -1,61 +1,73 @@
 "use client"
 
 import { create } from "zustand"
-import { MOCK_NOTIFICATIONS, type AlertNotification } from "@/lib/mock-data/alerts"
+import {
+  getAlerts,
+  markAlertRead,
+  markAllAlertsRead,
+  type AlertNotification,
+} from "@/lib/api/alertsApi"
 
 interface NotificationState {
   notifications: AlertNotification[]
   unreadCount: number
-
-  // Actions
-  addNotification: (notification: Omit<AlertNotification, "id" | "createdAt" | "read">) => void
-  markAsRead: (id: string) => void
-  markAllAsRead: () => void
+  isLoading: boolean
+  loadNotifications: () => Promise<void>
+  markAsRead: (id: string) => Promise<void>
+  markAllAsRead: () => Promise<void>
   removeNotification: (id: string) => void
   clearAll: () => void
 }
 
-export const useNotificationStore = create<NotificationState>()((set, get) => ({
-  notifications: MOCK_NOTIFICATIONS,
-  unreadCount: MOCK_NOTIFICATIONS.filter((n) => !n.read).length,
+function unreadCount(notifications: AlertNotification[]) {
+  return notifications.filter((n) => !n.isRead).length
+}
 
-  addNotification: (notification) => {
-    const newNotification: AlertNotification = {
-      ...notification,
-      id: `not_${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      read: false,
+export const useNotificationStore = create<NotificationState>()((set, get) => ({
+  notifications: [],
+  unreadCount: 0,
+  isLoading: false,
+
+  loadNotifications: async () => {
+    set({ isLoading: true })
+    try {
+      const notifications = await getAlerts(50)
+      set({ notifications, unreadCount: unreadCount(notifications) })
+    } catch (err) {
+      console.error("Failed to load alerts", err)
+    } finally {
+      set({ isLoading: false })
     }
-    set((state) => ({
-      notifications: [newNotification, ...state.notifications],
-      unreadCount: state.unreadCount + 1,
-    }))
   },
 
-  markAsRead: (id) =>
-    set((state) => {
-      const notifications = state.notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
-      )
-      return {
-        notifications,
-        unreadCount: notifications.filter((n) => !n.read).length,
-      }
-    }),
+  markAsRead: async (id) => {
+    const previous = get().notifications
+    const notifications = previous.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    set({ notifications, unreadCount: unreadCount(notifications) })
+    try {
+      await markAlertRead(id)
+    } catch (err) {
+      console.error("Failed to mark alert read", err)
+      set({ notifications: previous, unreadCount: unreadCount(previous) })
+    }
+  },
 
-  markAllAsRead: () =>
-    set((state) => ({
-      notifications: state.notifications.map((n) => ({ ...n, read: true })),
-      unreadCount: 0,
-    })),
+  markAllAsRead: async () => {
+    const previous = get().notifications
+    const notifications = previous.map((n) => ({ ...n, isRead: true }))
+    set({ notifications, unreadCount: 0 })
+    try {
+      await markAllAlertsRead()
+    } catch (err) {
+      console.error("Failed to mark all alerts read", err)
+      set({ notifications: previous, unreadCount: unreadCount(previous) })
+    }
+  },
 
   removeNotification: (id) =>
     set((state) => {
       const notifications = state.notifications.filter((n) => n.id !== id)
-      return {
-        notifications,
-        unreadCount: notifications.filter((n) => !n.read).length,
-      }
+      return { notifications, unreadCount: unreadCount(notifications) }
     }),
 
   clearAll: () => set({ notifications: [], unreadCount: 0 }),

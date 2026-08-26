@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { toast } from "sonner"
+import { SectionLoader } from "@/components/ui/loader"
+import { toast } from "@/lib/toast"
 import { Globe, Plus, ChevronDown, ChevronRight } from "lucide-react"
 import { fetchWebsites, connectWebsite, Website } from "@/lib/api/websitesApi"
 import { getDomainLogoUrl } from "@/lib/logoUtils"
@@ -35,7 +36,9 @@ export default function WebsitesSection() {
   }, [])
 
   useEffect(() => {
-    load()
+    queueMicrotask(() => {
+      void load()
+    })
   }, [load])
 
   const handleAdd = async () => {
@@ -73,7 +76,7 @@ export default function WebsitesSection() {
           </div>
 
           {isLoading ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>
+            <SectionLoader className="min-h-32" label="Loading websites..." />
           ) : sites.length === 0 ? (
             <EmptyState icon={Globe} message="No websites connected yet." />
           ) : (

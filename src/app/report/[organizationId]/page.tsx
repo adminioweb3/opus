@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getFullReport, FullReportData } from "@/lib/api/reportApi"
-import { Loader2 } from "lucide-react"
+import { PageLoader } from "@/components/ui/loader"
 
 import ReportCover from "@/components/report/ReportCover"
 import ExecutiveKPIs from "@/components/report/ExecutiveKPIs"
@@ -64,11 +64,10 @@ function ReportPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <h2 className="text-xl font-semibold text-slate-700">Generating Executive Dashboard...</h2>
-        <p className="text-sm text-slate-500 mt-2">Aggregating AI visibility metrics</p>
-      </div>
+      <PageLoader
+        className="min-h-screen bg-slate-50"
+        label="Generating executive dashboard and aggregating AI visibility metrics..."
+      />
     )
   }
 

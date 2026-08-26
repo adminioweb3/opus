@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { CreditCard, Download, RefreshCw, Receipt } from "lucide-react"
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { SectionHead, StatusPill, EmptyState } from "./shared"

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Card,
   CardContent,
@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { SectionLoader } from "@/components/ui/loader";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import {
   getCommandCenter,
@@ -351,12 +352,7 @@ export default function CommandCenterPage() {
       </div>
 
       {isLoading && !data ? (
-        <div className="py-24 flex flex-col items-center justify-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-          <p className="text-sm text-muted-foreground">
-            Loading real command center data…
-          </p>
-        </div>
+        <SectionLoader label="Loading real command center data..." />
       ) : (
         <>
           {/* SECTION: KPIs */}

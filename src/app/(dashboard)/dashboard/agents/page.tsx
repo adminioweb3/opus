@@ -8,7 +8,7 @@ import {
   User, CircleDot, Hexagon, FolderPlus, Search, Pencil,
   MoreVertical, Pause, Trash2, Copy as DuplicateIcon, X
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

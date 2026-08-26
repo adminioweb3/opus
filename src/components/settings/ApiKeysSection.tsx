@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { SectionLoader } from "@/components/ui/loader"
 import { Key, Copy, RefreshCw, Trash2 } from "lucide-react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { SectionHead, EmptyState, StatusPill } from "./shared"
 import { generateApiKey, getApiKeys, revokeApiKey, type ApiKeyRecord } from "@/lib/api/apiKeysApi"
 
@@ -32,7 +33,9 @@ export default function ApiKeysSection() {
   }, [])
 
   useEffect(() => {
-    load()
+    queueMicrotask(() => {
+      void load()
+    })
   }, [load])
 
   const activeKeys = useMemo(() => keys.filter((key) => key.isActive), [keys])
@@ -147,7 +150,7 @@ export default function ApiKeysSection() {
 
           <div>
             {isLoading ? (
-              <EmptyState icon={Key} message="Loading API keys..." />
+              <SectionLoader className="min-h-32" label="Loading API keys..." />
             ) : keys.length === 0 ? (
               <EmptyState icon={Key} message="No API keys have been generated yet." />
             ) : (

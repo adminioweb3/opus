@@ -20,6 +20,14 @@ export interface GeoSubMetric {
   score: number;
 }
 
+export interface GeoTechnicalCheck {
+  key: string;
+  label: string;
+  score: number;
+  passed: boolean;
+  evidence: string;
+}
+
 export interface CompetitorGap {
   name: string;
   coverage: string;
@@ -43,7 +51,11 @@ export interface GeoOptimizationResponse {
   score: number;
   verdict: string;
   statusText: string;
+  deterministicScore: number;
+  scoreSource: string;
   subMetrics: GeoSubMetric[];
+  technicalChecks: GeoTechnicalCheck[];
+  evidenceNotes: string[];
   fixRecommendations: FixRecommendation[];
   competitorGap: CompetitorGap[];
   promptCoverage: PromptCoverageItem[];

@@ -6,7 +6,7 @@ import {
   Lightbulb, Download, FlaskConical, CheckCircle2,
   Code, ChevronDown, ChevronRight, Copy
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -379,6 +379,11 @@ export default function GeoOptimizerPage() {
                 <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                   {hasResults ? results?.statusText : "Ready for AI distribution"}
                 </div>
+                {hasResults && results?.scoreSource && (
+                  <div className="text-[11px] text-muted-foreground">
+                    Score source: {results.scoreSource.replace(/_/g, " ")}
+                  </div>
+                )}
               </div>
 
               {hasResults && results && results.subMetrics.length > 0 && (
@@ -401,6 +406,46 @@ export default function GeoOptimizerPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Deterministic audit evidence */}
+          {hasResults && results?.technicalChecks && results.technicalChecks.length > 0 && (
+            <Card className="lg:col-span-2 flex flex-col">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                  <CardTitle className="text-lg">Deterministic technical audit</CardTitle>
+                  <CardDescription>Robots, sitemap, schema, headings, SSR, freshness, and authority checks</CardDescription>
+                </div>
+                <Badge variant="secondary" className="text-xs">
+                  {results.technicalChecks.filter((check) => check.passed).length}/{results.technicalChecks.length} passed
+                </Badge>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y divide-border/50">
+                  {results.technicalChecks.map((check) => {
+                    const tone = check.passed
+                      ? "text-emerald-600 bg-emerald-500/10"
+                      : check.score >= 50
+                        ? "text-amber-600 bg-amber-500/10"
+                        : "text-red-500 bg-red-500/10";
+                    return (
+                      <div key={check.key} className="flex items-start justify-between gap-4 p-4 hover:bg-muted/20 transition-colors">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[13.5px] font-semibold">{check.label}</span>
+                            <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0 ${tone}`}>
+                              {check.passed ? "Pass" : "Gap"}
+                            </Badge>
+                          </div>
+                          <p className="text-[12.5px] text-muted-foreground mt-1 leading-relaxed">{check.evidence}</p>
+                        </div>
+                        <span className={`shrink-0 text-[11.5px] font-bold px-2 py-1 rounded-md ${tone}`}>{check.score}/100</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Fixes */}
           <Card className="lg:col-span-2 flex flex-col">

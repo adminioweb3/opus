@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionLoader } from "@/components/ui/loader";
 import {
   Dialog,
   DialogContent,
@@ -289,7 +290,7 @@ export default function PublishingCenterPage() {
         <Card>
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="p-8 text-center text-muted-foreground text-sm">Loading drafts…</div>
+              <SectionLoader className="min-h-32" label="Loading drafts..." />
             ) : filteredDrafts.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground text-sm">
                 {drafts.length === 0

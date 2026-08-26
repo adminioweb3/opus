@@ -6,7 +6,7 @@ import { mockDeploymentsData } from "@/lib/mock-data/deployments"
 import { motion } from "framer-motion"
 import { CheckCircle2, Circle, Plug, Loader2 } from "lucide-react"
 import { upsertIntegration } from "@/lib/api/integrationsApi"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 
 export default function IntegrationsPage() {
   const [connecting, setConnecting] = useState<string | null>(null)

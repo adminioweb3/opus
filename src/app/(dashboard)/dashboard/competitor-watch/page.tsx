@@ -12,7 +12,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import apiClient from "@/lib/apiClient";
 import { getDomainLogoUrl } from "@/lib/logoUtils";

@@ -5,15 +5,24 @@ import {
   HeartPulse, ShieldCheck, MessageSquare, Award,
   AlertTriangle, MessageSquareOff, TrendingUp, TrendingDown,
   ChevronDown, Download, ArrowUpRight,
-  Minus, Flag, Link as LinkIcon, Route, FileUp, ShieldAlert
+  Minus, Flag, Link as LinkIcon, Route, FileUp, ShieldAlert, RefreshCw, CheckCircle2
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { SectionLoader } from "@/components/ui/loader";
+import { toast } from "@/lib/toast";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import { getBrandPulse, BrandPulseResponse } from "@/lib/api/brandPulseApi";
+import {
+  getFactAccuracy,
+  refreshFactAccuracy,
+  getConsensus,
+  refreshConsensus,
+  BrandKnowledgeResult,
+  CrossEngineConsensusResult,
+} from "@/lib/api/brandKnowledgeApi";
 import { getPlatformLogoUrl } from "@/lib/logoUtils";
 import { LogoAvatar } from "@/components/ui/logo-avatar";
 
@@ -51,13 +60,23 @@ export default function BrandPulsePage() {
   const [range, setRange] = useState<"7D" | "30D" | "90D">("30D");
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<BrandPulseResponse | null>(null);
+  const [factAccuracy, setFactAccuracy] = useState<BrandKnowledgeResult | null>(null);
+  const [consensus, setConsensus] = useState<CrossEngineConsensusResult | null>(null);
+  const [refreshingFacts, setRefreshingFacts] = useState(false);
+  const [refreshingConsensus, setRefreshingConsensus] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!organizationId) return;
     setIsLoading(true);
     try {
-      const res = await getBrandPulse(range);
+      const [res, facts, consensusData] = await Promise.all([
+        getBrandPulse(range),
+        getFactAccuracy(range === "7D" ? 7 : range === "90D" ? 90 : 30),
+        getConsensus(range === "7D" ? 7 : range === "90D" ? 90 : 30),
+      ]);
       setData(res);
+      setFactAccuracy(facts);
+      setConsensus(consensusData);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load brand pulse data");
@@ -65,6 +84,36 @@ export default function BrandPulsePage() {
       setIsLoading(false);
     }
   }, [organizationId, range]);
+
+  const lookbackDays = range === "7D" ? 7 : range === "90D" ? 90 : 30;
+
+  const handleRefreshFacts = useCallback(async () => {
+    setRefreshingFacts(true);
+    try {
+      const res = await refreshFactAccuracy(lookbackDays);
+      setFactAccuracy(res);
+      toast.success("Fact accuracy refreshed from stored AI responses");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to refresh fact accuracy");
+    } finally {
+      setRefreshingFacts(false);
+    }
+  }, [lookbackDays]);
+
+  const handleRefreshConsensus = useCallback(async () => {
+    setRefreshingConsensus(true);
+    try {
+      const res = await refreshConsensus(lookbackDays);
+      setConsensus(res);
+      toast.success(res.hasIndependentProviders ? "Consensus refreshed" : "Consensus is gated until 2+ providers have evidence");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to refresh consensus");
+    } finally {
+      setRefreshingConsensus(false);
+    }
+  }, [lookbackDays]);
 
   useEffect(() => {
     fetchData();
@@ -170,10 +219,7 @@ export default function BrandPulsePage() {
       </div>
 
       {isLoading && !data ? (
-        <div className="py-24 flex flex-col items-center justify-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-          <p className="text-sm text-slate-500">Loading real brand pulse data…</p>
-        </div>
+        <SectionLoader label="Loading real brand pulse data..." />
       ) : (
         <>
           {/* ALERTS */}
@@ -415,6 +461,98 @@ export default function BrandPulsePage() {
                   })}
                   {(data?.promptEvidence ?? []).length === 0 && (
                     <p className="text-sm text-slate-500 text-center py-4">No prompt evidence yet.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* SECTION: Phase 5 fact accuracy + consensus */}
+          <h2 className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-4 px-1">AI fact accuracy monitor</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div>
+                    <h3 className="text-[15px] font-bold text-slate-900">Verified brand claims</h3>
+                    <p className="text-[13px] text-slate-500">Claims extracted from stored AI responses and checked against verified profile facts.</p>
+                  </div>
+                  <Button size="sm" variant="outline" disabled={refreshingFacts} onClick={handleRefreshFacts}>
+                    {refreshingFacts ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    Refresh
+                  </Button>
+                </div>
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+                    <div className="text-[22px] font-space-grotesk font-bold">{factAccuracy?.claims.length ?? 0}</div>
+                    <div className="text-[11px] text-slate-500 font-semibold uppercase">Claims</div>
+                  </div>
+                  <div className="rounded-lg bg-red-50 border border-red-100 p-3">
+                    <div className="text-[22px] font-space-grotesk font-bold text-red-600">{factAccuracy?.incorrectCount ?? 0}</div>
+                    <div className="text-[11px] text-red-500 font-semibold uppercase">Incorrect</div>
+                  </div>
+                  <div className="rounded-lg bg-amber-50 border border-amber-100 p-3">
+                    <div className="text-[22px] font-space-grotesk font-bold text-amber-600">{factAccuracy?.unverifiedCount ?? 0}</div>
+                    <div className="text-[11px] text-amber-600 font-semibold uppercase">Unverified</div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {(factAccuracy?.claims ?? []).slice(0, 5).map((claim) => {
+                    const check = factAccuracy?.factChecks.find((f) => f.brandClaimId === claim.id);
+                    const status = check?.verificationStatus ?? "Unverified";
+                    const tone = status === "Verified" ? "bg-emerald-50 text-emerald-700" : status === "Incorrect" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700";
+                    return (
+                      <div key={claim.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <Badge className={`text-[10px] ${tone}`}>{status}</Badge>
+                          <span className="text-[11px] text-slate-400">{claim.platform}</span>
+                        </div>
+                        <p className="text-[12.5px] text-slate-700 leading-relaxed">{claim.claimText}</p>
+                        {check?.explanation && <p className="text-[11.5px] text-slate-500 mt-1">{check.explanation}</p>}
+                      </div>
+                    );
+                  })}
+                  {(factAccuracy?.claims ?? []).length === 0 && (
+                    <p className="text-sm text-slate-500 text-center py-5">No structured brand claims extracted yet. Refresh after real prompt responses mention your brand.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div>
+                    <h3 className="text-[15px] font-bold text-slate-900">Cross-engine consensus</h3>
+                    <p className="text-[13px] text-slate-500">Agreement/disagreement across independent AI providers.</p>
+                  </div>
+                  <Button size="sm" variant="outline" disabled={refreshingConsensus} onClick={handleRefreshConsensus}>
+                    {refreshingConsensus ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    Refresh
+                  </Button>
+                </div>
+                <div className={`rounded-xl border p-4 mb-5 ${consensus?.hasIndependentProviders ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"}`}>
+                  <div className="flex items-start gap-3">
+                    {consensus?.hasIndependentProviders ? <CheckCircle2 className="w-5 h-5 text-emerald-600 mt-0.5" /> : <ShieldAlert className="w-5 h-5 text-amber-600 mt-0.5" />}
+                    <div>
+                      <div className={`text-[13px] font-bold ${consensus?.hasIndependentProviders ? "text-emerald-800" : "text-amber-800"}`}>
+                        {consensus?.hasIndependentProviders ? "Independent-provider evidence available" : "Gated until more providers are connected"}
+                      </div>
+                      <p className={`text-[12.5px] mt-1 ${consensus?.hasIndependentProviders ? "text-emerald-700" : "text-amber-700"}`}>
+                        {consensus?.status ?? "Consensus analysis requires at least two independent configured providers with stored responses."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {(consensus?.insights ?? []).slice(0, 5).map((insight) => (
+                    <div key={insight.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                      <Badge className="text-[10px] bg-indigo-50 text-indigo-700 mb-2">{insight.insightType}</Badge>
+                      <p className="text-[12.5px] text-slate-700 leading-relaxed">{insight.summary}</p>
+                    </div>
+                  ))}
+                  {(consensus?.insights ?? []).length === 0 && consensus?.hasIndependentProviders && (
+                    <p className="text-sm text-slate-500 text-center py-5">No material disagreements found in the selected window.</p>
                   )}
                 </div>
               </CardContent>

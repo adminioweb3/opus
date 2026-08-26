@@ -7,7 +7,7 @@ import {
   ClipboardList, Cloud, ChevronLeft, ChevronRight, Check, Mic, FlaskConical, Briefcase,
   Target, AlertTriangle, Clock, CircleCheck, Loader2, MoreVertical, X, Zap, Sparkles, Link
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import ReactMarkdown from 'react-markdown';
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import { getKnowledgeBases, createKnowledgeBase, askKnowledgeBase, KnowledgeBaseDto, KnowledgeBaseAnswer } from "@/lib/api/knowledgeVaultApi";

@@ -1,14 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { MOCK_PROMPTS, type MonitoredPrompt, type PromptResponse } from "@/lib/mock-data/prompts"
 import { usePermission } from "@/components/auth/PermissionGate"
-import { Plus, Search, Filter, Play, Pause, Trash2, Eye, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
+import { Plus, Search, Play, Pause, Trash2, Eye, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
 import { formatDate } from "@/lib/utils"
+import { toast } from "@/lib/toast"
 
 const platformColors: Record<string, string> = {
   chatgpt: "bg-[#10A37F]/10 text-[#10A37F]",
@@ -25,7 +26,7 @@ const sentimentColors = {
 }
 
 export default function MonitoringPage() {
-  const [prompts, setPrompts] = useState<MonitoredPrompt[]>(MOCK_PROMPTS)
+  const [prompts] = useState<MonitoredPrompt[]>(MOCK_PROMPTS)
   const [searchQuery, setSearchQuery] = useState("")
   const [expandedPrompt, setExpandedPrompt] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -42,33 +43,17 @@ export default function MonitoringPage() {
 
   const handleAddPrompt = () => {
     if (!newPrompt.trim()) return
-    const mockPrompt: MonitoredPrompt = {
-      id: `prm_${Date.now()}`,
-      prompt: newPrompt,
-      category: "Custom",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      lastChecked: new Date().toISOString(),
-      frequency: "daily",
-      responses: [
-        { platform: "chatgpt", response: "Generating response...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 0, confidenceScore: 0, checkedAt: new Date().toISOString(), position: null },
-        { platform: "gemini", response: "Generating response...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 0, confidenceScore: 0, checkedAt: new Date().toISOString(), position: null },
-        { platform: "claude", response: "Generating response...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 0, confidenceScore: 0, checkedAt: new Date().toISOString(), position: null },
-        { platform: "perplexity", response: "Generating response...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 0, confidenceScore: 0, checkedAt: new Date().toISOString(), position: null },
-        { platform: "grok", response: "Generating response...", brandMentioned: false, sentiment: "neutral", citationUrls: [], visibilityScore: 0, confidenceScore: 0, checkedAt: new Date().toISOString(), position: null },
-      ],
-    }
-    setPrompts([mockPrompt, ...prompts])
+    toast.info("Monitoring prompt creation is preview-only until the live monitoring API is connected.")
     setNewPrompt("")
     setShowAddModal(false)
   }
 
-  const toggleStatus = (id: string) => {
-    setPrompts(prompts.map(p => p.id === id ? { ...p, status: p.status === "active" ? "paused" : "active" } : p))
+  const toggleStatus = () => {
+    toast.info("Monitoring status changes are preview-only until the live monitoring API is connected.")
   }
 
-  const deletePrompt = (id: string) => {
-    setPrompts(prompts.filter(p => p.id !== id))
+  const deletePrompt = () => {
+    toast.info("Monitoring deletion is preview-only until the live monitoring API is connected.")
   }
 
   const avgScore = (responses: PromptResponse[]) => {
@@ -141,11 +126,11 @@ export default function MonitoringPage() {
                     <div className="text-2xl font-bold">{avgScore(prompt.responses)}</div>
                     <div className="text-xs text-muted-foreground">Avg Score</div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => toggleStatus(prompt.id)}>
+                  <Button variant="ghost" size="sm" onClick={toggleStatus}>
                     {prompt.status === "active" ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   </Button>
                   {canDelete && (
-                    <Button variant="ghost" size="sm" onClick={() => deletePrompt(prompt.id)}>
+                    <Button variant="ghost" size="sm" onClick={deletePrompt}>
                       <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
                   )}

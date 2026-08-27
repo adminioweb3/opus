@@ -23,8 +23,8 @@ interface OrganizationState {
   }) => void;
 }
 
-// Default dummy Organization ID for demo purposes
-const DUMMY_ORG_ID = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
+// Default empty string for Organization ID
+const DUMMY_ORG_ID = '';
 
 export const useOrganizationStore = create<OrganizationState>()(
   persist(

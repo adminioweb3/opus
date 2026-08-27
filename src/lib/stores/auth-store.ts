@@ -8,6 +8,8 @@ import type { UserRole } from "@/lib/utils"
 import { MOCK_USERS, DEMO_CREDENTIALS, type MockUser } from "@/lib/mock-data/users"
 import { syncUserToBackend } from "@/lib/api/authApi"
 
+const allowDemoAuth = process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_ENABLE_DEMO_AUTH === "true"
+
 interface AuthState {
   user: User | MockUser | null
   token: string | null
@@ -196,8 +198,10 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null })
         
-        // 1. Check Demo Credentials fallback
-        const matchedDemoUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
+        // 1. Check development-only demo credentials fallback
+        const matchedDemoUser = allowDemoAuth
+          ? MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
+          : null
         if (matchedDemoUser && (password === DEMO_CREDENTIALS.password || password === "demo1234")) {
           set({
             user: { ...matchedDemoUser, lastActive: new Date().toISOString() },
@@ -299,6 +303,8 @@ export const useAuthStore = create<AuthState>()(
 
       // Dev helper: switch role for testing permissions
       switchRole: (role: UserRole) => {
+        if (!allowDemoAuth) return
+
         const current = get().user
         if (current) {
           const matchedUser = MOCK_USERS.find(u => u.role === role)
@@ -311,7 +317,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "citationly-firebase-auth",
       partialize: (state) => ({
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
     }

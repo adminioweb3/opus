@@ -63,7 +63,7 @@ export function CommandPalette() {
           <CommandItem onSelect={() => navigate("/dashboard/competitor-watch")}><Swords className="w-4 h-4 mr-2" /> Competitor Watch</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/opportunity-finder")}><Target className="w-4 h-4 mr-2" /> Opportunity Finder</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/content-generator")}><PenSquare className="w-4 h-4 mr-2" /> Content Studio</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/integrations")}><Plug className="w-4 h-4 mr-2" /> Integrations (Preview)</CommandItem>
+          <CommandItem onSelect={() => navigate("/dashboard/settings?tab=integrations")}><Plug className="w-4 h-4 mr-2" /> Integrations</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/settings")}><Settings className="w-4 h-4 mr-2" /> Settings</CommandItem>
         </CommandGroup>
 

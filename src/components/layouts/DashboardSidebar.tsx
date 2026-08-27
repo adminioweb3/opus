@@ -2,37 +2,17 @@
 
 import { useState, useEffect } from "react";
 import {
-  BarChart3,
   Settings,
-  BrainCircuit,
-  Search,
-  MessageSquare,
   Users,
-  PieChart,
-  FileText,
   Target,
-  Lightbulb,
-  Wand2,
-  TrendingUp,
   Sparkles,
   Bot,
-  Zap,
   FileEdit,
-  DollarSign,
-  Send,
-  ShoppingCart,
-  ShieldCheck,
-  Ghost,
-  Terminal,
-  Rocket,
   Globe,
   Plug,
   Key,
   CreditCard,
   Lock,
-  Activity,
-  Bell,
-  GitBranch,
   ChevronRight,
   Folder,
   Command,
@@ -204,8 +184,8 @@ const menuCategories = [
         permission: "settings.view",
       },
       {
-        title: "Team Management (Preview)",
-        url: "/dashboard/team",
+        title: "Team Management",
+        url: "/dashboard/settings?tab=team",
         permission: "team.view",
       },
       {
@@ -214,12 +194,12 @@ const menuCategories = [
         permission: "settings.view",
       },
       {
-        title: "Integrations (Preview)",
-        url: "/dashboard/integrations",
+        title: "Integrations",
+        url: "/dashboard/settings?tab=integrations",
         permission: "integrations.view",
       },
       {
-        title: "Billing (Preview)",
+        title: "Billing",
         url: "/dashboard/settings?tab=billing",
         permission: "settings.view",
       },
@@ -281,12 +261,7 @@ function CollapsibleMenu({
       });
 
   const [isOpen, setIsOpen] = useState(hasActive);
-
-  useEffect(() => {
-    if (hasActive) {
-      setIsOpen(true);
-    }
-  }, [hasActive]);
+  const isExpanded = isOpen || hasActive;
 
   // Check permission for direct link
   if (
@@ -349,15 +324,15 @@ function CollapsibleMenu({
           <ChevronRight
             className={cn(
               "w-4 h-4 text-muted-foreground transition-transform duration-200",
-              isOpen && "rotate-90",
+              isExpanded && "rotate-90",
             )}
           />
         </div>
       </SidebarMenuButton>
 
-      {isOpen && (
+      {isExpanded && (
         <SidebarMenuSub>
-          {visibleItems.map((item: any) => {
+          {visibleItems.map((item: MenuItem) => {
             const isActive =
               item.url === "/dashboard/overview"
                 ? pathname === "/dashboard" ||
@@ -403,6 +378,7 @@ export function DashboardSidebar() {
   const { orgName, plan, updateOrg } = useOrganizationStore();
   const { planType, trialEndsAt, isTrialExpired } = useRealOrganizationStore();
   const role = ((user as { role?: string })?.role as UserRole) ?? "viewer";
+  const [renderedAt] = useState(() => Date.now());
 
   const planLabel = (() => {
     if (planType !== "Trial") return `${plan} plan`;
@@ -410,9 +386,7 @@ export function DashboardSidebar() {
     if (!trialEndsAt) return "Trial";
     const daysLeft = Math.max(
       0,
-      Math.ceil(
-        (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-      ),
+      Math.ceil((new Date(trialEndsAt).getTime() - renderedAt) / (1000 * 60 * 60 * 24)),
     );
     return `Trial · ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
   })();
@@ -532,10 +506,10 @@ export function DashboardSidebar() {
               <Settings className="mr-2 h-4 w-4" /> General
             </DropdownMenuItem>
             <DropdownMenuItem
-              render={<Link href="/dashboard/team" />}
+              render={<Link href="/dashboard/settings?tab=team" />}
               className="cursor-pointer w-full"
             >
-              <Users className="mr-2 h-4 w-4" /> Team Management (Preview)
+              <Users className="mr-2 h-4 w-4" /> Team Management
             </DropdownMenuItem>
             <DropdownMenuItem
               render={<Link href="/dashboard/settings?tab=websites" />}
@@ -544,10 +518,10 @@ export function DashboardSidebar() {
               <Globe className="mr-2 h-4 w-4" /> Websites
             </DropdownMenuItem>
             <DropdownMenuItem
-              render={<Link href="/dashboard/integrations" />}
+              render={<Link href="/dashboard/settings?tab=integrations" />}
               className="cursor-pointer w-full"
             >
-              <Plug className="mr-2 h-4 w-4" /> Integrations (Preview)
+              <Plug className="mr-2 h-4 w-4" /> Integrations
             </DropdownMenuItem>
             <DropdownMenuItem
               render={<Link href="/dashboard/settings?tab=api-keys" />}
@@ -559,7 +533,7 @@ export function DashboardSidebar() {
               render={<Link href="/dashboard/settings?tab=billing" />}
               className="cursor-pointer w-full"
             >
-              <CreditCard className="mr-2 h-4 w-4" /> Billing (Preview)
+              <CreditCard className="mr-2 h-4 w-4" /> Billing
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600 cursor-pointer">

@@ -18,59 +18,62 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsHydrated(true)
+    let cancelled = false
 
     // Listen to Firebase auth state to rehydrate the user object on reload
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      let isDemo = isAuthenticated && useAuthStore.getState().token === "demo-token"
+      
       if (firebaseUser) {
-        const token = await firebaseUser.getIdToken()
+        const token = await firebaseUser.getIdToken(true) // Force network refresh
         setAuthData(firebaseUser, token)
-      } else if (isAuthenticated && useAuthStore.getState().token !== "demo-token") {
+        isDemo = false
+      } else if (isAuthenticated && !isDemo) {
         // If Firebase says no user but our store says authenticated (and not a demo user), the token likely expired
         logout()
       }
-      setAuthChecked(true)
+      
+      // If we are authenticated (either via fresh Firebase token or valid demo token)
+      if (useAuthStore.getState().isAuthenticated) {
+        if (isDemo) {
+          if (!cancelled) setOnboardingChecked(true)
+        } else {
+          try {
+            const result = await syncUserToBackend()
+            if (cancelled) return
+            useOrganizationStore.getState().setSyncResult(result)
+            if (result.needsOnboarding) {
+              router.replace("/onboarding")
+            } else {
+              setOnboardingChecked(true)
+            }
+          } catch (err: any) {
+            console.error("Onboarding status check failed:", err)
+            if (!cancelled) {
+              if (err?.response?.status === 401) {
+                logout()
+              } else {
+                setOnboardingChecked(true)
+              }
+            }
+          }
+        }
+      }
+
+      if (!cancelled) setAuthChecked(true)
     })
 
-    return () => unsubscribe()
-  }, [])
+    return () => {
+      cancelled = true
+      unsubscribe()
+    }
+  }, [router, isAuthenticated, setAuthData, logout])
 
   useEffect(() => {
     if (isHydrated && authChecked && !isAuthenticated) {
       router.replace("/login")
     }
   }, [isHydrated, authChecked, isAuthenticated, router])
-
-  // Re-checks onboarding status against the real backend on every dashboard load (not just at
-  // login) — closes the gap where a user could reach /dashboard directly (bookmark, stale tab,
-  // browser history) without ever completing onboarding, since a stale persisted "needsOnboarding:
-  // false" from a previous session would otherwise never get corrected.
-  useEffect(() => {
-    if (!authChecked || !isAuthenticated) return
-    if (useAuthStore.getState().token === "demo-token") {
-      setOnboardingChecked(true)
-      return
-    }
-
-    let cancelled = false
-    syncUserToBackend()
-      .then((result) => {
-        if (cancelled) return
-        useOrganizationStore.getState().setSyncResult(result)
-        if (result.needsOnboarding) {
-          router.replace("/onboarding")
-        } else {
-          setOnboardingChecked(true)
-        }
-      })
-      .catch((err) => {
-        console.error("Onboarding status check failed:", err)
-        if (!cancelled) setOnboardingChecked(true)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [authChecked, isAuthenticated, router])
 
   if (!isHydrated || !authChecked || (isAuthenticated && !onboardingChecked)) {
     return (

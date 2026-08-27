@@ -19,10 +19,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [isAuthenticated, isLoading, user, router])
 
+  // SECURITY TODO: This role check currently relies on client-side Zustand state which can be manipulated.
+  // It must be updated to verify the actual ASP.NET Core Admin JWT from the backend (/api/admin/login).
   if (isLoading || !isAuthenticated || (user as { role?: string })?.role !== "superadmin") {
     return <PageLoader className="min-h-screen" label="Checking admin access..." />
   }
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="p-8 max-w-7xl mx-auto">

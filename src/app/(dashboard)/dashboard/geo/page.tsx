@@ -10,30 +10,6 @@ import { getFullReport, FullReportData } from "@/lib/api/reportApi"
 import { getExecutiveMetrics, ExecutiveMetricsResult } from "@/lib/api/dashboardApi"
 import { MetricProvenanceBadge, type MetricProvenanceKind } from "@/components/ui/metric-provenance-badge"
 
-const DEFAULT_SCORES = [
-  { lab: 'AI Visibility Score', v: 78, ic: Eye, c: 'text-primary', bg: 'bg-primary/10', chg: '+5.2%', dir: 'up' },
-  { lab: 'Citation Score', v: 82, ic: Quote, c: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', chg: '+3.1%', dir: 'up' },
-  { lab: 'Sentiment Score', v: 65, ic: Smile, c: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', chg: '-1.2%', dir: 'down' },
-  { lab: 'Competitor Score', v: 71, ic: Swords, c: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', chg: '+2.5%', dir: 'up' },
-  { lab: 'Hallucination Risk', v: 12, ic: AlertTriangle, c: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', chg: '-2%', dir: 'down' },
-  { lab: 'SEO Health', v: 91, ic: Globe, c: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-950/30', chg: '+0.5%', dir: 'up' },
-  { lab: 'AEO Readiness', v: 68, ic: Search, c: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', chg: '+8.4%', dir: 'up' },
-  { lab: 'GEO Readiness', v: 74, ic: Target, c: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', chg: '+4.1%', dir: 'up' }
-];
-
-const DEFAULT_TREND_DATA = Array.from({ length: 30 }, (_, i) => ({
-  date: `Day ${i + 1}`,
-  score: [120, 138, 150, 142, 128, 160, 148, 135, 158, 152, 140, 165, 158, 148, 170, 162, 155, 175, 168, 160, 178, 172, 165, 182, 176, 170, 185, 178, 172, 188][i]
-}));
-
-const DEFAULT_SOV_DATA = [
-  { name: 'Acme Corp', value: 38.4, color: 'hsl(var(--primary))' },
-  { name: 'Profound', value: 22.1, color: '#2563EB' },
-  { name: 'BrightEdge', value: 15.7, color: '#7C3AED' },
-  { name: 'Semrush', value: 12.3, color: '#16A34A' },
-  { name: 'Others', value: 11.5, color: '#CBD5E1' }
-];
-
 export default function GeoDashboardPage() {
   return (
     <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>}>

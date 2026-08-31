@@ -69,6 +69,7 @@ import {
   FanoutOverviewRow,
   ExecutionHistoryRow,
   AnalysisResultsResponse,
+  PromptResponseEvidence,
   RankBlock,
   TopicRanking,
   PromptTopic,
@@ -2147,6 +2148,14 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
     }
   };
 
+  const formatCost = (costUsd: number | null) =>
+    costUsd === null ? "Cost unavailable" : `$${costUsd.toFixed(6)}`;
+
+  const formatTokens = (response: PromptResponseEvidence) => {
+    if (response.promptTokens === null && response.completionTokens === null) return "Token usage unavailable";
+    return `${response.promptTokens ?? 0} in / ${response.completionTokens ?? 0} out tokens`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
@@ -2214,10 +2223,37 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                         <div className="py-3 flex justify-center">
                           <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
                         </div>
-                      ) : (details?.recommendations ?? []).length === 0 ? (
-                        <p className="text-[12px] text-slate-500">No recommendations were generated for this run.</p>
                       ) : (
-                        details!.recommendations.map((rec) => {
+                        <>
+                          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                            <div className="text-[12.5px] font-bold text-slate-800">Provider evidence</div>
+                            <div className="mt-1 text-[11.5px] text-slate-500">
+                              {details?.responses.length ?? 0} captured provider response{(details?.responses.length ?? 0) === 1 ? "" : "s"}
+                            </div>
+                            <div className="mt-2 space-y-2">
+                              {(details?.responses ?? []).map((response) => (
+                                <div key={response.id} className="rounded-md border border-slate-200 bg-white p-2.5 text-[11px] text-slate-600">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-semibold text-slate-800">{response.platform}</span>
+                                    <Badge className={`text-[9px] ${response.isError ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
+                                      {response.isError ? "Unavailable" : "Captured"}
+                                    </Badge>
+                                  </div>
+                                  <div className="mt-1.5 space-y-0.5">
+                                    <div>{response.providerKey ?? "No provider"} {response.modelUsed ? `- ${response.modelUsed}` : ""}</div>
+                                    <div>{formatTokens(response)} - {formatCost(response.costUsd)}</div>
+                                    <div>{response.wasSearchGrounded ? "Web-search grounded" : "Not web-search grounded"} - {response.promptVersion}</div>
+                                    <div>{new Date(response.createdAt).toLocaleString()}</div>
+                                    {response.isError && response.errorMessage && <div className="pt-1 text-red-700">{response.errorMessage}</div>}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          {(details?.recommendations ?? []).length === 0 ? (
+                            <p className="text-[12px] text-slate-500">No recommendations were generated for this run.</p>
+                          ) : (
+                            details!.recommendations.map((rec) => {
                           const implementation = implementations.find((item) => item.promptRecommendationId === rec.id);
                           return (
                             <div key={rec.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
@@ -2249,7 +2285,9 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                               )}
                             </div>
                           );
-                        })
+                            })
+                          )}
+                        </>
                       )}
                     </div>
                   )}

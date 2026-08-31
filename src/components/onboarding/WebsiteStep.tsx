@@ -26,8 +26,15 @@ function normalizeUrlInput(raw: string): string {
     .replace(/\/+$/, "")
 }
 
-function isLikelyDomain(value: string): boolean {
-  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(\/.*)?$/i.test(value)
+function getDomainValidationMessage(value: string): string | null {
+  const candidate = value.trim().toLowerCase()
+  if (!candidate) return "Enter a domain, like acme.com"
+  if (candidate.includes("@") || candidate.includes(":")) return "Enter only the public domain, without credentials or ports"
+  if (candidate.includes("/") || candidate.includes("?") || candidate.includes("#")) return "Enter only the domain, without a page path"
+  if (candidate === "localhost" || candidate.endsWith(".localhost") || candidate.endsWith(".local")) return "Enter a public website domain"
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(candidate)) return "Enter a public website domain, not an IP address"
+  if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i.test(candidate)) return "Enter a valid domain, like acme.com"
+  return null
 }
 
 interface WebsiteStepProps {
@@ -43,7 +50,8 @@ interface WebsiteStepProps {
 // (e.g. "acme.com") — https:// and www. are silently normalized away on type/paste.
 export function WebsiteStep({ value, onChange, onContinue, isScraping, scrapeProgress }: WebsiteStepProps) {
   const [touched, setTouched] = useState(false)
-  const valid = value.length > 0 && isLikelyDomain(value)
+  const validationMessage = getDomainValidationMessage(value)
+  const valid = validationMessage === null
   const showError = touched && value.length > 0 && !valid
 
   const stageIndex = Math.min(
@@ -142,7 +150,7 @@ export function WebsiteStep({ value, onChange, onContinue, isScraping, scrapePro
               exit={{ opacity: 0, height: 0 }}
               className="flex items-center gap-1.5 text-[13px] text-red-500 mt-2.5"
             >
-              <AlertCircle className="w-3.5 h-3.5" /> Enter a valid domain, like acme.com
+              <AlertCircle className="w-3.5 h-3.5" /> {validationMessage}
             </motion.p>
           )}
         </AnimatePresence>

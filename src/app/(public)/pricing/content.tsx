@@ -174,11 +174,11 @@ const FAQS = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Yes. Cancel self-serve from your billing settings, no email chain, no retention call. You keep full access through the end of your paid period, and you can export your reports and data before the account closes. If you come back later, your workspace history is restored.",
+    a: "Yes. Cancel self-serve from your billing settings, no email chain or retention call. Cashfree stops future recurring charges after cancellation is confirmed, and Citationly immediately returns the workspace to its trial limits. Export any reports and data you need before cancelling.",
   },
   {
     q: "What payment methods do you accept?",
-    a: "All major credit and debit cards (Visa, Mastercard, and American Express) are processed securely through Stripe. Enterprise plans can also pay by ACH, wire transfer, or invoice with net-30 terms. Prices are in USD; applicable taxes are calculated at checkout based on your billing address.",
+    a: "Recurring payments are authorized securely through Cashfree using the payment methods available for your selected mandate. Enterprise billing arrangements are confirmed with sales. Applicable taxes are calculated based on your billing details.",
   },
 ]
 

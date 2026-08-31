@@ -92,7 +92,7 @@ export default function AnalysisSimulationPage() {
           setProgress(100)
           
           setTimeout(() => {
-            router.push(`/report/${orgId}?source=onboarding`)
+            router.push(orgId ? `/report/${orgId}?source=onboarding` : "/onboarding/report")
             setTimeout(() => {
               storeState.resetJourney()
             }, 1000)

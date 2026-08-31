@@ -11,6 +11,7 @@ interface OrganizationState {
   isTrialExpired: boolean;
   industry: string | null;
   setOrganizationId: (id: string) => void;
+  updateOrganization: (result: Partial<Pick<OrganizationState, "organizationName" | "websiteDomain" | "industry">>) => void;
   setSyncResult: (result: {
     organizationId: string;
     organizationName?: string;
@@ -38,6 +39,7 @@ export const useOrganizationStore = create<OrganizationState>()(
       isTrialExpired: false,
       industry: null,
       setOrganizationId: (id: string) => set({ organizationId: id }),
+      updateOrganization: (result) => set(result),
       setSyncResult: (result) =>
         set({
           organizationId: result.organizationId,

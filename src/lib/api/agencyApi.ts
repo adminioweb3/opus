@@ -86,6 +86,10 @@ export async function createReportShareLink(request: {
   return response.data
 }
 
+export async function revokeReportShareLink(id: string): Promise<void> {
+  await apiClient.delete(`/Agency/report-links/${encodeURIComponent(id)}`)
+}
+
 export async function getSharedReport(token: string): Promise<SharedReportResponse> {
   const response = await apiClient.get<SharedReportResponse>(`/Agency/public/reports/${encodeURIComponent(token)}`)
   return response.data

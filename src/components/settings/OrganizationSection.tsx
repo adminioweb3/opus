@@ -11,22 +11,10 @@ import { Pencil, Plus, Trash2, Image as ImageIcon, Info, Folder } from "lucide-r
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { SettingsRow, SectionHead, StatusPill } from "./shared"
 
-interface Workspace {
-  id: string
-  name: string
-  members: number
-  domain: string
-}
-
-const MOCK_WORKSPACES: Workspace[] = [
-  { id: "w1", name: "Main workspace", members: 1, domain: "" },
-]
-
-const NOTIF_EVENTS = ["Citation gained", "Citation lost", "Competitor mention", "Weekly digest", "Agent completed", "Billing alerts"]
-const NOTIF_CHANNELS: Array<{ key: "email" | "inapp" | "slack"; label: string }> = [
+const NOTIF_EVENTS = ["Citation gained", "Citation lost", "Competitor mention", "Weekly digest", "Billing alerts"]
+const NOTIF_CHANNELS: Array<{ key: "email" | "inapp"; label: string }> = [
   { key: "email", label: "Email" },
   { key: "inapp", label: "In-app" },
-  { key: "slack", label: "Slack" },
 ]
 
 export default function OrganizationSection() {
@@ -52,7 +40,7 @@ export default function OrganizationSection() {
   const [aiFallback, setAiFallback] = useState("Claude Sonnet")
 
   const [notifMatrix, setNotifMatrix] = useState<Record<string, Record<string, boolean>>>(() =>
-    Object.fromEntries(NOTIF_EVENTS.map((e) => [e, { email: true, inapp: true, slack: false }]))
+    Object.fromEntries(NOTIF_EVENTS.map((e) => [e, { email: true, inapp: true }]))
   )
 
   const notImplemented = () => toast.info("This will save once organization settings are wired up on the backend")
@@ -137,20 +125,18 @@ export default function OrganizationSection() {
             action={<Button size="sm" onClick={notImplemented}><Plus className="w-3.5 h-3.5 mr-1.5" /> New workspace</Button>}
           />
           <div className="space-y-2">
-            {MOCK_WORKSPACES.map((w) => (
-              <div key={w.id} className="flex items-center justify-between p-3 rounded-lg border border-border/60">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <Folder className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium">{w.name}</div>
-                    <div className="text-xs text-muted-foreground">{w.members} member{w.members === 1 ? "" : "s"}{w.domain ? ` · ${w.domain}` : ""}</div>
-                  </div>
+            <div className="flex items-center justify-between p-3 rounded-lg border border-border/60">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <Folder className="w-4 h-4" />
                 </div>
-                <Button variant="ghost" size="sm" onClick={notImplemented}><Pencil className="w-4 h-4" /></Button>
+                <div>
+                  <div className="text-sm font-medium">{organizationName || "Current workspace"}</div>
+                  <div className="text-xs text-muted-foreground">{websiteDomain || "No primary domain connected"}</div>
+                </div>
               </div>
-            ))}
+              <Button variant="ghost" size="sm" onClick={notImplemented}><Pencil className="w-4 h-4" /></Button>
+            </div>
           </div>
         </CardContent>
       </Card>

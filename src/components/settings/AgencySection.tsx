@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { BriefcaseBusiness, Copy, ExternalLink, RefreshCw, Share2, Sparkles, Users } from "lucide-react"
+import { Ban, BriefcaseBusiness, Copy, ExternalLink, RefreshCw, Share2, Sparkles, Users } from "lucide-react"
 import { toast } from "@/lib/toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,6 +11,7 @@ import {
   addAgencyClient,
   createReportShareLink,
   getAgencyOverview,
+  revokeReportShareLink,
   saveAgency,
   saveWhiteLabel,
   type AgencyOverview,
@@ -145,6 +146,21 @@ export default function AgencySection() {
     }
   }
 
+  const handleRevokeLink = async () => {
+    if (!latestLink) return
+    setSaving(true)
+    try {
+      await revokeReportShareLink(latestLink.id)
+      setLatestLink(null)
+      toast.success("Share link revoked")
+    } catch (err) {
+      console.error(err)
+      toast.error("Failed to revoke share link")
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return <SectionLoader label="Loading agency settings..." />
   }
@@ -237,6 +253,9 @@ export default function AgencySection() {
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => window.open(latestLink.shareUrl, "_blank")}>
                   <ExternalLink className="mr-2 h-4 w-4" /> Open
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleRevokeLink} disabled={saving}>
+                  <Ban className="mr-2 h-4 w-4" /> Revoke
                 </Button>
               </div>
             </div>

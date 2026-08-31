@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
 import { completeOnboarding } from "@/lib/api/onboardingApi"
-import { LIMITED_REPORT } from "@/lib/mock-data/journey"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -36,11 +35,11 @@ const PLANS = [
   }
 ]
 
-import { useOrganizationStore } from "@/lib/stores/organization-store"
+import { useOrganizationStore } from "@/lib/stores/organizationStore"
 
 export default function PaywallCheckoutPage() {
   const router = useRouter()
-  const { websiteUrl, businessName, analysisResult, setSubscribed, setState } = useJourneyStore()
+  const { websiteUrl, businessName, analysisResult } = useJourneyStore()
 
   const [selectedPlan, setSelectedPlan] = useState("growth")
   const [loading, setLoading] = useState(false)
@@ -49,30 +48,31 @@ export default function PaywallCheckoutPage() {
     setLoading(true)
     
     try {
+      if (!analysisResult) {
+        throw new Error("Analysis must complete before onboarding can be finalized.")
+      }
       // Map all onboarding data into the dashboard database
       await completeOnboarding({
         websiteUrl: websiteUrl || "",
         businessName: businessName || "",
 
-        visibilityScore: analysisResult?.overallConfidence ?? LIMITED_REPORT.visibilityScore,
-        brandAuthority: analysisResult?.domainAuthorityEstimate?.value?.estimatedScore ?? LIMITED_REPORT.brandAuthority,
-        contentStrength: analysisResult?.seoStrength?.value?.score ?? LIMITED_REPORT.contentStrength,
-        citationScore: analysisResult?.topicalAuthority?.confidence ?? LIMITED_REPORT.citationScore
+        visibilityScore: analysisResult.overallConfidence,
+        brandAuthority: analysisResult.domainAuthorityEstimate?.value?.estimatedScore ?? 0,
+        contentStrength: analysisResult.seoStrength?.value?.score ?? 0,
+        citationScore: analysisResult.topicalAuthority?.confidence ?? 0
       })
 
-      // Update the local organization store so the sidebar/navbar show the correct details
-      useOrganizationStore.getState().updateOrg({
-        orgName: businessName || "My Organization",
-        orgDomain: websiteUrl || ""
+      useOrganizationStore.getState().updateOrganization({
+        organizationName: businessName || "",
+        websiteDomain: websiteUrl || ""
       })
     } catch (error) {
       console.error("Failed to complete onboarding mapping:", error)
-      // Proceed to dashboard anyway so user is not stuck
+      setLoading(false)
+      return
     }
     
-    setSubscribed(true)
-    setState("subscribed")
-    router.push("/dashboard")
+    router.push("/dashboard/settings")
   }
 
   return (
@@ -138,7 +138,7 @@ export default function PaywallCheckoutPage() {
 
           <Card className="border-border shadow-lg">
             <CardContent className="p-6">
-              <h4 className="font-bold mb-4 flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-500" /> Checkout</h4>
+              <h4 className="font-bold mb-4 flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-500" /> Billing setup</h4>
               <div className="space-y-3 text-sm mb-6">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Selected Plan</span>
@@ -159,9 +159,9 @@ export default function PaywallCheckoutPage() {
                 onClick={handleSubscribe}
                 disabled={loading}
               >
-                {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</> : <>Subscribe & Unlock Dashboard <ArrowRight className="w-4 h-4 ml-2" /></>}
+                {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</> : <>Continue to billing setup <ArrowRight className="w-4 h-4 ml-2" /></>}
               </Button>
-              <p className="text-center text-xs text-muted-foreground mt-4">Secure payment powered by Stripe. Cancel anytime.</p>
+              <p className="text-center text-xs text-muted-foreground mt-4">Payment authorization is completed in your workspace through Cashfree.</p>
             </CardContent>
           </Card>
         </div>

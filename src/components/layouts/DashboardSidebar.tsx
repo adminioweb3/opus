@@ -23,8 +23,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { useOrganizationStore } from "@/lib/stores/organization-store";
-import { useOrganizationStore as useRealOrganizationStore } from "@/lib/stores/organizationStore";
+import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import { syncUserToBackend } from "@/lib/api/authApi";
 import { hasPermission, type UserRole } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -375,13 +374,12 @@ function CollapsibleMenu({
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { user, token } = useAuthStore();
-  const { orgName, plan, updateOrg } = useOrganizationStore();
-  const { planType, trialEndsAt, isTrialExpired } = useRealOrganizationStore();
+  const { organizationName, planType, trialEndsAt, isTrialExpired } = useOrganizationStore();
   const role = ((user as { role?: string })?.role as UserRole) ?? "viewer";
   const [renderedAt] = useState(() => Date.now());
 
   const planLabel = (() => {
-    if (planType !== "Trial") return `${plan} plan`;
+    if (planType !== "Trial") return `${planType} plan`;
     if (isTrialExpired) return "Trial expired";
     if (!trialEndsAt) return "Trial";
     const daysLeft = Math.max(
@@ -395,19 +393,13 @@ export function DashboardSidebar() {
     if (token) {
       syncUserToBackend()
         .then((res) => {
-          if (res.organizationName || res.websiteDomain) {
-            updateOrg({
-              orgName: res.organizationName || "Company",
-              orgDomain: res.websiteDomain || "company.com",
-            });
-          }
           if (res.organizationId) {
-            useRealOrganizationStore.getState().setSyncResult(res);
+            useOrganizationStore.getState().setSyncResult(res);
           }
         })
         .catch((err) => console.error("Sync failed", err));
     }
-  }, [token, updateOrg]);
+  }, [token]);
 
   return (
     <Sidebar>
@@ -478,7 +470,7 @@ export function DashboardSidebar() {
                     : "Guest"}
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
-                  {orgName}
+                  {organizationName}
                 </span>
               </div>
             </div>

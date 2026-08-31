@@ -20,6 +20,7 @@ import RecommendationsKanban from "@/components/report/RecommendationsKanban"
 import FinalScorecard from "@/components/report/FinalScorecard"
 import ReportFooter from "@/components/report/ReportFooter"
 import SubscribeModal from "@/components/report/SubscribeModal"
+import ReportExportButton from "@/components/report/ReportExportButton"
 
 export default function ReportPage() {
   return (
@@ -87,12 +88,7 @@ function ReportPageContent() {
 
   return (
     <div className="report-doc min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 pb-20">
-      <button
-        onClick={() => window.print()}
-        className="print:hidden fixed top-6 right-6 z-50 text-sm font-medium text-slate-600 hover:text-blue-600 bg-white/90 backdrop-blur-md border border-slate-200 shadow-sm rounded-full px-4 py-2 transition-colors"
-      >
-        Export PDF
-      </button>
+      <ReportExportButton className="print:hidden fixed top-6 right-6 z-50 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600 disabled:cursor-wait disabled:opacity-70 bg-white/90 backdrop-blur-md border border-slate-200 shadow-sm rounded-full px-4 py-2 transition-colors" />
 
       <main className="max-w-7xl mx-auto px-6 pt-12 space-y-16 relative">
         <ReportCover data={reportData} />

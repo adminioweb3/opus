@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
-import { LIMITED_REPORT } from "@/lib/mock-data/journey"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MetricProvenanceBadge } from "@/components/ui/metric-provenance-badge"
@@ -12,11 +11,22 @@ export default function PaywallReportPage() {
   const router = useRouter()
   const { websiteUrl, analysisResult } = useJourneyStore()
 
-  // Use the live AI results if available, otherwise fallback
-  const visibilityScore = analysisResult?.overallConfidence ?? LIMITED_REPORT.visibilityScore;
-  const brandAuthority = analysisResult?.domainAuthorityEstimate?.value?.estimatedScore ?? LIMITED_REPORT.brandAuthority;
-  const contentStrength = analysisResult?.seoStrength?.value?.score ?? LIMITED_REPORT.contentStrength;
-  const citationScore = analysisResult?.topicalAuthority?.confidence ?? LIMITED_REPORT.citationScore;
+  if (!analysisResult) {
+    return (
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center p-6">
+        <Card className="w-full max-w-md"><CardContent className="p-6 space-y-4">
+          <h1 className="text-xl font-semibold">Analysis unavailable</h1>
+          <p className="text-sm text-muted-foreground">Your analysis did not complete, so there is no report to display yet.</p>
+          <Button onClick={() => router.push("/onboarding")}>Return to onboarding</Button>
+        </CardContent></Card>
+      </div>
+    )
+  }
+
+  const visibilityScore = analysisResult.overallConfidence;
+  const brandAuthority = analysisResult.domainAuthorityEstimate?.value?.estimatedScore ?? 0;
+  const contentStrength = analysisResult.seoStrength?.value?.score ?? 0;
+  const citationScore = analysisResult.topicalAuthority?.confidence ?? 0;
 
   const metrics = [
     { label: "AI Visibility Score", value: visibilityScore, icon: Eye, color: "text-red-500", suffix: "/100", status: visibilityScore < 50 ? "Critical" : "Fair" },

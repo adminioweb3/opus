@@ -89,6 +89,7 @@ export interface GeoDashboardHeader {
   enginesScanned: number;
   promptsTracked: number;
   status: string;
+  scoringMethodVersion: string;
 }
 
 export interface GeoPillar {

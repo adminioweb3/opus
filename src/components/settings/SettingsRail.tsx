@@ -16,7 +16,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
   { id: "sites", label: "Websites", icon: Globe, desc: "Connected sites, crawl preferences and verification." },
   { id: "integrations", label: "Integrations", icon: Plug, desc: "Connect analytics, CRM, CMS, infra and AI providers." },
   { id: "billing", label: "Billing", icon: CreditCard, desc: "Plan, seats, payment methods, invoices and usage." },
-  { id: "apikeys", label: "API Keys", icon: Key, desc: "Keys, webhooks, environment variables and logs." },
+  { id: "apikeys", label: "API Keys", icon: Key, desc: "Keys, environment variables and logs." },
   { id: "agency", label: "Agency", icon: BriefcaseBusiness, desc: "Client workspaces, white-label branding and report sharing." },
   { id: "security", label: "Security", icon: ShieldAlert, desc: "MFA, SSO, password policy, devices and compliance." },
 ]

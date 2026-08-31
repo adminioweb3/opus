@@ -17,7 +17,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-// Dummy Data
 const ENGINE_COLORS: Record<string, string> = {ChatGPT:'#10A37F', Claude:'#D97706', Gemini:'#4285F4', Perplexity:'#20808D'};
 
 const KB_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = { Building2, Package, LifeBuoy, Database, Folder, Globe, Users, Briefcase };
@@ -36,15 +35,11 @@ const toVaultCard = (kb: KnowledgeBaseDto) => ({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const INITIAL_VAULT_SRC: Record<string, any[]> = {};
 
-const BRAND_KITS = [
-  {name:'Acme — Primary', icon: Palette, tint:'#6366F1', bg:'#EEEEFE', voice:'Confident, plain-spoken, no jargon', sw:['#6366F1','#1E293B','#16A34A','#EAF1FE']},
-  {name:'Acme Labs (beta)', icon: FlaskConical, tint:'#7C3AED', bg:'#F3EEFF', voice:'Playful, technical, builder-first', sw:['#7C3AED','#0EA5E9','#111827','#FDE68A']}
-];
+type BrandKit = { name: string; icon: React.ComponentType<{ size?: number; className?: string }>; tint: string; bg: string; voice: string; sw: string[] };
+type AudienceSegment = { name: string; icon: React.ComponentType<{ size?: number; className?: string }>; tint: string; bg: string; size: string; tags: string[] };
 
-const SEGMENTS = [
-  {name:'Mid-market RevOps', icon: Users, tint:'#2563EB', bg:'#EAF1FE', size:'~4,200 buyers', tags:['B2B SaaS','50–500 staff','North America']},
-  {name:'Agency owners', icon: Briefcase, tint:'#16A34A', bg:'#ECFDF3', size:'~1,800 buyers', tags:['Web & design','Founder-led','Global']}
-];
+const BRAND_KITS: BrandKit[] = [];
+const SEGMENTS: AudienceSegment[] = [];
 
 const ADD_METHODS = [
   {ic: Globe, id:'scrape', t:'Scrape a page', d:'Pull clean content from one or more URLs.', tint:'#6366F1', bg:'#EEEEFE'},
@@ -694,6 +689,13 @@ export default function KnowledgeVaultPage() {
               </Card>
             );
           })}
+          {BRAND_KITS.length === 0 && (
+            <Card className="md:col-span-2 lg:col-span-3">
+              <CardContent className="p-8 text-center text-sm text-slate-500">
+                Brand kits are not available yet. Citationly does not show example brand settings as workspace data.
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
 
@@ -717,6 +719,13 @@ export default function KnowledgeVaultPage() {
               </Card>
             );
           })}
+          {SEGMENTS.length === 0 && (
+            <Card className="md:col-span-2 lg:col-span-3">
+              <CardContent className="p-8 text-center text-sm text-slate-500">
+                Audience segments are not available yet. Citationly does not show example audiences as workspace data.
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>

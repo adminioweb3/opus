@@ -108,6 +108,21 @@ export interface PromptRecommendation {
   estimatedVisibilityGain: number;
 }
 
+export interface PromptResponseEvidence {
+  id: string;
+  platform: string;
+  createdAt: string;
+  providerKey: string | null;
+  modelUsed: string | null;
+  promptTokens: number | null;
+  completionTokens: number | null;
+  costUsd: number | null;
+  wasSearchGrounded: boolean;
+  promptVersion: string;
+  isError: boolean;
+  errorMessage: string | null;
+}
+
 export interface RecommendationImplementation {
   id: string;
   organizationId: string;
@@ -134,7 +149,7 @@ export interface RecommendationImplementation {
 export interface AnalysisResultsResponse {
   visibility: PromptVisibility | null;
   mentions: unknown[];
-  responses: unknown[];
+  responses: PromptResponseEvidence[];
   recommendations: PromptRecommendation[];
   recommendationImplementations: RecommendationImplementation[];
   competitorComparisons: unknown[];

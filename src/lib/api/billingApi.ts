@@ -4,6 +4,7 @@ export interface SubscriptionRecord {
   id: string
   organizationId: string
   stripeSubscriptionId: string | null
+  cashfreeSubscriptionId: string | null
   planKey: string
   status: string
   currentPeriodStart: string | null
@@ -58,22 +59,32 @@ export async function getPaymentMethods(): Promise<PaymentMethodRecord[]> {
   return response.data
 }
 
-export async function createCheckoutSession(planKey: string): Promise<{ url: string }> {
+export interface CashfreeSubscriptionSession {
+  subscriptionId: string
+  sessionId: string
+  status: string
+  environment: "sandbox" | "production"
+}
+
+export async function createSubscriptionSession(
+  planKey: string,
+  customerName: string,
+  customerEmail: string,
+  customerPhone: string,
+): Promise<CashfreeSubscriptionSession> {
   const origin = window.location.origin
-  const response = await apiClient.post<{ url: string }>("/Billing/checkout-session", {
+  const response = await apiClient.post<CashfreeSubscriptionSession>("/Billing/subscription-session", {
     planKey,
-    successUrl: `${origin}/dashboard/settings?billing=success`,
-    cancelUrl: `${origin}/dashboard/settings?billing=cancelled`,
+    customerName,
+    customerEmail,
+    customerPhone,
+    returnUrl: `${origin}/dashboard/settings?billing=return`,
   })
   return response.data
 }
 
-export async function createPortalSession(): Promise<{ url: string }> {
-  const origin = window.location.origin
-  const response = await apiClient.post<{ url: string }>("/Billing/portal-session", {
-    returnUrl: `${origin}/dashboard/settings`,
-  })
-  return response.data
+export async function cancelSubscription(): Promise<void> {
+  await apiClient.post("/Billing/subscription/cancel")
 }
 
 /** Surfaces the real backend message (e.g. "Billing is not configured yet...") instead of a

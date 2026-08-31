@@ -2,7 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { Recommendation, MOCK_RECOMMENDATIONS } from "../mock-data/journey"
+import { Recommendation } from "../mock-data/journey"
 import { type OnboardingAnalysisResult } from "../api/onboardingApi"
 
 export type JourneyState = "not_started" | "onboarding" | "analyzing" | "paywall" | "subscribed"
@@ -51,14 +51,14 @@ const initialState = {
   services: "",
   products: "",
   keywords: "",
-  competitors: ["Competitor A", "Competitor B"],
+  competitors: [],
   whoDoYouSellTo: "",
   knownCompetitors: "",
   mainOffering: "",
   currentState: "not_started" as JourneyState,
   hasSubscribed: false,
   analysisResult: null as OnboardingAnalysisResult | null,
-  tasks: MOCK_RECOMMENDATIONS,
+  tasks: [],
 }
 
 export const useJourneyStore = create<AIJourneyStore>()(

@@ -22,20 +22,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-const OPPS = [
-  {ic: Versions, tint:'text-red-600', bg:'bg-red-50', t:'Publish comparison pages vs Profound', why:'They just took 3 "vs" queries you ranked for on Perplexity.', impact:'+$28k'},
-  {ic: FileCode, tint:'text-blue-600', bg:'bg-blue-50', t:'Add FAQ schema to high-intent guides', why:'BrightEdge guides outrank you but lack structured answers — an opening.', impact:'+$22k'},
-  {ic: Link2, tint:'text-purple-600', bg:'bg-purple-50', t:'Earn 3 third-party listicle placements', why:'Listicles drive the most AI citations; Profound leads here.', impact:'+$40k'},
-  {ic: Target, tint:'text-teal-600', bg:'bg-teal-50', t:'Defend tooling queries from seoClarity', why:'Strengthen entity pages before their AI module matures.', impact:'+$9k'},
-];
+type Opportunity = { ic: React.ComponentType<{ className?: string }>; tint: string; bg: string; t: string; why: string; impact: string };
+type CompetitorActivity = { ic: React.ComponentType<{ className?: string }>; tint: string; bg: string; t: string; d: string; time: string };
 
-const ACTIVITY = [
-  {type:'risk', ic: AlertTriangle, tint:'text-red-600', bg:'bg-red-50', t:'Profound published 4 comparison pages', d:'Targeting "vs" queries you win on Perplexity.', time:'2h ago'},
-  {type:'risk', ic: TrendingUp, tint:'text-red-600', bg:'bg-red-50', t:'Otterly AI share rose 4% this month', d:'Steepest growth curve in the tracked set.', time:'5h ago'},
-  {type:'win', ic: CheckCircle2, tint:'text-emerald-600', bg:'bg-emerald-50', t:'Acme citation share up 2% on Claude', d:'New entity page resolved brand identity.', time:'1d ago'},
-  {type:'move', ic: Versions, tint:'text-blue-600', bg:'bg-blue-50', t:'BrightEdge republished flagship guide', d:'Updated for AI overviews — no schema added (opening).', time:'4d ago'},
-  {type:'risk', ic: Link2, tint:'text-red-600', bg:'bg-red-50', t:'Profound gained 3 listicle placements', d:'Now driving fresh AI citations on high-intent queries.', time:'1w ago'}
-];
+const OPPS: Opportunity[] = [];
+const ACTIVITY: CompetitorActivity[] = [];
 
 const MODEL_ORDER = ['ChatGPT','Claude','Gemini','Perplexity'];
 
@@ -491,6 +482,7 @@ export default function CompetitorWatch() {
                   </div>
                 </div>
               ))}
+              {OPPS.length === 0 && <div className="p-5 text-sm text-slate-500">Opportunity recommendations will appear when evidence-backed recommendations are available.</div>}
             </div>
             <button
               onClick={() => router.push("/dashboard/opportunity-finder")}
@@ -523,6 +515,7 @@ export default function CompetitorWatch() {
                   </div>
                 </div>
               ))}
+              {ACTIVITY.length === 0 && <div className="p-5 text-sm text-slate-500">Competitor activity will appear when monitored events are available.</div>}
             </div>
             <button
               onClick={() => toast.info("Full activity timeline coming soon")}

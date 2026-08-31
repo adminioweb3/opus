@@ -1,8 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "@/lib/toast"
 import { CreditCard, Download, RefreshCw, Receipt } from "lucide-react"
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
@@ -11,8 +14,8 @@ import {
   getSubscription,
   getInvoices,
   getPaymentMethods,
-  createCheckoutSession,
-  createPortalSession,
+  createSubscriptionSession,
+  cancelSubscription,
   extractBillingErrorMessage,
   type GetSubscriptionResponse,
   type InvoiceRecord,
@@ -20,8 +23,8 @@ import {
 } from "@/lib/api/billingApi"
 
 const PLANS = [
-  { key: "Pro", name: "Pro", price: 499, feat: ["Higher AI usage limits", "Daily recurring scans", "API access"] },
-  { key: "Enterprise", name: "Enterprise", price: null, feat: ["Highest AI usage limits", "Regional & persona breakdowns", "Dedicated support"] },
+  { key: "Pro", name: "Pro", priceLabel: "Configured in Cashfree", selfServe: true, feat: ["Higher AI usage limits", "Daily recurring scans", "API access"] },
+  { key: "Enterprise", name: "Enterprise", priceLabel: "Contact sales", selfServe: false, feat: ["Highest AI usage limits", "Regional & persona breakdowns", "Dedicated support"] },
 ]
 
 function formatCents(cents: number, currency: string): string {
@@ -29,13 +32,18 @@ function formatCents(cents: number, currency: string): string {
 }
 
 export default function BillingSection() {
+  const router = useRouter()
   const { planType, trialEndsAt, isTrialExpired } = useOrganizationStore()
   const [subscription, setSubscription] = useState<GetSubscriptionResponse | null>(null)
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([])
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [pendingPlanKey, setPendingPlanKey] = useState<string | null>(null)
-  const [isOpeningPortal, setIsOpeningPortal] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [selectedPlanKey, setSelectedPlanKey] = useState<string | null>(null)
+  const [customerName, setCustomerName] = useState("")
+  const [customerEmail, setCustomerEmail] = useState("")
+  const [customerPhone, setCustomerPhone] = useState("")
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -63,29 +71,38 @@ export default function BillingSection() {
   const activePlanKey = subscription?.subscription?.planKey ?? planType ?? "Trial"
   const billingConfigured = subscription?.billingConfigured ?? false
 
-  const handleSwitchPlan = async (planKey: string) => {
+  const handleStartAuthorization = async () => {
+    if (!selectedPlanKey || !customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
+      toast.error("Enter your billing contact details to continue")
+      return
+    }
+    const planKey = selectedPlanKey
     setPendingPlanKey(planKey)
     try {
-      const { url } = await createCheckoutSession(planKey)
-      window.location.href = url
+      const session = await createSubscriptionSession(planKey, customerName, customerEmail, customerPhone)
+      const cashfree = await getCashfree(session.environment)
+      await cashfree.subscriptionsCheckout({ subsSessionId: session.sessionId, redirectTarget: "_self" })
+      setSelectedPlanKey(null)
     } catch (err) {
       console.error(err)
-      toast.error(extractBillingErrorMessage(err, "Failed to start checkout"))
+      toast.error(extractBillingErrorMessage(err, "Failed to start Cashfree authorization"))
     } finally {
       setPendingPlanKey(null)
     }
   }
 
-  const handleManageBilling = async () => {
-    setIsOpeningPortal(true)
+  const handleCancelSubscription = async () => {
+    if (!window.confirm("Cancel this Cashfree subscription? Your paid access will end when Cashfree confirms the cancellation.")) return
+    setIsCancelling(true)
     try {
-      const { url } = await createPortalSession()
-      window.location.href = url
+      await cancelSubscription()
+      await load()
+      toast.success("Subscription cancelled")
     } catch (err) {
       console.error(err)
-      toast.error(extractBillingErrorMessage(err, "Failed to open the billing portal"))
+      toast.error(extractBillingErrorMessage(err, "Failed to cancel subscription"))
     } finally {
-      setIsOpeningPortal(false)
+      setIsCancelling(false)
     }
   }
 
@@ -93,19 +110,26 @@ export default function BillingSection() {
     <div className="space-y-5">
       {!billingConfigured && !isLoading && (
         <div className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
-          Billing isn't connected yet — plan changes and payment management aren't available until Stripe is configured
+          Billing isn't connected yet - plan changes are unavailable until Cashfree is configured
         </div>
       )}
 
       <Card>
         <CardContent className="pt-6">
-          <SectionHead title="Current plan" />
+          <SectionHead
+            title="Current plan"
+            action={subscription?.subscription?.cashfreeSubscriptionId && subscription.subscription.status.toLowerCase() === "active" ? (
+              <Button size="sm" variant="outline" disabled={isCancelling} onClick={handleCancelSubscription}>
+                {isCancelling ? "Cancelling..." : "Cancel subscription"}
+              </Button>
+            ) : undefined}
+          />
           <div className="flex items-center justify-between p-4 rounded-lg border border-border/60 bg-muted/20">
             <div>
               <div className="text-lg font-bold">{activePlanKey} Plan</div>
               <div className="text-sm text-muted-foreground mt-1">
                 {subscription?.subscription
-                  ? `Status: ${subscription.subscription.status}${subscription.subscription.currentPeriodEnd ? ` · renews ${new Date(subscription.subscription.currentPeriodEnd).toLocaleDateString()}` : ""}`
+                  ? `Status: ${subscription.subscription.status}${subscription.subscription.currentPeriodEnd ? ` - renews ${new Date(subscription.subscription.currentPeriodEnd).toLocaleDateString()}` : ""}`
                   : trialEndsAt
                     ? isTrialExpired
                       ? "Trial expired"
@@ -121,6 +145,26 @@ export default function BillingSection() {
         </CardContent>
       </Card>
 
+      <Dialog open={selectedPlanKey !== null} onOpenChange={(open) => !open && setSelectedPlanKey(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Authorize {selectedPlanKey} plan</DialogTitle>
+            <DialogDescription>Cashfree uses these details to create your recurring-payment mandate.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input aria-label="Billing name" autoComplete="name" placeholder="Billing name" value={customerName} onChange={(event) => setCustomerName(event.target.value)} />
+            <Input aria-label="Billing email" autoComplete="email" type="email" placeholder="Billing email" value={customerEmail} onChange={(event) => setCustomerEmail(event.target.value)} />
+            <Input aria-label="Mobile number" autoComplete="tel" inputMode="tel" placeholder="Indian mobile number" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedPlanKey(null)}>Cancel</Button>
+            <Button onClick={handleStartAuthorization} disabled={pendingPlanKey !== null}>
+              {pendingPlanKey ? "Starting..." : "Continue to Cashfree"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardContent className="pt-6">
           <SectionHead title="Plans" sub="Compare and upgrade." />
@@ -128,10 +172,10 @@ export default function BillingSection() {
             {PLANS.map((p) => (
               <div key={p.key} className={`p-4 rounded-lg border ${p.key.toLowerCase() === activePlanKey.toLowerCase() ? "border-primary bg-primary/5" : "border-border/60"}`}>
                 <div className="font-semibold mb-1">{p.name}</div>
-                <div className="text-2xl font-bold mb-3">{p.price ? `$${p.price}` : "Custom"}{p.price && <span className="text-sm font-normal text-muted-foreground">/mo</span>}</div>
+                <div className="text-base font-semibold mb-3 text-muted-foreground">{p.priceLabel}</div>
                 <ul className="space-y-1.5 mb-4">
                   {p.feat.map((f) => (
-                    <li key={f} className="text-xs text-muted-foreground">• {f}</li>
+                    <li key={f} className="text-xs text-muted-foreground">- {f}</li>
                   ))}
                 </ul>
                 <Button
@@ -139,7 +183,7 @@ export default function BillingSection() {
                   variant="outline"
                   className="w-full"
                   disabled={pendingPlanKey === p.key || p.key.toLowerCase() === activePlanKey.toLowerCase()}
-                  onClick={() => handleSwitchPlan(p.key)}
+                  onClick={() => p.selfServe ? setSelectedPlanKey(p.key) : router.push("/contact")}
                 >
                   {pendingPlanKey === p.key ? (
                     <>
@@ -147,8 +191,8 @@ export default function BillingSection() {
                     </>
                   ) : p.key.toLowerCase() === activePlanKey.toLowerCase() ? (
                     "Current plan"
-                  ) : p.price ? (
-                    "Switch plan"
+                  ) : p.selfServe ? (
+                    "Authorize with Cashfree"
                   ) : (
                     "Contact sales"
                   )}
@@ -161,21 +205,11 @@ export default function BillingSection() {
 
       <Card>
         <CardContent className="pt-6">
-          <SectionHead
-            title="Payment method"
-            action={
-              <Button size="sm" variant="outline" onClick={handleManageBilling} disabled={isOpeningPortal}>
-                <CreditCard className="w-3.5 h-3.5 mr-1.5" /> {isOpeningPortal ? "Opening…" : "Manage billing"}
-              </Button>
-            }
-          />
+          <SectionHead title="Cashfree mandate" />
           {isLoading ? (
-            <EmptyState icon={CreditCard} message="Loading payment methods…" />
+            <EmptyState icon={CreditCard} message="Loading Cashfree mandate..." />
           ) : paymentMethods.length === 0 ? (
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/60">
-              <div className="w-10 h-6 bg-slate-200 rounded flex items-center justify-center text-[10px] font-bold text-slate-500">CARD</div>
-              <div className="flex-1 text-sm text-muted-foreground">No payment method on file</div>
-            </div>
+            <EmptyState icon={CreditCard} message="Mandate details are managed securely by Cashfree." />
           ) : (
             <div className="space-y-2">
               {paymentMethods.map((pm) => (
@@ -184,8 +218,8 @@ export default function BillingSection() {
                     {pm.brand ?? "Card"}
                   </div>
                   <div className="flex-1 text-sm text-muted-foreground">
-                    •••• {pm.last4 ?? "----"}
-                    {pm.expMonth && pm.expYear ? ` · Expires ${pm.expMonth}/${pm.expYear}` : ""}
+                    **** {pm.last4 ?? "----"}
+                    {pm.expMonth && pm.expYear ? ` - Expires ${pm.expMonth}/${pm.expYear}` : ""}
                   </div>
                   {pm.isDefault && <StatusPill kind="ok" text="Default" />}
                 </div>
@@ -199,9 +233,9 @@ export default function BillingSection() {
         <CardContent className="pt-6">
           <SectionHead title="Invoices" />
           {isLoading ? (
-            <EmptyState icon={Receipt} message="Loading invoices…" />
+            <EmptyState icon={Receipt} message="Loading invoices..." />
           ) : invoices.length === 0 ? (
-            <EmptyState icon={Receipt} message="No invoices yet." />
+            <EmptyState icon={Receipt} message="No Cashfree invoice records yet." />
           ) : (
             <div className="space-y-2">
               {invoices.map((inv) => (
@@ -232,4 +266,26 @@ export default function BillingSection() {
       </Card>
     </div>
   )
+}
+
+type CashfreeCheckout = {
+  subscriptionsCheckout: (options: { subsSessionId: string; redirectTarget: "_self" | "_blank" }) => Promise<unknown>
+}
+
+async function getCashfree(environment: "sandbox" | "production"): Promise<CashfreeCheckout> {
+  type CashfreeFactory = (options: { mode: "sandbox" | "production" }) => CashfreeCheckout
+  const currentWindow = window as Window & { Cashfree?: CashfreeFactory }
+  if (currentWindow.Cashfree) return currentWindow.Cashfree({ mode: environment })
+
+  await new Promise<void>((resolve, reject) => {
+    const script = document.createElement("script")
+    script.src = "https://sdk.cashfree.com/js/v3/cashfree.js"
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error("Unable to load Cashfree checkout"))
+    document.head.appendChild(script)
+  })
+  const loadedCashfree = currentWindow.Cashfree as CashfreeFactory | undefined
+  if (!loadedCashfree) throw new Error("Cashfree checkout is unavailable")
+  return loadedCashfree({ mode: environment })
 }

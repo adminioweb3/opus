@@ -18,6 +18,7 @@ import RegionAnalysis from "@/components/report/RegionAnalysis"
 import RecommendationsKanban from "@/components/report/RecommendationsKanban"
 import FinalScorecard from "@/components/report/FinalScorecard"
 import ReportFooter from "@/components/report/ReportFooter"
+import ReportExportButton from "@/components/report/ReportExportButton"
 
 export default function SharedReportPage() {
   const params = useParams()
@@ -70,12 +71,7 @@ export default function SharedReportPage() {
               <p className="text-xs text-slate-500">Expires {new Date(payload.expiresAt).toLocaleDateString()}</p>
             </div>
           </div>
-          <button
-            onClick={() => window.print()}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:text-blue-600"
-          >
-            Export PDF
-          </button>
+          <ReportExportButton className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:text-blue-600 disabled:cursor-wait disabled:opacity-70" />
         </div>
       </div>
 

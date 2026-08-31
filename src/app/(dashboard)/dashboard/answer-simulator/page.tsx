@@ -67,7 +67,7 @@ export default function AnswerSimulatorPage() {
   const [persona, setPersona] = useState(PERSONAS[0]);
   const [stage, setStage] = useState(STAGES[1]);
   const [region, setRegion] = useState(REGIONS[0]);
-  const [brand, setBrand] = useState("Acme Corp");
+  const [brand, setBrand] = useState("");
 
   // Main Simulation State
   const [isSimulating, setIsSimulating] = useState(false);

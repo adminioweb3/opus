@@ -154,6 +154,7 @@ export default function GeoDashboardPage() {
     enginesScanned: number;
     promptsTracked: number;
     status: string;
+    scoringMethodVersion: string;
   } | null>(null);
 
   const [pillars, setPillars] = useState<
@@ -346,6 +347,9 @@ export default function GeoDashboardPage() {
               </Badge>
               <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors py-1 px-2.5">
                 <i className="ti ti-message-2 mr-1.5 text-sm" /> {header?.promptsTracked ?? 0} prompts tracked
+              </Badge>
+              <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors py-1 px-2.5" title="Scoring methodology used for the latest scan">
+                <i className="ti ti-git-branch mr-1.5 text-sm" /> {header?.scoringMethodVersion ?? "unavailable"}
               </Badge>
             </div>
           </div>

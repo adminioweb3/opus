@@ -101,10 +101,7 @@ export default function IntegrationsSection() {
     <div className="space-y-5">
       <Card>
         <CardContent className="pt-6">
-          <SectionHead title="Integrations" sub="Connect analytics, CRM, CMS, infra and AI providers." />
-          <div className="mb-4 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
-            Preview — mixed real and mocked connections
-          </div>
+          <SectionHead title="Integrations" sub="Connect supported API-key integrations. OAuth providers are shown only when their connection flow is available." />
 
           <div className="flex gap-2 overflow-x-auto pb-1 mb-4">
             {CATEGORIES.map((cat) => (

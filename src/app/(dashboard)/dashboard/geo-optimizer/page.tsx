@@ -95,7 +95,7 @@ export default function GeoOptimizerPage() {
 
   const handleLoadSample = useCallback(() => {
     setMode("url");
-    setUrl("https://acmecorp.com/guide/best-project-management-tools");
+    setUrl("https://example.com/guide");
     setTarget("best project management tools for teams");
     setEngine("ChatGPT, Perplexity, AI Overviews");
   }, []);

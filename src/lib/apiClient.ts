@@ -2,19 +2,40 @@ import axios from 'axios';
 import { useAuthStore } from './stores/auth-store';
 import { auth } from './firebase';
 
+/**
+ * Automatically resolves the backend API URL across all environments without manual switching:
+ * 1. Localhost (Browser & Local Dev) -> http://localhost:8088/api
+ * 2. Render Environment (*.onrender.com) -> https://opus-backend-l3mp.onrender.com/api
+ * 3. DigitalOcean / Live (*.citationly.ai or custom domain) -> https://api.citationly.ai/api
+ */
 export function getApiBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost:8088')) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
+  // Client-side: Dynamic hostname detection
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
+
+    // Localhost development
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.')) {
+      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api';
+    }
+
+    // Render test environment
     if (host.includes('onrender.com')) {
       return 'https://opus-backend-l3mp.onrender.com/api';
     }
-    if (host.includes('citationly.ai')) {
-      return 'https://api.citationly.ai/api';
-    }
+
+    // DigitalOcean / Production live environment (citationly.ai, www.citationly.ai, etc.)
+    return 'https://api.citationly.ai/api';
   }
+
+  // Server-side (SSR / Node.js build):
+  if (process.env.RENDER || process.env.RENDER_SERVICE_ID) {
+    return 'https://opus-backend-l3mp.onrender.com/api';
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://api.citationly.ai/api';
+  }
+
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api';
 }
 

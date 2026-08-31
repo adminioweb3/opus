@@ -4,8 +4,8 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# NEXT_PUBLIC_* vars must be present at build time for Next.js to inline them.
-ARG NEXT_PUBLIC_API_URL=https://opus-backend-l3mp.onrender.com/api
+# Optional build-time override for API URL (defaults to automatic runtime host detection)
+ARG NEXT_PUBLIC_API_URL=""
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 ARG NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSyBYh8YhBEV8AjKq6rN51tRetAhA-5WkUf0"

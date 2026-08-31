@@ -20,6 +20,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { getApiBaseUrl } from "@/lib/apiClient";
 import { getLatestSnapshot, DashboardSnapshot } from "@/lib/api/analysisApi";
 import { getFullReport, FullReportData } from "@/lib/api/reportApi";
 import { Card, CardContent } from "@/components/ui/card";
@@ -116,7 +117,7 @@ function WarRoomContent() {
     // Fallback website ID if needed
     const websiteId = reportData?.websiteProfile?.id || "";
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8088"}/api/Analysis/stream${websiteId ? `?websiteId=${websiteId}` : ""}`;
+    const url = `${getApiBaseUrl().replace(/\/api$/, '')}/api/Analysis/stream${websiteId ? `?websiteId=${websiteId}` : ""}`;
 
     try {
       const response = await fetch(url, {

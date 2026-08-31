@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { getApiBaseUrl } from "@/lib/apiClient";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -192,7 +193,7 @@ export default function AssistantPage() {
     setIsThinking(true);
 
     try {
-      const baseUrl = apiClient.defaults.baseURL || "http://localhost:8088/api";
+      const baseUrl = getApiBaseUrl();
       const token = useAuthStore.getState().token;
 
       const response = await fetch(baseUrl + "/assistant/chat", {

@@ -1,4 +1,4 @@
-import apiClient from '../apiClient';
+import apiClient, { getApiBaseUrl } from '../apiClient';
 import { useAuthStore } from '../stores/auth-store';
 
 export interface ScoreHistoryPoint {
@@ -253,7 +253,7 @@ export async function streamAnalysis(
   onProgress: (progress: AnalysisProgress) => void
 ): Promise<string | null> {
   const token = useAuthStore.getState().token;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api';
+  const baseUrl = getApiBaseUrl();
 
   const response = await fetch(`${baseUrl}/PromptIntelligence/analyze/stream/${questionId}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},

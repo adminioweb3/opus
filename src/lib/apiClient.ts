@@ -2,8 +2,24 @@ import axios from 'axios';
 import { useAuthStore } from './stores/auth-store';
 import { auth } from './firebase';
 
+export function getApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost:8088')) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host.includes('onrender.com')) {
+      return 'https://opus-backend-l3mp.onrender.com/api';
+    }
+    if (host.includes('citationly.ai')) {
+      return 'https://api.citationly.ai/api';
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api';
+}
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api',
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,6 +43,7 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 apiClient.interceptors.request.use((config) => {
+  config.baseURL = getApiBaseUrl();
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

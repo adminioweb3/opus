@@ -450,8 +450,8 @@ export default function GeoDashboardPage() {
             </CardHeader>
             <CardContent className="flex-1 p-0 px-2 pb-4">
               <div className="h-[260px] w-full pt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  {trendData.length > 0 ? (
+                {trendData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="geoTrendGrad" x1="0" y1="0" x2="0" y2="1">
@@ -468,10 +468,10 @@ export default function GeoDashboardPage() {
                       />
                       <Area type="monotone" dataKey="score" stroke="#6366F1" strokeWidth={2.5} fill="url(#geoTrendGrad)" dot={false} />
                     </AreaChart>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">No trend data yet.</div>
-                  )}
-                </ResponsiveContainer>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No trend data yet.</div>
+                )}
               </div>
             </CardContent>
           </Card>

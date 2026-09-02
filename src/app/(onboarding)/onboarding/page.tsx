@@ -34,10 +34,12 @@ export default function JourneyOnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeProgress, setScrapeProgress] = useState(0);
+  const [scrapeWarning, setScrapeWarning] = useState<string | null>(null);
 
   const goNext = async () => {
     if (organizationId) {
       try {
+        setScrapeWarning(null);
         setIsScraping(true);
         setScrapeProgress(10);
         const formattedUrl = websiteUrl.startsWith("http")
@@ -87,7 +89,7 @@ export default function JourneyOnboardingPage() {
             if (domainName) {
               updateOnboardingData({ businessName: domainName });
             }
-          } catch (e) {
+          } catch {
             // Ignore URL parsing errors
           }
         }
@@ -95,7 +97,8 @@ export default function JourneyOnboardingPage() {
         setCurrentStep(2);
       } catch (err) {
         console.error("Failed to start scraping or scraping timed out/failed", err);
-        // If scraping fails or returns no pages, proceed to the next step anyway without showing an error.
+        setScrapeWarning("We could not finish the website scan yet. You can continue and we will use your answers to build the report.");
+        // If scraping fails or returns no pages, proceed to the next step with clear fallback context.
         setCurrentStep(2);
       } finally {
         setIsScraping(false);
@@ -168,7 +171,12 @@ export default function JourneyOnboardingPage() {
             scrapeProgress={scrapeProgress}
           />
         ) : (
-          <BusinessStep data={businessData} onChange={handleBusinessChange} onSubmit={finish} />
+          <BusinessStep
+            data={businessData}
+            onChange={handleBusinessChange}
+            onSubmit={finish}
+            warning={scrapeWarning}
+          />
         )}
       </OnboardingLayout>
     </>

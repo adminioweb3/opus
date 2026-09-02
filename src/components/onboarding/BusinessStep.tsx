@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { ChevronDown, Globe, X, Sparkles, Building2, Landmark, Package, Loader2, AlertCircle } from "lucide-react"
+import { ChevronDown, Globe, Sparkles, Building2, Landmark, Package, Loader2, AlertCircle } from "lucide-react"
 import {
   Command,
   CommandInput,
@@ -103,20 +103,25 @@ function OfferingInput({ value, onChange, suggestion }: { value: string; onChang
   const showSuggestion = suggestion && !value
 
   return (
-    <div className="relative">
+    <div className="space-y-2">
+      {showSuggestion && (
+        <button
+          type="button"
+          onClick={() => onChange(suggestion)}
+          className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-left text-xs font-semibold text-primary hover:bg-primary/15"
+        >
+          <Sparkles className="h-3 w-3 shrink-0" />
+          <span className="truncate">Use suggestion: {suggestion}</span>
+        </button>
+      )}
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={suggestion || "The one thing you're best known for selling"}
+        placeholder="The one thing you're best known for selling"
         className={`w-full h-10 rounded-lg border px-3 text-[13px] font-medium outline-none transition-colors focus:border-[#5B5CEB] focus:ring-4 focus:ring-[#5B5CEB]/10 ${
           showSuggestion ? "border-primary/30 bg-primary/5" : "border-black/10 bg-white"
         }`}
       />
-      {showSuggestion && (
-        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-semibold pointer-events-none">
-          AI Suggested
-        </span>
-      )}
     </div>
   )
 }
@@ -248,10 +253,11 @@ interface BusinessStepProps {
   data: BusinessStepData
   onChange: (field: keyof BusinessStepData, value: string) => void
   onSubmit: () => void
+  warning?: string | null
 }
 
 // Step 2: sectioned business-details form with AI prefilling
-export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
+export function BusinessStep({ data, onChange, onSubmit, warning }: BusinessStepProps) {
   const [suggestions, setSuggestions] = useState<{ industry?: string; keywords: string[]; offering?: string }>({ keywords: [] })
   const [loading, setLoading] = useState(false)
   const suggestionsLoadedRef = useRef(false)
@@ -291,7 +297,7 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
     }
 
     fetchSuggestions()
-  }, [data.websiteUrl, data.businessName])
+  }, [data.websiteUrl, data.businessName, data.industry])
 
   const isIndustryValid = data.industry !== "Other" || (data.industry === "Other" && data.customIndustry.trim().length > 0)
   const isKeywordsValid = keywordList.length >= 5
@@ -307,6 +313,12 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
       <p className="text-[12.5px] text-muted-foreground mb-4">
         A few details so we can tailor the report to your market and audience.
       </p>
+      {warning && (
+        <div className="mb-4 flex gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-[12.5px] font-medium text-amber-800">
+          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span>{warning}</span>
+        </div>
+      )}
 
       <form
         onSubmit={(e) => {
@@ -414,7 +426,7 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
                 suggestion={suggestions.offering}
               />
               <p className="text-[11.5px] text-muted-foreground mt-1.5 leading-snug">
-                The single thing you're best known for — if you sell several things, name the main one.
+                The single thing you&apos;re best known for — if you sell several things, name the main one.
               </p>
             </div>
             <div>
@@ -451,7 +463,7 @@ export function BusinessStep({ data, onChange, onSubmit }: BusinessStepProps) {
                 suggestions={suggestions.keywords}
               />
               <p className="text-[11.5px] text-muted-foreground mt-1.5 leading-snug">
-                The more precise your keywords, the better we track your buyers' real questions.
+                The more precise your keywords, the better we track your buyers&apos; real questions.
               </p>
             </div>
           </div>

@@ -16,9 +16,12 @@ import { Loader2 } from "lucide-react"
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login, loginWithGoogle, loginWithGithub, isLoading, error, clearError, isAuthenticated } = useAuthStore()
-  const { needsOnboarding } = useOrganizationStore()
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore()
   const router = useRouter()
+
+  useEffect(() => {
+    clearError()
+  }, [clearError])
 
   // Watch for successful auth and redirect
   useEffect(() => {

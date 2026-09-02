@@ -42,6 +42,20 @@ export function KeywordInput({
     setInput("")
   }
 
+  const addKeywords = (rawKeywords: string[]) => {
+    const nextKeywords = [...keywords]
+    rawKeywords.forEach((keyword) => {
+      const trimmed = keyword.trim().toLowerCase()
+      if (trimmed && !nextKeywords.includes(trimmed) && nextKeywords.length < maxKeywords) {
+        nextKeywords.push(trimmed)
+      }
+    })
+
+    if (nextKeywords.length !== keywords.length) {
+      onChange(nextKeywords.join(", "))
+    }
+  }
+
   const removeKeyword = (index: number) => {
     const newKeywords = keywords.filter((_, i) => i !== index)
     onChange(newKeywords.join(", "))
@@ -58,6 +72,15 @@ export function KeywordInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
+    if (val.includes(",")) {
+      const parts = val.split(",")
+      const completed = parts.slice(0, -1)
+      addKeywords(completed)
+      setInput(parts.at(-1) ?? "")
+      setShowSuggestions(false)
+      return
+    }
+
     setInput(val)
     setShowSuggestions(suggestions.length > 0 && val.length > 0)
   }
@@ -66,18 +89,18 @@ export function KeywordInput({
     e.preventDefault()
     const pasted = e.clipboardData.getData("text")
     const newKeywords = pasted
-      .split(/[,\s]+/)
+      .split(/[,;\n\r]+/)
       .map((k) => k.trim().toLowerCase())
       .filter((k) => k.length > 0 && !keywords.includes(k))
       .slice(0, maxKeywords - keywordCount)
 
     if (newKeywords.length > 0) {
-      onChange([...keywords, ...newKeywords].join(", "))
+      addKeywords(newKeywords)
       setInput("")
     }
   }
 
-  const useSuggestion = (suggestion: string) => {
+  const handleSuggestionClick = (suggestion: string) => {
     addKeyword(suggestion)
     onSuggestionsUsed?.()
   }
@@ -129,7 +152,7 @@ export function KeywordInput({
                 .map((suggestion, index) => (
                   <button
                     key={index}
-                    onClick={() => useSuggestion(suggestion)}
+                    onClick={() => handleSuggestionClick(suggestion)}
                     className="w-full text-left px-2 py-2 text-sm hover:bg-primary/10 rounded transition"
                   >
                     <span className="text-muted-foreground">+</span> {suggestion}

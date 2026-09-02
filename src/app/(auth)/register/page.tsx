@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/stores/auth-store"
-import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons"
 import { Divider } from "@/components/auth/Divider"
 import { PasswordInput } from "@/components/auth/PasswordInput"
@@ -31,6 +30,10 @@ function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const { register, isLoading, error, clearError, isAuthenticated } = useAuthStore()
   const router = useRouter()
+
+  useEffect(() => {
+    clearError()
+  }, [clearError])
 
   // Watch for successful auth (handles both email and social registration)
   useEffect(() => {
@@ -106,7 +109,11 @@ function RegisterForm() {
               <PasswordInput
                 id="password"
                 value={password}
-                onChange={setPassword}
+                onChange={(value) => {
+                  setPassword(value)
+                  clearError()
+                }}
+                autoComplete="new-password"
               />
             </div>
 
@@ -115,7 +122,11 @@ function RegisterForm() {
               <PasswordInput
                 id="confirm-password"
                 value={confirmPassword}
-                onChange={setConfirmPassword}
+                onChange={(value) => {
+                  setConfirmPassword(value)
+                  clearError()
+                }}
+                autoComplete="new-password"
               />
             </div>
           </div>

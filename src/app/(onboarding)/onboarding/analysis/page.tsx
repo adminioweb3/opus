@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useJourneyStore } from "@/lib/stores/journey-store"
-import { Sparkles, Search, FileText, Target, Globe, Quote, Lightbulb } from "lucide-react"
+import { Sparkles, Search, FileText, Target, Globe, Quote, Lightbulb, AlertCircle, RefreshCw } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const SCAN_STEPS = [
   { id: "analysis", label: "Analyzing website & business...", icon: FileText },
@@ -20,93 +21,173 @@ export default function AnalysisSimulationPage() {
   const { websiteUrl, setState } = useJourneyStore()
   const [activeStepIndex, setActiveStepIndex] = useState(0)
   const [progress, setProgress] = useState(0)
+  const [hasError, setHasError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isRetrying, setIsRetrying] = useState(false)
 
-    useEffect(() => {
-      // Call real API
-      const runAnalysis = async () => {
-        try {
-          const { analyzeOnboardingData, analyzeCompetitors, analyzeAiSearchPrompts, analyzeVisibility, analyzePlatformVisibility, analyzeCitations, analyzePersonas, analyzeRegions, generateRecommendations, generateExecutiveSummary } = await import("@/lib/api/onboardingApi")
-          const storeState = useJourneyStore.getState()
-          const orgStore = (await import("@/lib/stores/organizationStore")).useOrganizationStore.getState()
-          
-          const orgId = orgStore.organizationId || undefined;
+  const runAnalysis = async () => {
+    setHasError(false)
+    setErrorMessage(null)
+    setIsRetrying(false)
+    setActiveStepIndex(0)
+    setProgress(0)
 
-          // STEP 0: Analysis
-          setActiveStepIndex(0)
-          setProgress(5)
-          
-          const finalIndustry = storeState.industry === "Other" && storeState.customIndustry
-            ? storeState.customIndustry
-            : storeState.industry;
-            
-          const result = await analyzeOnboardingData({
-            websiteUrl: storeState.websiteUrl,
-            businessName: storeState.businessName,
-            industry: finalIndustry,
-            targetAudience: storeState.targetAudience,
-            keywords: storeState.keywords,
-            whoDoYouSellTo: storeState.whoDoYouSellTo,
-            knownCompetitors: storeState.knownCompetitors,
-            mainOffering: storeState.mainOffering
-          })
-          storeState.setAnalysisResult(result)
+    try {
+      const {
+        analyzeOnboardingData,
+        analyzeCompetitors,
+        analyzeAiSearchPrompts,
+        analyzeVisibility,
+        analyzePlatformVisibility,
+        analyzeCitations,
+        analyzePersonas,
+        analyzeRegions,
+        generateRecommendations,
+        generateExecutiveSummary,
+        completeOnboarding,
+      } = await import("@/lib/api/onboardingApi")
+      const storeState = useJourneyStore.getState()
+      const orgStore = (await import("@/lib/stores/organizationStore")).useOrganizationStore.getState()
 
-          if (orgId) {
-            // STEP 1: Competitors
-            setActiveStepIndex(1)
-            setProgress(20)
-            await analyzeCompetitors()
-            
-            // STEP 2: Prompts
-            setActiveStepIndex(2)
-            setProgress(35)
-            await analyzeAiSearchPrompts()
+      const orgId = orgStore.organizationId || undefined;
 
-            // STEP 3: Visibility & Platforms
-            setActiveStepIndex(3)
-            setProgress(50)
-            await analyzeVisibility()
-            setProgress(60)
-            await analyzePlatformVisibility()
+      // STEP 0: Analysis
+      setActiveStepIndex(0)
+      setProgress(5)
 
-            // STEP 4: Citations
-            setActiveStepIndex(4)
-            setProgress(70)
-            await analyzeCitations()
+      const finalIndustry = storeState.industry === "Other" && storeState.customIndustry
+        ? storeState.customIndustry
+        : storeState.industry;
 
-            // STEP 5: Personas & Regions
-            setActiveStepIndex(5)
-            setProgress(80)
-            await analyzePersonas()
-            setProgress(85)
-            await analyzeRegions()
+      const result = await analyzeOnboardingData({
+        websiteUrl: storeState.websiteUrl,
+        businessName: storeState.businessName,
+        industry: finalIndustry,
+        targetAudience: storeState.targetAudience,
+        keywords: storeState.keywords,
+        whoDoYouSellTo: storeState.whoDoYouSellTo,
+        knownCompetitors: storeState.knownCompetitors,
+        mainOffering: storeState.mainOffering
+      })
+      storeState.setAnalysisResult(result)
 
-            // STEP 6: Recommendations & Executive Summary
-            setActiveStepIndex(6)
-            setProgress(90)
-            await generateRecommendations()
-            setProgress(95)
-            await generateExecutiveSummary()
-          }
-          
-          setProgress(100)
-          
-          setTimeout(() => {
-            router.push(orgId ? `/report/${orgId}?source=onboarding` : "/onboarding/report")
-            setTimeout(() => {
-              storeState.resetJourney()
-            }, 1000)
-          }, 1000)
+      if (orgId) {
+        // STEP 1: Competitors
+        setActiveStepIndex(1)
+        setProgress(20)
+        await analyzeCompetitors()
 
-        } catch (err) {
-          console.error("Analysis failed", err)
-          setState("paywall")
-        }
+        // STEP 2: Prompts
+        setActiveStepIndex(2)
+        setProgress(35)
+        await analyzeAiSearchPrompts()
+
+        // STEP 3: Visibility & Platforms
+        setActiveStepIndex(3)
+        setProgress(50)
+        await analyzeVisibility()
+        setProgress(60)
+        await analyzePlatformVisibility()
+
+        // STEP 4: Citations
+        setActiveStepIndex(4)
+        setProgress(70)
+        await analyzeCitations()
+
+        // STEP 5: Personas & Regions
+        setActiveStepIndex(5)
+        setProgress(80)
+        await analyzePersonas()
+        setProgress(85)
+        await analyzeRegions()
+
+        // STEP 6: Recommendations & Executive Summary
+        setActiveStepIndex(6)
+        setProgress(90)
+        await generateRecommendations()
+        setProgress(95)
+        await generateExecutiveSummary()
+
+        // BUG FIX: Mark onboarding complete so auth/sync returns needsOnboarding=false
+        await completeOnboarding({
+          websiteUrl: storeState.websiteUrl,
+          businessName: storeState.businessName,
+          visibilityScore: 0,
+          brandAuthority: 0,
+          contentStrength: 0,
+          citationScore: 0,
+        })
       }
 
-      runAnalysis()
+      setProgress(100)
 
-  }, [router, setState])
+      setTimeout(() => {
+        // BUG FIX: Always redirect to dashboard, not /report/:id (which needs pre-loaded data)
+        router.push("/dashboard")
+        setTimeout(() => {
+          storeState.resetJourney()
+        }, 1000)
+      }, 1000)
+
+    } catch (err: unknown) {
+      console.error("Analysis failed", err)
+      // BUG FIX: Show a retry UI instead of silently sending user to paywall
+      const message = err instanceof Error ? err.message : "An unexpected error occurred."
+      setErrorMessage(message)
+      setHasError(true)
+    }
+  }
+
+  useEffect(() => {
+    runAnalysis()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
+        <div className="w-full max-w-md relative">
+          <div className="absolute -inset-10 bg-destructive/10 blur-[100px] rounded-full z-0 pointer-events-none" />
+          <div className="relative z-10 glass-card border border-border p-10 rounded-3xl shadow-2xl text-center space-y-6">
+            <div className="w-20 h-20 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-10 h-10 text-destructive" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight mb-2">Analysis Interrupted</h1>
+              <p className="text-muted-foreground text-sm">
+                Something went wrong while analyzing your website. This is usually a temporary issue.
+              </p>
+              {errorMessage && (
+                <p className="mt-3 text-xs text-muted-foreground font-mono bg-muted/50 rounded-lg p-3 text-left break-all">
+                  {errorMessage}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => {
+                  setIsRetrying(true)
+                  runAnalysis()
+                }}
+                disabled={isRetrying}
+                className="w-full"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isRetrying ? "animate-spin" : ""}`} />
+                Try Again
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/dashboard")}
+                className="w-full text-muted-foreground"
+              >
+                Skip & Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">

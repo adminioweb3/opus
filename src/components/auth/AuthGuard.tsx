@@ -43,7 +43,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             if (cancelled) return
             useOrganizationStore.getState().setSyncResult(result)
             if (result.needsOnboarding) {
-              router.replace("/onboarding")
+              setOnboardingChecked(true)
+              if (window.location.pathname !== "/onboarding") {
+                router.replace("/onboarding")
+              }
             } else {
               setOnboardingChecked(true)
             }

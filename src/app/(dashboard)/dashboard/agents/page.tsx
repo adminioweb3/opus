@@ -14,8 +14,8 @@ export default function AgentsPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Agent activity will appear here when the managed-agent service is connected. Citationly does not show sample runs as customer data.
           </p>
-          <Link href="/dashboard/prompt-intelligence" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
-            Open prompt intelligence <ArrowRight className="ml-2 h-4 w-4" />
+          <Link href="/dashboard/answer-atlas" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+            Open Answer Atlas <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </CardContent>
       </Card>

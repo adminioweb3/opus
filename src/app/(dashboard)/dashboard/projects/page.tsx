@@ -14,7 +14,7 @@ export default function ProjectsPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Project planning will appear here once it is backed by an organization-scoped service. No example projects are shown as customer work.
           </p>
-          <Link href="/dashboard/command-center" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+          <Link href="/dashboard/overview" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
             Open command center <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </CardContent>

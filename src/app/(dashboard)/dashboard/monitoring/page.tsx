@@ -14,8 +14,8 @@ export default function MonitoringPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Citationly will show monitored prompt responses here once the live monitoring API is available. No sample prompt data is shown as customer data.
           </p>
-          <Link href="/dashboard/prompt-intelligence" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
-            Open prompt intelligence <ArrowRight className="ml-2 h-4 w-4" />
+          <Link href="/dashboard/visibility-radar" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+            Open visibility radar <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </CardContent>
       </Card>

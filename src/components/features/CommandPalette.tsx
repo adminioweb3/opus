@@ -7,7 +7,7 @@ import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { getTopCompetitors, type CompetitorResult } from "@/lib/api/dashboardApi"
 import { getTeamMembers, type TeamMember } from "@/lib/api/teamApi"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
-import { Activity, Target, BarChart3, FileText, Users, Settings, Plug, LayoutDashboard, Swords, Bot, Sparkles, Compass, PenSquare } from "lucide-react"
+import { Target, BarChart3, Users, Settings, Plug, LayoutDashboard, Swords, Bot, Sparkles, Compass, PenSquare } from "lucide-react"
 
 export function CommandPalette() {
   const { commandPaletteOpen, setCommandPaletteOpen } = useUIStore()
@@ -54,12 +54,10 @@ export function CommandPalette() {
 
         <CommandGroup heading="Navigation">
           <CommandItem onSelect={() => navigate("/dashboard/overview")}><LayoutDashboard className="w-4 h-4 mr-2" /> Command Center</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/war-room")}><Activity className="w-4 h-4 mr-2" /> Executive War Room</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/assistant")}><Bot className="w-4 h-4 mr-2" /> Citationly Assistant</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/geo-dashboard")}><Sparkles className="w-4 h-4 mr-2" /> GEO Dashboard</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/geo-optimizer")}><Compass className="w-4 h-4 mr-2" /> Page Auditor</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/visibility-radar")}><BarChart3 className="w-4 h-4 mr-2" /> Visibility Radar</CommandItem>
-          <CommandItem onSelect={() => navigate("/dashboard/brand-pulse")}><FileText className="w-4 h-4 mr-2" /> Brand Intelligence (Preview)</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/competitor-watch")}><Swords className="w-4 h-4 mr-2" /> Competitor Watch</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/opportunity-finder")}><Target className="w-4 h-4 mr-2" /> Opportunity Finder</CommandItem>
           <CommandItem onSelect={() => navigate("/dashboard/content-generator")}><PenSquare className="w-4 h-4 mr-2" /> Content Studio</CommandItem>

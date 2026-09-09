@@ -56,7 +56,7 @@ export default function PaywallReportPage() {
           <Badge variant="outline" className="mb-4">Free Analysis Complete</Badge>
           <h1 className="text-4xl font-bold tracking-tight">Your AI Visibility is at Risk</h1>
           <p className="text-xl text-muted-foreground mt-4">
-            We analyzed <span className="font-mono text-foreground font-medium">{websiteUrl || "your website"}</span> across ChatGPT, Gemini, Claude, and Perplexity.
+            We analyzed <span className="font-mono text-foreground font-medium">{websiteUrl || "your website"}</span> using the AI providers and technical checks currently available for your workspace.
           </p>
         </div>
 

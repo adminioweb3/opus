@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { toast } from "@/lib/toast";
 import { useOrganizationStore } from "@/lib/stores/organizationStore";
+import { useRouter } from "next/navigation";
 import {
   getOpportunityFinder,
   runOpportunityDeepScan,
@@ -57,6 +58,7 @@ const SORT_KEYS: Record<string, keyof Opportunity> = {
 };
 
 export default function OpportunityFinderPage() {
+  const router = useRouter();
   const { organizationId } = useOrganizationStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
@@ -167,8 +169,8 @@ export default function OpportunityFinderPage() {
     [opportunities],
   );
 
-  const scoreTrend = useMemo(() => (data?.forecast.trend ?? []).map((t) => t.avgScore), [data]);
-  const countTrend = useMemo(() => (data?.forecast.trend ?? []).map((t) => t.count), [data]);
+  const scoreTrend = useMemo(() => (data?.forecast?.trend ?? []).map((t) => t.avgScore), [data]);
+  const countTrend = useMemo(() => (data?.forecast?.trend ?? []).map((t) => t.count), [data]);
 
   if (!isLoading && data && !data.hasData) {
     return (
@@ -276,8 +278,8 @@ export default function OpportunityFinderPage() {
                     </div>
 
                     <div className="flex items-center gap-2 mt-auto">
-                      <Button size="sm" className="flex-1" onClick={() => toast.info("Execute coming soon")}>
-                        <Play className="w-3.5 h-3.5 fill-white" /> Execute
+                      <Button size="sm" className="flex-1" onClick={() => router.push("/dashboard/geo-optimizer")}>
+                        <Play className="w-3.5 h-3.5 fill-white" /> Create fix
                       </Button>
                       <Button variant="secondary" size="sm" onClick={() => setExpandedId(expandedId === m.id ? null : m.id)}>
                         Details
@@ -364,8 +366,8 @@ export default function OpportunityFinderPage() {
                             <TableCell className="p-4 text-[13px] font-bold text-emerald-600">+{m.estimatedGainPct}%</TableCell>
                             <TableCell className="p-4 text-[13px] font-bold text-slate-900">{m.difficulty}</TableCell>
                             <TableCell className="p-4 text-right">
-                              <Button size="sm" onClick={(e) => { e.stopPropagation(); toast.info("Execute coming soon"); }}>
-                                <Play className="w-3 h-3 fill-white" /> Execute
+                              <Button size="sm" onClick={(e) => { e.stopPropagation(); router.push("/dashboard/geo-optimizer"); }}>
+                                <Play className="w-3 h-3 fill-white" /> Create fix
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -488,7 +490,7 @@ export default function OpportunityFinderPage() {
                     <div className="flex items-center justify-between border-b border-slate-100 pb-5">
                       <div>
                         <div className="text-[11.5px] font-bold uppercase tracking-wider text-slate-400 mb-1">Potential AI Growth</div>
-                        <div className="text-[20px] font-space-grotesk font-bold text-slate-900 leading-none mb-1.5">+{data?.forecast.potentialGainPct ?? 0}%</div>
+                        <div className="text-[20px] font-space-grotesk font-bold text-slate-900 leading-none mb-1.5">+{data?.forecast?.potentialGainPct ?? 0}%</div>
                         <div className="text-[11.5px] font-medium text-emerald-600 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> Avg. across open opportunities</div>
                       </div>
                       <div className="w-24 h-8 opacity-70">

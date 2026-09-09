@@ -7,16 +7,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "@/lib/toast"
-import { CreditCard, Download, RefreshCw, Receipt } from "lucide-react"
+import { Activity, CreditCard, Download, RefreshCw, Receipt } from "lucide-react"
 import { useOrganizationStore } from "@/lib/stores/organizationStore"
 import { SectionHead, StatusPill, EmptyState } from "./shared"
 import {
   getSubscription,
+  getBillingUsage,
   getInvoices,
   getPaymentMethods,
   createSubscriptionSession,
   cancelSubscription,
   extractBillingErrorMessage,
+  type BillingUsageResponse,
   type GetSubscriptionResponse,
   type InvoiceRecord,
   type PaymentMethodRecord,
@@ -35,6 +37,7 @@ export default function BillingSection() {
   const router = useRouter()
   const { planType, trialEndsAt, isTrialExpired } = useOrganizationStore()
   const [subscription, setSubscription] = useState<GetSubscriptionResponse | null>(null)
+  const [usage, setUsage] = useState<BillingUsageResponse | null>(null)
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([])
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -48,12 +51,14 @@ export default function BillingSection() {
   const load = useCallback(async () => {
     setIsLoading(true)
     try {
-      const [subResult, invoiceResult, methodResult] = await Promise.all([
+      const [subResult, usageResult, invoiceResult, methodResult] = await Promise.all([
         getSubscription(),
+        getBillingUsage(),
         getInvoices(),
         getPaymentMethods(),
       ])
       setSubscription(subResult)
+      setUsage(usageResult)
       setInvoices(invoiceResult)
       setPaymentMethods(methodResult)
     } catch (err) {
@@ -205,6 +210,39 @@ export default function BillingSection() {
 
       <Card>
         <CardContent className="pt-6">
+          <SectionHead
+            title="Usage and limits"
+            sub={usage ? `Current UTC period: ${new Date(usage.periodStart).toLocaleDateString()} - ${new Date(usage.periodEnd).toLocaleDateString()}` : "Current plan usage from server-side counters."}
+          />
+          {isLoading ? (
+            <EmptyState icon={Activity} message="Loading usage..." />
+          ) : !usage ? (
+            <EmptyState icon={Activity} message="Usage data is unavailable right now." />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <UsageMetricCard label={usage.aiCalls.label} value={usage.aiCalls.currentUsage} limit={usage.aiCalls.limit} unit={usage.aiCalls.unit} />
+              <UsageMetricCard label={usage.publicApiCalls.label} value={usage.publicApiCalls.currentUsage} limit={usage.publicApiCalls.limit} unit={usage.publicApiCalls.unit} />
+              <UsageMetricCard
+                label={usage.estimatedAiSpend.label}
+                value={usage.estimatedAiSpend.currentUsage / 1_000_000}
+                limit={usage.estimatedAiSpend.limit === null ? null : usage.estimatedAiSpend.limit / 1_000_000}
+                unit="USD today"
+                currency
+              />
+              <div className="p-4 rounded-lg border border-border/60 bg-muted/20">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">Scan cadence</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {usage.recurringScanIntervalDays === null ? "Custom" : `Every ${usage.recurringScanIntervalDays} day${usage.recurringScanIntervalDays === 1 ? "" : "s"}`}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">Configured by your active plan entitlement.</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
           <SectionHead title="Cashfree mandate" />
           {isLoading ? (
             <EmptyState icon={CreditCard} message="Loading Cashfree mandate..." />
@@ -264,6 +302,42 @@ export default function BillingSection() {
           )}
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function UsageMetricCard({
+  label,
+  value,
+  limit,
+  unit,
+  currency = false,
+}: {
+  label: string
+  value: number
+  limit: number | null
+  unit: string
+  currency?: boolean
+}) {
+  const pct = limit && limit > 0 ? Math.min(100, Math.round((value / limit) * 100)) : null
+  const formattedValue = currency ? `$${value.toFixed(4)}` : value.toLocaleString()
+  const formattedLimit = limit === null ? "Unlimited" : currency ? `$${limit.toFixed(4)}` : limit.toLocaleString()
+
+  return (
+    <div className="p-4 rounded-lg border border-border/60 bg-muted/20">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+          <div className="mt-1 text-lg font-semibold">{formattedValue}</div>
+        </div>
+        <StatusPill kind={limit === null || (pct !== null && pct < 80) ? "ok" : pct !== null && pct < 100 ? "warn" : "bad"} text={formattedLimit} />
+      </div>
+      {pct !== null && (
+        <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
+          <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+        </div>
+      )}
+      <p className="mt-2 text-xs text-muted-foreground">{unit}</p>
     </div>
   )
 }

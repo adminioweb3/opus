@@ -44,7 +44,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Run your first scan",
-    desc: "Trigger your first scan and watch the platform query six major engines with your question set, then return the mentions and citations it finds.",
+    desc: "Trigger your first scan and watch the platform query the AI providers configured for your workspace, then return the mentions and citations it finds.",
   },
 ]
 
@@ -142,7 +142,7 @@ const FAQS: FaqItem[] = [
   },
   {
     q: "Which engines does the platform monitor?",
-    a: "Citationly continuously monitors six major AI engines, covering the assistants and answer surfaces most buyers actually use for research, and reports on mentions, citations, and Share of Voice across all of them.",
+    a: "Citationly monitors the AI providers configured for your workspace and labels provider coverage honestly. Unconfigured engines are not simulated or shown as if they were measured.",
   },
   {
     q: "Can I export data from reports?",
@@ -576,7 +576,8 @@ export function Content() {
                 >
                   Integrations documentation
                 </Link>{" "}
-                covers no-code connections to tools like Google Analytics, Search Console, Slack, and Zapier.
+                separates available integrations from planned no-code connections such as Google Analytics,
+                Search Console, Slack, and Zapier.
               </motion.p>
             </div>
           </motion.div>

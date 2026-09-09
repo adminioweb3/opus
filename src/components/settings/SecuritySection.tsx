@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/lib/toast"
-import { Copy, KeyRound, Monitor, RefreshCw, ShieldCheck, ShieldPlus, Smartphone } from "lucide-react"
+import { Copy, Download, KeyRound, Monitor, RefreshCw, ShieldCheck, ShieldPlus, Smartphone } from "lucide-react"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { SectionHead, StatusPill } from "./shared"
 import {
@@ -16,6 +16,7 @@ import {
   getDeletionRequests,
   getRetentionPolicy,
   getSsoOverview,
+  exportAuditLogs,
   rotateScimToken,
   saveRetentionPolicy,
   saveSsoConnection,
@@ -146,6 +147,24 @@ export default function SecuritySection() {
     }
   }
 
+  const downloadAuditLogs = async () => {
+    try {
+      const blob = await exportAuditLogs(1000)
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `citationly-audit-logs-${new Date().toISOString().slice(0, 10)}.csv`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+      toast.success("Audit logs exported")
+    } catch (err) {
+      console.error(err)
+      toast.error("Failed to export audit logs")
+    }
+  }
+
   return (
     <div className="space-y-5">
       <Card>
@@ -243,7 +262,15 @@ export default function SecuritySection() {
 
       <Card>
         <CardContent className="pt-6">
-          <SectionHead title="Audit logs" sub="Sensitive admin, security, billing, SCIM, API-key, and report actions." />
+          <SectionHead
+            title="Audit logs"
+            sub="Sensitive admin, security, billing, SCIM, API-key, and report actions."
+            action={
+              <Button size="sm" variant="outline" onClick={downloadAuditLogs} disabled={loadingEnterprise}>
+                <Download className="mr-2 h-4 w-4" /> Export CSV
+              </Button>
+            }
+          />
           <div className="space-y-2">
             {auditLogs.length === 0 ? (
               <p className="rounded-lg border border-border/60 p-3 text-sm text-muted-foreground">

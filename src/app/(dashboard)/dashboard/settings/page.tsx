@@ -9,6 +9,7 @@ import WebsitesSection from "@/components/settings/WebsitesSection"
 import IntegrationsSection from "@/components/settings/IntegrationsSection"
 import BillingSection from "@/components/settings/BillingSection"
 import ApiKeysSection from "@/components/settings/ApiKeysSection"
+import FeedbackSection from "@/components/settings/FeedbackSection"
 import AgencySection from "@/components/settings/AgencySection"
 import SecuritySection from "@/components/settings/SecuritySection"
 import { ChevronRight, Settings as SettingsIcon } from "lucide-react"
@@ -21,6 +22,7 @@ const SECTION_COMPONENTS: Record<string, React.ComponentType> = {
   integrations: IntegrationsSection,
   billing: BillingSection,
   apikeys: ApiKeysSection,
+  feedback: FeedbackSection,
   agency: AgencySection,
   security: SecuritySection,
 }

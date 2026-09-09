@@ -113,7 +113,7 @@ const QUICKSTARTS: {
   {
     icon: ScanSearch,
     title: "Understanding your first scan",
-    steps: ["Visibility Radar runs across 6 engines", "Results land within 48 hours", "Review platform-by-platform detail"],
+    steps: ["Citationly runs the AI providers configured for your workspace", "Results appear as jobs complete", "Review provider-specific evidence where available"],
   },
   {
     icon: LineChart,
@@ -137,8 +137,8 @@ const INTEGRATIONS: {
   {
     initials: "SL",
     name: "Slack",
-    desc: "Brand Pulse alerts and weekly Visibility Radar digests, posted straight to a channel.",
-    status: "Available",
+    desc: "Brand Pulse alerts and weekly Visibility Radar digests, posted straight to a channel after Slack delivery ships.",
+    status: "Coming soon",
     gradient: "from-indigo-500 to-violet-500",
   },
   {
@@ -184,8 +184,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         Create an account, connect your website, and Knowledge Vault begins crawling immediately. Your
-        first Visibility Radar scan across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok
-        completes within 48 hours, with no setup beyond verifying your domain.
+        first visibility workflow uses the providers and technical checks currently configured for your
+        workspace. Additional engines appear only when real provider access is available.
       </>
     ),
   },
@@ -193,9 +193,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "How often do visibility scans run?",
     a: (
       <>
-        Visibility Radar scans run weekly by default on every plan, with each engine scanned
-        independently so you can see platform-specific movement. Professional and Enterprise plans can
-        trigger an on-demand deep scan from Opportunity Finder at any time.
+        Scan cadence follows your plan entitlement. Each configured provider is measured independently so
+        you can see provider-specific movement when that provider is available.
       </>
     ),
   },
@@ -508,7 +507,7 @@ export function Content() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">
-                    API access rolling out on Enterprise: join the waitlist
+                    API access is available through server-generated scoped keys
                   </p>
                 </div>
                 <Link

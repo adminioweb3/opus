@@ -19,6 +19,24 @@ export interface GetSubscriptionResponse {
   subscription: SubscriptionRecord | null
 }
 
+export interface BillingUsageMetric {
+  label: string
+  metricKey: string
+  currentUsage: number
+  limit: number | null
+  unit: string
+}
+
+export interface BillingUsageResponse {
+  planKey: string
+  periodStart: string
+  periodEnd: string
+  aiCalls: BillingUsageMetric
+  estimatedAiSpend: BillingUsageMetric
+  publicApiCalls: BillingUsageMetric
+  recurringScanIntervalDays: number | null
+}
+
 export interface InvoiceRecord {
   id: string
   organizationId: string
@@ -46,6 +64,11 @@ export interface PaymentMethodRecord {
 
 export async function getSubscription(): Promise<GetSubscriptionResponse> {
   const response = await apiClient.get<GetSubscriptionResponse>("/Billing/subscription")
+  return response.data
+}
+
+export async function getBillingUsage(): Promise<BillingUsageResponse> {
+  const response = await apiClient.get<BillingUsageResponse>("/Billing/usage")
   return response.data
 }
 

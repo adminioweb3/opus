@@ -4,7 +4,7 @@ import { Content } from "./content"
 export const metadata: Metadata = {
   title: "Citationly Integrations: Connect Your Marketing Stack | Citationly",
   description:
-    "Connect Citationly to Google Analytics, Search Console, Slack, Zapier, and your CRM. Bring AI search intelligence into the tools your team already uses.",
+    "Explore available and planned Citationly integrations for publishing, analytics, alerts, automation, and developer workflows.",
 }
 
 export default function IntegrationsPage() {

@@ -94,6 +94,14 @@ export async function getAuditLogs(limit = 50): Promise<AuditLog[]> {
   return response.data
 }
 
+export async function exportAuditLogs(limit = 1000): Promise<Blob> {
+  const response = await apiClient.get<Blob>("/AuditLogs/export.csv", {
+    params: { limit },
+    responseType: "blob",
+  })
+  return response.data
+}
+
 export async function getRetentionPolicy(): Promise<RetentionPolicy> {
   const response = await apiClient.get<RetentionPolicy>("/DataLifecycle/retention-policy")
   return response.data

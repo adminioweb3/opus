@@ -32,27 +32,27 @@ const PLATFORMS: { icon: LucideIcon; name: string; desc: string }[] = [
   {
     icon: BarChart3,
     name: "Google Analytics",
-    desc: "Brings AI visibility context alongside your traffic and conversion data.",
+    desc: "Planned: bring AI visibility context alongside traffic and conversion data.",
   },
   {
     icon: Search,
     name: "Google Search Console",
-    desc: "Pairs AI search presence with traditional search performance.",
+    desc: "Planned: pair AI search presence with traditional search performance.",
   },
   {
     icon: MessageSquare,
     name: "Slack",
-    desc: "Sends alerts and summaries to the right channel.",
+    desc: "Planned: send alerts and summaries to the right channel after alert delivery is production-verified.",
   },
   {
     icon: Zap,
     name: "Zapier",
-    desc: "Connects Citationly to thousands of other apps for no-code automation.",
+    desc: "Planned: connect Citationly events to no-code automation workflows.",
   },
   {
     icon: Users,
     name: "CRM",
-    desc: "Routes AI visibility signals into your CRM so sales and marketing share the same view.",
+    desc: "Planned: route AI visibility signals into revenue workflows once CRM integrations are available.",
   },
 ]
 
@@ -75,10 +75,10 @@ const BENEFITS: { icon: LucideIcon; title: string; desc: string }[] = [
 ]
 
 const SETUP_STEPS: { step: string; title: string; desc: string }[] = [
-  { step: "01", title: "Choose the integration", desc: "Pick the tool you want Citationly to connect to." },
-  { step: "02", title: "Authorize the connection", desc: "Sign in to the other tool and grant access." },
-  { step: "03", title: "Configure what flows", desc: "Choose which data, alerts, or events move across." },
-  { step: "04", title: "Confirm and go live", desc: "Save the connection and it starts working immediately." },
+  { step: "01", title: "Choose the integration", desc: "Pick an available integration or join the waitlist for a planned one." },
+  { step: "02", title: "Authorize or configure", desc: "For live integrations, provide credentials or authorize the connected service." },
+  { step: "03", title: "Test the connection", desc: "Confirm the integration can create the expected draft, export, alert, or report artifact." },
+  { step: "04", title: "Review before shipping", desc: "Keep publishing and automation review-first unless your team explicitly approves a live policy." },
 ]
 
 interface UseCase {
@@ -93,26 +93,26 @@ const USE_CASES: UseCase[] = [
     role: "Marketing team",
     desc: (
       <>
-        A marketing team routes weekly{" "}
+        A marketing team prepares weekly{" "}
         <Link
           href="/features/share-of-voice"
           className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
         >
           Share of Voice
         </Link>{" "}
-        summaries to Slack.
+        summaries for Slack once notification delivery is enabled for their workspace.
       </>
     ),
   },
   {
     icon: LineChart,
     role: "SEO team",
-    desc: "An SEO team pairs Citationly with Search Console.",
+    desc: "An SEO team exports Citationly evidence while Search Console integration remains on the roadmap.",
   },
   {
     icon: DollarSign,
     role: "Revenue team",
-    desc: "A revenue team pushes AI visibility signals into their CRM.",
+    desc: "A revenue team uses Citationly reports today and can add CRM sync after that integration is released.",
   },
 ]
 
@@ -127,9 +127,10 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "Which tools does Citationly integrate with?",
     a: (
       <>
-        Citationly connects to Google Analytics, Google Search Console, Slack, Zapier, and CRM platforms
-        today, with more integrations shipping regularly. Zapier alone opens the door to thousands of
-        additional apps without custom code.
+        Citationly currently supports customer-facing integration paths for WordPress publishing,
+        public API/API-key access, MCP access, and developer handoff export. Google Analytics, Google
+        Search Console, Slack, Zapier, and CRM integrations are planned roadmap items and should not
+        be treated as live until they appear in your workspace settings.
       </>
     ),
   },
@@ -137,8 +138,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "Do integrations require code?",
     a: (
       <>
-        No. Every supported integration connects through an authorization flow in your account settings.
-        Choose the integration, sign in to the other tool, and confirm what data flows. No code required.
+        CMS publishing and API workflows require the configuration shown in your workspace settings.
+        Code-based websites can use developer handoff export today while GitHub PR automation is built.
       </>
     ),
   },
@@ -146,9 +147,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "How do real-time alerts work?",
     a: (
       <>
-        Alerts, like a visibility score change or a new citation, post to the destination you configure,
-        such as a Slack channel, as soon as they are detected. You choose which events trigger an alert
-        and where it goes.
+        Citationly records alert events and delivery status. Email delivery depends on configured SMTP,
+        and Slack delivery is a planned integration rather than a live promise.
       </>
     ),
   },
@@ -156,12 +156,11 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "Can I connect Citationly to a tool that is not listed?",
     a: (
       <>
-        If the tool is not one of the built-in integrations, Zapier can usually bridge the gap without
-        code. For anything Zapier does not cover, the{" "}
+        If the tool is not one of the available integrations, use the{" "}
         <Link href="/api" className="text-indigo-600 font-medium hover:underline">
           API
         </Link>{" "}
-        lets your team build a custom connection directly.
+        or developer handoff export today. Zapier is planned for no-code automation later.
       </>
     ),
   },
@@ -169,9 +168,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "Why connect to Google Search Console?",
     a: (
       <>
-        Search Console shows how your brand performs in traditional search. Pairing it with Citationly
-        lets your SEO team see AI search visibility and organic search performance side by side, instead
-        of switching between two disconnected tools.
+        Search Console shows how your brand performs in traditional search. It is on the roadmap so teams
+        can compare AI visibility with organic search performance in one place once the integration ships.
       </>
     ),
   },
@@ -180,8 +178,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         Only the data you authorize for a specific integration is shared, and only with that destination.
-        Connecting Slack does not give Slack access to your CRM data, and you can review or revoke any
-        connection from your integration settings at any time.
+        Connecting one integration does not authorize another service. You can review or revoke available
+        connections from your integration settings.
       </>
     ),
   },
@@ -250,10 +248,10 @@ export function Content() {
     <div className="bg-background">
       <PageHero
         eyebrow="Integrations"
-        title="Citationly integrations: AI search data where your team already works"
+        title="Citationly integrations: available now and coming next"
         gradientWords={["works"]}
         wide
-        description="Connect Citationly to your analytics, communication, and automation tools so AI visibility insights reach the people who act on them, without another tab to check."
+        description="Use the integrations available in your workspace today, and see what is planned next for analytics, alerts, automation, CRM, and developer workflows."
       >
         <a
           href="#supported-platforms"
@@ -306,8 +304,9 @@ export function Content() {
             className="space-y-5 text-muted-foreground leading-relaxed text-[15px] md:text-base max-w-2xl mx-auto text-center"
           >
             <p>
-              Insight that lives in one more dashboard is easy to ignore. AI search integrations move
-              Citationly&apos;s data into the tools your team already opens every day.
+              Insight that lives in one more dashboard is easy to ignore. Citationly is building integrations
+              carefully: available workflows should work end to end, and planned workflows stay clearly labeled
+              until they are production-ready.
             </p>
           </motion.div>
         </div>
@@ -408,8 +407,8 @@ export function Content() {
                 transition={{ duration: 0.6, delay: 0.15 }}
                 className="text-white/55 leading-relaxed text-[15px] md:text-base mb-12"
               >
-                AI search integrations reduce friction, shorten response time, and connect AI visibility
-                to outcomes like pipeline and revenue.
+              Integrations reduce friction only when they are dependable. Citationly separates available
+              workflows from planned ones so teams know exactly what can be used today.
               </motion.p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-10 text-left">
@@ -488,8 +487,8 @@ export function Content() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-center text-muted-foreground max-w-xl mx-auto mt-4"
           >
-            Most connections take a few minutes and require no code. Teams building custom workflows can
-            go further with the{" "}
+            Available connections expose their setup requirements in workspace settings. Teams building custom
+            workflows can go further with the{" "}
             <Link href="/api" className="text-indigo-600 font-medium hover:underline">
               API
             </Link>

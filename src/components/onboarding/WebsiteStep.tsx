@@ -87,7 +87,7 @@ export function WebsiteStep({ value, onChange, onContinue, isScraping, scrapePro
         Build Your AI Visibility Workspace
       </h1>
       <p className="text-[14px] text-muted-foreground leading-relaxed mb-7 max-w-md">
-        Analyze your website across Google, ChatGPT, Claude, Gemini, and Perplexity in under 2 minutes.
+        Analyze your website using the AI providers and technical checks currently available for your workspace.
       </p>
 
       <form

@@ -22,7 +22,7 @@ export interface TopicRanking {
 }
 
 export interface RankRow {
-  rank: number;
+  rank: number | null;
   name: string;
   owned: boolean;
   value: number;
@@ -90,11 +90,15 @@ export interface PromptVisibility {
   id: string;
   promptAnalysisId: string;
   overallVisibilityScore: number;
+  visibilityRank: number;
   mentionFrequency: number;
   averagePosition: number;
   shareOfVoice: number;
   citationCount: number;
+  citationShare: number;
   competitorCount: number;
+  sampleCount: number;
+  methodologyVersion: string;
 }
 
 export interface PromptRecommendation {
@@ -267,6 +271,7 @@ export async function streamAnalysis(
   const decoder = new TextDecoder();
   let buffer = '';
   let lastAnalysisId: string | null = null;
+  let streamError: string | null = null;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -285,6 +290,7 @@ export async function streamAnalysis(
       try {
         const parsed: AnalysisProgress = JSON.parse(payload);
         if (parsed.analysisId) lastAnalysisId = parsed.analysisId;
+        if (parsed.error) streamError = parsed.error;
         onProgress(parsed);
       } catch {
         // Non-JSON keepalive frame — ignore.
@@ -292,6 +298,8 @@ export async function streamAnalysis(
     }
   }
 
+  if (streamError) throw new Error(streamError);
+  if (!lastAnalysisId) throw new Error('Analysis ended before metrics were created.');
   return lastAnalysisId;
 }
 

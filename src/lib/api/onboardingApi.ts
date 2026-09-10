@@ -91,6 +91,25 @@ export const completeOnboarding = async (payload: CompleteOnboardingPayload): Pr
   await apiClient.post('/onboarding/complete', payload);
 };
 
+export interface DashboardBaselineStatus {
+  ready: boolean;
+  promptEvidenceReady: boolean;
+  geoDashboardReady: boolean;
+  competitorWatchReady: boolean;
+}
+
+export const waitForDashboardBaseline = async (timeoutMs = 300_000): Promise<DashboardBaselineStatus> => {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const response = await apiClient.get<DashboardBaselineStatus>('/onboarding/dashboard-baseline-status');
+    if (response.data.ready) return response.data;
+    await new Promise((resolve) => setTimeout(resolve, 2_500));
+  }
+
+  throw new Error('Your measured dashboard baseline is still being prepared. Please try again.');
+};
+
 export interface AnalyzeCompetitorsPayload {
 }
 

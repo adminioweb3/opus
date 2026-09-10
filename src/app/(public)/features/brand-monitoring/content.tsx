@@ -81,7 +81,7 @@ const HOW_IT_WORKS: { step: string; title: string; desc: string }[] = [
   {
     step: "02",
     title: "Engines are questioned continuously",
-    desc: "Citationly asks the brand questions buyers actually ask, across all six engines.",
+    desc: "Citationly asks the brand questions buyers actually ask across the AI providers configured for the workspace.",
   },
   {
     step: "03",

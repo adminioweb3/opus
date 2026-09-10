@@ -43,7 +43,7 @@ const TIERS: Tier[] = [
     annualMonthly: 82,
     annualTotal: "$990",
     description: "For founders getting their first read on AI visibility.",
-    features: ["1 tracked website", "3 AI platforms", "Weekly scans", "Basic visibility score"],
+    features: ["1 tracked website", "Configured AI provider checks", "Weekly scans", "Basic visibility score"],
     ctaLabel: "Start free trial",
     ctaHref: "/register",
     highlighted: false,
@@ -57,8 +57,8 @@ const TIERS: Tier[] = [
     featureIntro: "Everything in Starter, plus",
     features: [
       "Track up to 5 websites",
-      "All 9 AI platforms",
-      "Daily monitoring",
+      "All configured AI providers",
+      "Plan-based monitoring",
       "5 tracked competitors",
       "AI fix recommendations",
       "Email alerts",
@@ -76,7 +76,7 @@ const TIERS: Tier[] = [
     featureIntro: "Everything in Professional, plus",
     features: [
       "Unlimited websites",
-      "Real-time monitoring",
+      "Priority scan cadence",
       "Unlimited competitors",
       "Executive reporting",
       "API access",
@@ -107,8 +107,8 @@ const COMPARISON: CompareGroup[] = [
     group: "Monitoring",
     rows: [
       { label: "Tracked websites", starter: "1", professional: "Up to 5", enterprise: "Unlimited" },
-      { label: "AI platforms monitored", starter: "3 platforms", professional: "All 9 platforms", enterprise: "All 9 platforms" },
-      { label: "Visibility Radar scan frequency", starter: "Weekly", professional: "Daily", enterprise: "Real-time" },
+      { label: "AI providers monitored", starter: "Configured providers", professional: "Configured providers", enterprise: "Configured providers" },
+      { label: "Visibility Radar scan frequency", starter: "Weekly", professional: "Plan-based", enterprise: "Priority cadence" },
       { label: "Brand Pulse monitoring & accuracy flags", starter: false, professional: true, enterprise: true },
       { label: "Email alerts", starter: false, professional: true, enterprise: true },
     ],
@@ -158,7 +158,7 @@ const COMPARISON: CompareGroup[] = [
 const FAQS = [
   {
     q: "How does the 7-day free trial work?",
-    a: "Every plan starts with a real 7-day free trial, no credit card required. During the trial you get full Professional-tier access: all 9 AI platforms, daily Visibility Radar scans, Citation Intelligence, Competitor Watch, and the GEO Optimizer. When the trial ends, you pick the plan that fits and continue where you left off. Your scan history, scores, and reports are all preserved. If you decide not to continue, nothing is charged and your account simply pauses.",
+    a: "Every plan starts with a real 7-day free trial, no credit card required. During the trial you get full Professional-tier access: configured AI provider checks, Visibility Radar scans, Citation Intelligence, Competitor Watch, and the GEO Optimizer. When the trial ends, you pick the plan that fits and continue where you left off. Your scan history, scores, and reports are all preserved. If you decide not to continue, nothing is charged and your account simply pauses.",
   },
   {
     q: "Can I switch plans later?",

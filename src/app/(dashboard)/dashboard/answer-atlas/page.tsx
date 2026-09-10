@@ -481,7 +481,7 @@ function RankPane({ title, block, unit }: { title: string; block: RankBlock; uni
         <tbody>
           {block.rows.slice(0, 6).map((r) => (
             <tr key={r.name} className={r.owned ? "bg-indigo-50/60" : ""}>
-              <td className="text-[12px] text-slate-400 py-2">{r.rank}.</td>
+              <td className="text-[12px] text-slate-400 py-2">{r.rank ? `${r.rank}.` : "—"}</td>
               <td className="py-2">
                 <span className="inline-flex items-center gap-2 font-medium">
                   <span
@@ -1080,9 +1080,16 @@ function PromptsTab({
                         <div className="text-[11px] text-slate-400 mt-0.5 pl-6">{(questionsByTopic[topic.id] ?? []).length} prompts</div>
                       </TableCell>
                       {visibleCols.rank && <TableCell className="p-4 font-mono text-[13.5px] text-slate-700">{s?.rank ? `#${s.rank}` : "–"}</TableCell>}
-                      {visibleCols.score && <TableCell className="p-4 font-mono font-medium text-[13.5px] text-slate-700">{s ? `${s.score}%` : "–"}</TableCell>}
+                      {visibleCols.score && (
+                        <TableCell
+                          className="p-4 font-mono font-medium text-[13.5px] text-slate-700"
+                          title={s?.score === 0 ? "The tracked brand was not found in any analyzed response for this topic." : "Percentage of analyzed responses that mentioned the tracked brand."}
+                        >
+                          {s ? `${s.score}%` : "–"}
+                        </TableCell>
+                      )}
                       {visibleCols.sov && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? `${s.shareOfVoice}%` : "–"}</TableCell>}
-                      {visibleCols.pos && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? s.averagePosition : "–"}</TableCell>}
+                      {visibleCols.pos && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s?.averagePosition ? `#${s.averagePosition}` : "–"}</TableCell>}
                       {visibleCols.citation && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? `${s.citationShare}%` : "–"}</TableCell>}
                     </TableRow>
                     {expanded && (
@@ -1102,7 +1109,11 @@ function PromptsTab({
                                       {q.latestAnalysis
                                         ? `Last run: ${new Date(q.latestAnalysis.runAt).toLocaleDateString()} · ${q.latestAnalysis.status}`
                                         : "Never analyzed"}
-                                      {q.visibility ? ` · Score ${q.visibility.overallVisibilityScore}%` : ""}
+                                      {q.visibility
+                                        ? q.visibility.methodologyVersion === "prompt-visibility:v4-mention-share"
+                                          ? ` · Observed visibility ${q.visibility.overallVisibilityScore}% · ${Math.round(q.visibility.overallVisibilityScore * q.visibility.sampleCount / 100)}/${q.visibility.sampleCount} AI answers mentioned the brand`
+                                          : " · Legacy score — rerun analysis"
+                                        : ""}
                                     </p>
                                   </div>
                                   <div className="shrink-0 flex items-center gap-3">

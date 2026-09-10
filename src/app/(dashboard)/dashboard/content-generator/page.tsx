@@ -18,10 +18,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-const CS_CARD = "bg-gradient-to-b from-white/98 to-[#FAF8FF]/94 border-[#E8E1F5] shadow-[0_16px_34px_rgba(15,23,42,.06)] rounded-xl";
-const CS_FIELD = "border-[#E8E1F5] rounded-xl text-[13.5px] text-[#261B43] focus-visible:border-primary/50 focus-visible:ring-primary/12";
-const CS_SIDE = "p-4.5 border border-[#E8E1F5] rounded-xl bg-gradient-to-b from-white to-[#FBF9FF]";
-const CS_SELECT = "w-full border border-[#E8E1F5] rounded-xl bg-white px-3.5 py-3 text-[13.5px] text-[#261B43] outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/12 transition-colors";
+const CS_CARD = "border-border bg-card shadow-sm";
+const CS_FIELD = "h-10 rounded-lg border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50";
+const CS_SIDE = "rounded-lg border border-border bg-muted/30 p-4";
+const CS_SELECT = "h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none transition-colors focus:border-ring focus:ring-3 focus:ring-ring/50";
 
 /* ── template data ───────────────────────────────────── */
 const TEMPLATES = [
@@ -275,32 +275,32 @@ export default function ContentGeneratorPage() {
   /* ── render ──────────────────────────────────────────── */
   return (
     <div className="p-6 md:p-8 max-w-[1400px] mx-auto">
-      <div className="grid gap-3.5 text-[#261B43]">
+      <div className="space-y-8">
 
         {/* ── header ───────────────────────────────── */}
         <div className="flex items-start justify-between gap-3.5 flex-wrap">
           <div>
-            <div className="inline-flex items-center gap-2.5 px-3 py-2 rounded-full border border-primary/16 bg-primary/10 text-primary text-xs font-bold tracking-wide uppercase">
-              <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-[#818CF8] to-accent shadow-[0_0_0_5px_rgba(99,102,241,.14)]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase text-primary">
+              <span className="h-2 w-2 rounded-full bg-primary" />
               Content studio
             </div>
-            <h1 className="mt-3 mb-1.5 font-space-grotesk text-[32px] leading-tight tracking-tight">Content Generator</h1>
-            <p className="max-w-[760px] text-[#6F6687] text-sm leading-relaxed">
+            <h1 className="mt-3 text-3xl font-bold tracking-tight">Content Generator</h1>
+            <p className="mt-2 max-w-[760px] text-sm leading-relaxed text-muted-foreground">
               Build SEO blogs, social posts, landing pages, and FAQ content inside the main
-              Citationly dashboard, with the same purple palette, rounded cards, and premium
-              module styling.
+              Citationly dashboard, using the same product UI system as the rest of the
+              workspace.
             </p>
           </div>
 
-          <div className="grid gap-2.5 min-w-[260px]">
-            <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-              <strong className="text-[#261B43]">Workflow</strong> Prompt to brief to competitor to draft
+          <div className="grid min-w-[260px] gap-2">
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+              <strong className="text-foreground">Workflow</strong> Prompt to brief to competitor to draft
             </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-              <strong className="text-[#261B43]">Status</strong> Ready for generation
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+              <strong className="text-foreground">Status</strong> Ready for generation
             </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-              <strong className="text-[#261B43]">Scope</strong> Premium interactive view
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+              <strong className="text-foreground">Scope</strong> Premium interactive view
             </span>
           </div>
         </div>
@@ -310,30 +310,30 @@ export default function ContentGeneratorPage() {
 
           {/* prompt editor card */}
           <Card className={CS_CARD}>
-            <div className="p-5.5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
+            <div className="p-5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
               <div>
-                <h2 className="font-space-grotesk text-xl tracking-tight">Prompt Editor</h2>
-                <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+                <h2 className="text-xl font-semibold tracking-tight">Prompt Editor</h2>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                   Start with a guided prompt, reuse templates, and lock in the target keyword
                   before generation.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-                <strong className="text-[#261B43]">Estimated Output</strong> {draft ? `${draft.wordCount} words generated` : (LENGTH_ESTIMATES[outputLength] || "—")}
+              <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">
+                <strong className="text-foreground">Estimated Output</strong> {draft ? `${draft.wordCount} words generated` : (LENGTH_ESTIMATES[outputLength] || "—")}
               </span>
             </div>
 
-            <div className="p-5.5 grid gap-4">
+            <div className="p-5 grid gap-4">
               {/* quick templates */}
               <div className="grid gap-2">
-                <span className="text-[12.5px] font-bold text-[#261B43]">Quick Templates</span>
+                <span className="text-sm font-medium">Quick Templates</span>
                 <div className="flex flex-wrap gap-2.5">
                   {TEMPLATES.map((t) => (
                     <button
                       key={t.label}
                       type="button"
                       onClick={() => handleTemplateClick(t.prompt)}
-                      className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-[#FAF8FF] text-[#261B43] text-[12.5px] font-bold cursor-pointer hover:-translate-y-px hover:border-primary/35 hover:bg-primary/8 transition-all"
+                      className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-border bg-secondary text-xs font-medium text-secondary-foreground cursor-pointer hover:-translate-y-px hover:border-primary/35 hover:bg-primary/8 transition-all"
                     >
                       {t.label}
                     </button>
@@ -343,7 +343,7 @@ export default function ContentGeneratorPage() {
 
               {/* prompt textarea */}
               <div className="grid gap-2">
-                <Label htmlFor="csPrompt" className="text-[12.5px] font-bold text-[#261B43]">Content Prompt</Label>
+                <Label htmlFor="csPrompt" className="text-sm font-medium">Content Prompt</Label>
                 <Textarea
                   id="csPrompt"
                   placeholder="Describe what you want Citationly to generate. Include the topic, primary keyword, desired format, brand context, and CTA."
@@ -354,22 +354,22 @@ export default function ContentGeneratorPage() {
               </div>
 
               {/* meta row */}
-              <div className="flex items-center justify-between gap-3 flex-wrap p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF]">
+              <div className="flex items-center justify-between gap-3 flex-wrap rounded-lg border border-border bg-muted/30 p-4">
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold">
-                    <strong className="text-[#261B43]">Characters</strong> <span>{prompt.length}</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
+                    <strong className="text-foreground">Characters</strong> <span>{prompt.length}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold">
-                    <strong className="text-[#261B43]">Output</strong> Structured long-form draft
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
+                    <strong className="text-foreground">Output</strong> Structured long-form draft
                   </span>
                 </div>
-                <div className="text-[#6F6687] text-[12.5px] font-semibold">Suggested inputs: angle, keyword, CTA, tone</div>
+                <div className="text-xs font-medium text-muted-foreground">Suggested inputs: angle, keyword, CTA, tone</div>
               </div>
 
               {/* keywords + attach */}
               <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 items-end">
                 <div className="grid gap-2">
-                  <Label htmlFor="csKeywords" className="text-[12.5px] font-bold text-[#261B43]">Keywords</Label>
+                  <Label htmlFor="csKeywords" className="text-sm font-medium">Keywords</Label>
                   <Input
                     id="csKeywords"
                     type="text"
@@ -377,12 +377,12 @@ export default function ContentGeneratorPage() {
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
                   />
-                  <small className="text-[#6F6687] text-xs leading-relaxed">
+                  <small className="text-muted-foreground text-xs leading-relaxed">
                     Use comma-separated target terms for blogs, FAQs, landing pages, and social
                     derivatives.
                   </small>
                 </div>
-                <Button variant="outline" className="border-[#E8E1F5] text-[#261B43]" type="button" onClick={handleAttachFiles}>
+                <Button variant="outline" type="button" onClick={handleAttachFiles}>
                   Attach Files
                 </Button>
               </div>
@@ -391,15 +391,15 @@ export default function ContentGeneratorPage() {
 
           {/* generation settings card */}
           <Card className={CS_CARD}>
-            <div className="p-5.5 pb-0">
-              <h2 className="font-space-grotesk text-xl tracking-tight">Generation Settings</h2>
-              <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+            <div className="p-5 pb-0">
+              <h2 className="text-xl font-semibold tracking-tight">Generation Settings</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 Keep the setup compact while controlling tone, format, audience, and
                 creativity.
               </p>
             </div>
 
-            <div className="p-5.5 grid gap-4">
+            <div className="p-5 grid gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <SelectField id="csType"     label="Content Type"   value={contentType}   onChange={setContentType}   options={CONTENT_TYPES} />
                 <SelectField id="csTone"     label="Tone"           value={tone}           onChange={setTone}           options={TONES} />
@@ -412,8 +412,8 @@ export default function ContentGeneratorPage() {
               </div>
 
               {/* creativity slider */}
-              <div className="p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF]">
-                <div className="flex items-center justify-between mb-2.5 text-[12.5px] font-bold">
+              <div className="rounded-lg border border-border bg-muted/30 p-4">
+                <div className="mb-2.5 flex items-center justify-between text-sm font-medium">
                   <span>Creativity</span>
                   <span className="text-primary">{creativity}%</span>
                 </div>
@@ -428,9 +428,9 @@ export default function ContentGeneratorPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-between gap-3 p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF] text-[#6F6687] text-[12.5px]">
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
                 <span>
-                  <strong className="text-[#261B43]">Generation Mode:</strong> Balanced SEO output with conversion-friendly
+                  <strong className="text-foreground">Generation Mode:</strong> Balanced SEO output with conversion-friendly
                   structure
                 </span>
                 <span>Ready</span>
@@ -438,7 +438,6 @@ export default function ContentGeneratorPage() {
 
               <div className="flex items-center flex-wrap gap-2.5">
                 <Button
-                  className="bg-gradient-to-br from-primary to-accent shadow-[0_14px_24px_rgba(99,102,241,.22)]"
                   disabled={isGenerating}
                   onClick={() => handleGenerate()}
                 >
@@ -447,7 +446,6 @@ export default function ContentGeneratorPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-primary/16 bg-primary/8 text-primary hover:bg-primary/12"
                   onClick={handleSaveDraft}
                 >
                   Save Draft
@@ -459,21 +457,21 @@ export default function ContentGeneratorPage() {
 
         {/* ── content brief ────────────────────────── */}
         <Card className={CS_CARD}>
-          <div className="p-5.5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
+          <div className="p-5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
             <div>
-              <h2 className="font-space-grotesk text-xl tracking-tight">Content Brief</h2>
-              <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+              <h2 className="text-xl font-semibold tracking-tight">Content Brief</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 Improve direction before generation with a dedicated two-column brief.
               </p>
             </div>
-            <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-              <strong className="text-[#261B43]">Required</strong> Strategy inputs before draft
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">
+              <strong className="text-foreground">Required</strong> Strategy inputs before draft
             </span>
           </div>
 
-          <div className="p-5.5 grid gap-4">
-            <div className="flex items-center gap-2.5 p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF] text-[#6F6687] text-[13px] leading-relaxed">
-              <strong className="text-[#261B43]">Brief Flow:</strong> Define the keyword, audience, intent, and CTA now so
+          <div className="p-5 grid gap-4">
+            <div className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">Brief Flow:</strong> Define the keyword, audience, intent, and CTA now so
               the generated content lands closer to publish-ready.
             </div>
 
@@ -492,24 +490,24 @@ export default function ContentGeneratorPage() {
 
         {/* ── competitor benchmarking ──────────────── */}
         <Card className={CS_CARD}>
-          <div className="p-5.5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
+          <div className="p-5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
             <div>
-              <h2 className="font-space-grotesk text-xl tracking-tight">Competitor Content Benchmarking</h2>
-              <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+              <h2 className="text-xl font-semibold tracking-tight">Competitor Content Benchmarking</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 Analyze a competing page, then generate a better response inside the same studio
                 workflow.
               </p>
             </div>
-            <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-              <strong className="text-[#261B43]">Outperform</strong> Analyze then exceed
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">
+              <strong className="text-foreground">Outperform</strong> Analyze then exceed
             </span>
           </div>
 
-          <div className="p-5.5">
+          <div className="p-5">
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(280px,.92fr)] gap-4">
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="csCompetitor" className="text-[12.5px] font-bold text-[#261B43]">Competitor Website URL</Label>
+                  <Label htmlFor="csCompetitor" className="text-sm font-medium">Competitor Website URL</Label>
                   <Input
                     id="csCompetitor"
                     type="url"
@@ -518,7 +516,7 @@ export default function ContentGeneratorPage() {
                     value={competitorUrl}
                     onChange={(e) => setCompetitorUrl(e.target.value)}
                   />
-                  <small className="text-[#6F6687] text-xs leading-relaxed">
+                  <small className="text-muted-foreground text-xs leading-relaxed">
                     Paste a ranking page or direct competitor article to review angles,
                     structure, and content gaps.
                   </small>
@@ -527,7 +525,6 @@ export default function ContentGeneratorPage() {
                 <div className="flex items-center flex-wrap gap-2.5">
                   <Button
                     variant="outline"
-                    className="border-[#E8E1F5] text-[#261B43]"
                     disabled={isAnalyzing}
                     onClick={handleAnalyzeCompetitor}
                   >
@@ -535,7 +532,6 @@ export default function ContentGeneratorPage() {
                     Analyze Competitor
                   </Button>
                   <Button
-                    className="bg-gradient-to-br from-primary to-accent shadow-[0_14px_24px_rgba(99,102,241,.22)]"
                     onClick={handleOutperform}
                   >
                     Generate Better Content
@@ -548,7 +544,7 @@ export default function ContentGeneratorPage() {
                     <div key={step.num} className={CS_SIDE}>
                       <span className="inline-flex items-center justify-center w-7.5 h-7.5 rounded-full mb-3 bg-primary/12 text-primary text-xs font-extrabold">{step.num}</span>
                       <h4 className="mb-2 text-sm font-bold">{step.title}</h4>
-                      <p className="text-[#6F6687] text-[12.8px] leading-relaxed">{step.desc}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -558,7 +554,7 @@ export default function ContentGeneratorPage() {
               <div className="grid gap-3">
                 <div className={CS_SIDE}>
                   <h4 className="mb-2 text-sm font-bold">Detected Opportunity</h4>
-                  <p className="text-[#6F6687] text-[12.8px] leading-relaxed">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {isAnalyzing
                       ? "Analyzing the competitor page…"
                       : competitorAnalysis?.opportunity ||
@@ -568,13 +564,13 @@ export default function ContentGeneratorPage() {
                 <div className={CS_SIDE}>
                   <h4 className="mb-2 text-sm font-bold">Content Gap Signals</h4>
                   {competitorAnalysis && competitorAnalysis.gapSignals.length > 0 ? (
-                    <ul className="m-0 pl-4.5 text-[#6F6687] text-[12.8px] leading-relaxed list-disc">
+                    <ul className="m-0 list-disc pl-4.5 text-sm leading-relaxed text-muted-foreground">
                       {competitorAnalysis.gapSignals.map((g, i) => (
                         <li key={i}>{g}</li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-[#6F6687] text-[12.8px] leading-relaxed">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       Analytic signals will appear here, showing key terms and entities the
                       competing content fails to target.
                     </p>
@@ -582,7 +578,7 @@ export default function ContentGeneratorPage() {
                 </div>
                 <div className={CS_SIDE}>
                   <h4 className="mb-2 text-sm font-bold">Recommended Angle</h4>
-                  <p className="text-[#6F6687] text-[12.8px] leading-relaxed">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {competitorAnalysis?.recommendedAngle ||
                       "Our audit engine will recommend a structural positioning angle to outperform the target page in search results."}
                   </p>
@@ -594,91 +590,91 @@ export default function ContentGeneratorPage() {
 
         {/* ── generated content output ─────────────── */}
         <Card className={CS_CARD}>
-          <div className="p-5.5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
+          <div className="p-5 pb-0 flex items-start justify-between gap-3.5 flex-wrap">
             <div>
-              <h2 className="font-space-grotesk text-xl tracking-tight">Generated Content Output</h2>
-              <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+              <h2 className="text-xl font-semibold tracking-tight">Generated Content Output</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 AI draft workspace containing output text, readability checklist, and publishing
                 integration links.
               </p>
             </div>
             <div className="flex items-center flex-wrap gap-2.5">
-              <Button variant="outline" className="border-[#E8E1F5] text-[#261B43]" onClick={handleSaveDraft}>
+              <Button variant="outline" onClick={handleSaveDraft}>
                 Save Draft
               </Button>
-              <Button variant="outline" className="border-primary/16 bg-primary/8 text-primary hover:bg-primary/12" onClick={handleOptimize}>
+              <Button variant="outline" onClick={handleOptimize}>
                 Optimize
               </Button>
-              <Button className="bg-gradient-to-br from-primary to-accent shadow-[0_14px_24px_rgba(99,102,241,.22)]" onClick={handlePublish}>
+              <Button onClick={handlePublish}>
                 Publish
               </Button>
             </div>
           </div>
 
           {/* toolbar */}
-          <div className="flex items-center justify-between gap-3 flex-wrap px-5.5 py-4.5 border-t border-b border-[#E8E1F5] bg-[#FAF8FF]">
+          <div className="flex items-center justify-between gap-3 flex-wrap border-y border-border bg-muted/30 px-5 py-4">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <button type="button" onClick={handleCopy} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white text-[#261B43] text-[12.5px] font-bold">
+              <button type="button" onClick={handleCopy} className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted">
                 <i className="ti ti-copy" /> Copy
               </button>
-              <button type="button" onClick={handleRewrite} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white text-[#261B43] text-[12.5px] font-bold">
+              <button type="button" onClick={handleRewrite} className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted">
                 <i className="ti ti-refresh" /> Rewrite
               </button>
-              <button type="button" onClick={handleOptimize} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white text-[#261B43] text-[12.5px] font-bold">
+              <button type="button" onClick={handleOptimize} className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted">
                 <i className="ti ti-wand" /> Optimize
               </button>
             </div>
             <div className="flex items-center gap-2.5">
-              <span className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-white/92 text-[#6F6687] text-[12.5px] font-semibold whitespace-nowrap">
-                <strong className="text-[#261B43]">Status</strong> <span>{docStatus}</span>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+                <strong className="text-foreground">Status</strong> <span>{docStatus}</span>
               </span>
             </div>
           </div>
 
-          <div className="p-5.5">
+          <div className="p-5">
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(280px,.92fr)] gap-4">
               {/* draft preview */}
-              <div className="p-5.5 border border-[#E8E1F5] rounded-xl bg-gradient-to-b from-white to-[#FCFBFF] min-h-[440px]">
+              <div className="p-5 rounded-lg border border-border bg-background min-h-[440px]">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
-                    <h3 className="font-space-grotesk text-lg tracking-tight">Draft Preview</h3>
-                    <p className="mt-1.5 text-[#6F6687] text-[13.5px] leading-relaxed">
+                    <h3 className="text-lg font-semibold tracking-tight">Draft Preview</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                       This area is prepared for long-form output, rewrites, and future
                       optimization passes.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[#EEF2F6] text-[#6F6687] text-xs font-bold">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-primary/10 text-primary text-xs font-medium">
                     {docStatus}
                   </div>
                 </div>
 
                 {isGenerating ? (
                   <>
-                    <div className="flex items-center gap-2.5 p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF] text-[#6F6687] text-[13px] leading-relaxed">
-                      <strong className="text-[#261B43]">Generating:</strong> Calling the model and structuring your draft —
+                    <div className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground">
+                      <strong className="text-foreground">Generating:</strong> Calling the model and structuring your draft —
                       this usually takes a few seconds.
                     </div>
                     <div className="grid gap-4.5 mt-4.5">
-                      <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-[30%]" />
-                      <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-[58%]" />
+                      <div className="h-3 rounded-full bg-primary/15 w-[30%]" />
+                      <div className="h-3 rounded-full bg-primary/15 w-[58%]" />
                       <div className="grid gap-2.5">
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-full" />
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-full" />
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-[58%]" />
+                        <div className="h-3 rounded-full bg-primary/15 w-full" />
+                        <div className="h-3 rounded-full bg-primary/15 w-full" />
+                        <div className="h-3 rounded-full bg-primary/15 w-[58%]" />
                       </div>
-                      <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-[30%]" />
+                      <div className="h-3 rounded-full bg-primary/15 w-[30%]" />
                       <div className="grid gap-2.5">
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-full" />
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-full" />
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-full" />
-                        <div className="h-3 rounded-full bg-gradient-to-r from-primary/14 to-primary/6 w-[58%]" />
+                        <div className="h-3 rounded-full bg-primary/15 w-full" />
+                        <div className="h-3 rounded-full bg-primary/15 w-full" />
+                        <div className="h-3 rounded-full bg-primary/15 w-full" />
+                        <div className="h-3 rounded-full bg-primary/15 w-[58%]" />
                       </div>
                     </div>
                   </>
                 ) : draft ? (
                   <>
-                    <div className="flex items-center gap-2.5 p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF] text-[#6F6687] text-[13px] leading-relaxed mb-4">
-                      <strong className="text-[#261B43]">Editing:</strong> Tweak the generated Markdown directly below, then
+                    <div className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground mb-4">
+                      <strong className="text-foreground">Editing:</strong> Tweak the generated Markdown directly below, then
                       click Save Draft to persist your changes.
                     </div>
                     <Textarea
@@ -689,8 +685,8 @@ export default function ContentGeneratorPage() {
                     />
                   </>
                 ) : (
-                  <div className="flex items-center gap-2.5 p-3.5 border border-[#E8E1F5] rounded-xl bg-[#FAF8FF] text-[#6F6687] text-[13px] leading-relaxed">
-                    <strong className="text-[#261B43]">No draft yet:</strong> Fill in the prompt and settings above, then
+                  <div className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground">
+                    <strong className="text-foreground">No draft yet:</strong> Fill in the prompt and settings above, then
                     click Generate Content to create your first draft.
                   </div>
                 )}
@@ -700,7 +696,7 @@ export default function ContentGeneratorPage() {
               <aside className="grid gap-3">
                 <div className={CS_SIDE}>
                   <h4 className="mb-2 text-sm font-bold">Generation Checklist</h4>
-                  <ul className="m-0 pl-4.5 text-[#6F6687] text-[12.8px] leading-relaxed list-disc">
+                  <ul className="m-0 list-disc pl-4.5 text-sm leading-relaxed text-muted-foreground">
                     <li>Prompt includes target keyword, angle, tone, and CTA.</li>
                     <li>Brief captures audience, intent, and reference inputs.</li>
                     <li>Competitor insights are ready to inform differentiation.</li>
@@ -711,7 +707,7 @@ export default function ContentGeneratorPage() {
                   <h4 className="mb-2 text-sm font-bold">Content Types Supported</h4>
                   <div className="flex flex-wrap gap-2.5 mt-3">
                     {CONTENT_TAGS.map((tag) => (
-                      <span key={tag} className="px-3 py-2 border border-[#E8E1F5] rounded-full bg-white text-[#6F6687] text-[11.5px] font-bold">{tag}</span>
+                      <span key={tag} className="rounded-full border border-border bg-secondary px-3 py-1.5 text-[11px] font-medium text-secondary-foreground">{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -719,7 +715,7 @@ export default function ContentGeneratorPage() {
                 <div className={CS_SIDE}>
                   <h4 className="mb-2 text-sm font-bold">Recent Drafts</h4>
                   {recentDrafts.length === 0 ? (
-                    <p className="text-[#6F6687] text-[12.8px] leading-relaxed">Your saved and generated drafts will show up here.</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">Your saved and generated drafts will show up here.</p>
                   ) : (
                     <ul className="m-0 p-0 list-none grid gap-2">
                       {recentDrafts.slice(0, 6).map((d) => (
@@ -727,7 +723,7 @@ export default function ContentGeneratorPage() {
                           <button
                             type="button"
                             onClick={() => loadDraftIntoEditor(d)}
-                            className="w-full text-left block px-3.5 py-2.5 rounded-full border border-[#E8E1F5] bg-[#FAF8FF] text-[#261B43] text-[12.5px] font-bold cursor-pointer hover:-translate-y-px hover:border-primary/35 hover:bg-primary/8 transition-all"
+                            className="w-full text-left block px-3.5 py-2.5 rounded-full border border-border bg-secondary text-xs font-medium text-secondary-foreground cursor-pointer hover:-translate-y-px hover:border-primary/35 hover:bg-primary/8 transition-all"
                           >
                             {d.title || d.contentType} · {d.wordCount} words
                           </button>
@@ -768,7 +764,7 @@ interface SelectFieldProps {
 function SelectField({ id, label, value, onChange, options }: SelectFieldProps) {
   return (
     <div className="grid gap-2">
-      <Label htmlFor={id} className="text-[12.5px] font-bold text-[#261B43]">{label}</Label>
+      <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
       <select
         id={id}
         value={value}
@@ -793,13 +789,13 @@ interface BriefFieldProps {
 function BriefField({ id, label, value, onChange }: BriefFieldProps) {
   return (
     <div className={CS_SIDE}>
-      <Label htmlFor={id} className="block mb-2.5 text-[12.5px] font-bold text-[#261B43]">{label}</Label>
+      <Label htmlFor={id} className="mb-2 block text-sm font-medium">{label}</Label>
       <input
         id={id}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border-0 p-0 bg-transparent text-[#261B43] text-sm outline-none"
+        className="w-full border-0 p-0 bg-transparent text-foreground text-sm outline-none"
       />
     </div>
   );
@@ -812,12 +808,12 @@ interface BriefSelectFieldProps extends BriefFieldProps {
 function BriefSelectField({ id, label, value, onChange, options }: BriefSelectFieldProps) {
   return (
     <div className={CS_SIDE}>
-      <Label htmlFor={id} className="block mb-2.5 text-[12.5px] font-bold text-[#261B43]">{label}</Label>
+      <Label htmlFor={id} className="mb-2 block text-sm font-medium">{label}</Label>
       <select
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border-0 p-0 bg-transparent text-[#261B43] text-sm outline-none cursor-pointer"
+        className="w-full border-0 p-0 bg-transparent text-foreground text-sm outline-none cursor-pointer"
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>{opt}</option>

@@ -45,6 +45,7 @@ export default function AnalysisSimulationPage() {
         generateRecommendations,
         generateExecutiveSummary,
         completeOnboarding,
+        waitForDashboardBaseline,
       } = await import("@/lib/api/onboardingApi")
       const storeState = useJourneyStore.getState()
       const orgStore = (await import("@/lib/stores/organizationStore")).useOrganizationStore.getState()
@@ -117,6 +118,8 @@ export default function AnalysisSimulationPage() {
           contentStrength: 0,
           citationScore: 0,
         })
+        setProgress(98)
+        await waitForDashboardBaseline()
       }
 
       setProgress(100)

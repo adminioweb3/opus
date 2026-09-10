@@ -555,7 +555,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Gauge,
     title: "AI Visibility Dashboard",
-    desc: "One executive view of how every AI platform sees your brand, refreshed with each weekly scan.",
+    desc: "One executive view of how configured AI providers see your brand, refreshed with each scan.",
   },
   {
     icon: Quote,
@@ -575,7 +575,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: LineChart,
     title: "AI Search Analytics",
-    desc: "Week-over-week trends in visibility, prompt coverage, and sentiment across all six engines.",
+    desc: "Week-over-week trends in visibility, prompt coverage, and sentiment across configured providers.",
   },
   {
     icon: Swords,
@@ -673,7 +673,7 @@ const WORKFLOW_STEPS: { icon: LucideIcon; step: string; title: string; desc: str
     icon: Radar,
     step: "02",
     title: "Weekly scans",
-    desc: "Visibility Radar checks six AI platforms on a fixed weekly cadence and scores each one.",
+    desc: "Visibility Radar checks configured AI providers on the plan cadence and scores the evidence it can verify.",
   },
   {
     icon: ListChecks,

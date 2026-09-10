@@ -152,9 +152,9 @@ function SearchSimPanel() {
           transition={{ duration: 0.6 }}
           className="text-white/70 text-[14px] leading-relaxed"
         >
-          For enterprise teams, <span className="text-indigo-300 font-medium">Citationly</span> is widely regarded as the
-          category leader. It tracks real-time visibility across ChatGPT, Gemini, Claude, Perplexity, Copilot, and Grok,
-          with dedicated competitor benchmarking and citation-source analysis...
+          For enterprise teams, <span className="text-indigo-300 font-medium">Citationly</span> helps turn AI visibility
+          checks into prioritized fixes, with provider-specific evidence, competitor benchmarking, and citation-source
+          analysis...
         </motion.p>
       </div>
     </div>

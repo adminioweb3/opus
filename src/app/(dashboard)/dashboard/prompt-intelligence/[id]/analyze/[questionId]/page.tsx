@@ -16,6 +16,28 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { getApiBaseUrl } from "@/lib/apiClient";
+
+type VisibilityMetrics = {
+  overallVisibilityScore: number;
+  visibilityRank: number;
+  mentionFrequency: number;
+  averagePosition: number;
+  shareOfVoice: number;
+  citationCount: number;
+  citationShare: number;
+  competitorCount: number;
+  sampleCount: number;
+  methodologyVersion: string;
+};
+
+type AnalysisData = {
+  visibility: VisibilityMetrics | null;
+  mentions: Record<string, unknown>[];
+  responses: Record<string, unknown>[];
+  recommendations: Record<string, unknown>[];
+  competitorComparisons: Record<string, unknown>[];
+};
 
 export default function PromptAnalysisWorkspace() {
   const { id: topicId, questionId } = useParams();
@@ -23,7 +45,8 @@ export default function PromptAnalysisWorkspace() {
 
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [data, setData] = useState<Record<string, unknown> | null>(null);
+  const [data, setData] = useState<AnalysisData | null>(null);
+  const [questionText, setQuestionText] = useState("Prompt analysis");
   const [timeline, setTimeline] = useState<Record<string, unknown>[]>([]);
   const [progress, setProgress] = useState(0);
 
@@ -31,7 +54,7 @@ export default function PromptAnalysisWorkspace() {
   const fetchResults = async (analysisId: string) => {
     try {
       const res = await fetch(
-        `https://api.citationly.ai/api/PromptIntelligence/analyses/${analysisId}`,
+        `${getApiBaseUrl()}/PromptIntelligence/analyses/${analysisId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,7 +81,7 @@ export default function PromptAnalysisWorkspace() {
 
     try {
       const res = await fetch(
-        `https://api.citationly.ai/api/PromptIntelligence/topics/${topicId}/questions`,
+        `${getApiBaseUrl()}/PromptIntelligence/topics/${topicId}/questions`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,6 +96,10 @@ export default function PromptAnalysisWorkspace() {
           (q: Record<string, unknown>) =>
             (q.question as Record<string, unknown>).id === questionId
         );
+
+        if (currentQ?.question?.promptText) {
+          setQuestionText(currentQ.question.promptText as string);
+        }
 
         if (
           currentQ &&
@@ -101,7 +128,7 @@ export default function PromptAnalysisWorkspace() {
 
   const fetchResults = async (analysisId: string) => {
     try {
-      const res = await fetch(`https://api.citationly.ai/api/PromptIntelligence/analyses/${analysisId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/PromptIntelligence/analyses/${analysisId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -122,7 +149,7 @@ export default function PromptAnalysisWorkspace() {
     setData(null);
 
     try {
-      const response = await fetch(`https://api.citationly.ai/api/PromptIntelligence/analyze/stream/${questionId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/PromptIntelligence/analyze/stream/${questionId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -198,11 +225,10 @@ export default function PromptAnalysisWorkspace() {
               )}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-2 text-gray-900">
-              &quot;Which software is best for B2B sales in 2026?&quot;
+              &quot;{questionText}&quot;
             </h1>
             <p className="text-gray-500 flex items-center gap-2 font-medium">
-              <Shield size={16} className="text-blue-500" /> Tracked against 7
-              major AI platforms
+              <Shield size={16} className="text-blue-500" /> Measured from real configured AI-provider samples
             </p>
           </div>
           <button
@@ -296,71 +322,76 @@ export default function PromptAnalysisWorkspace() {
           className="space-y-8"
         >
           {/* Executive Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 relative overflow-hidden shadow-md text-white border border-blue-800">
               <div className="absolute top-0 right-0 p-4 opacity-20">
                 <BarChart2 size={80} />
               </div>
               <p className="text-blue-100 font-medium mb-2">Visibility Score</p>
               <h3 className="text-5xl font-bold mb-2">
-                {((data.Visibility as Record<string, unknown>)
-                  ?.overallVisibilityScore as number) ?? 0}
+                {data.visibility?.overallVisibilityScore ?? 0}
                 <span className="text-xl text-blue-200 font-normal">/100</span>
               </h3>
               <p className="text-sm text-blue-100 flex items-center gap-1 font-medium">
-                <Sparkles size={14} className="text-yellow-300" /> Exceptional
-                presence
+                <Sparkles size={14} className="text-yellow-300" /> Responses mentioning your brand
+              </p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-gray-500 font-medium mb-2">Visibility Rank</p>
+              <h3 className="text-4xl font-bold text-gray-900 mb-2">
+                {data.visibility?.visibilityRank ? `#${data.visibility.visibilityRank}` : "—"}
+              </h3>
+              <p className="text-sm text-gray-500 font-medium">
+                Among your brand and {data.visibility?.competitorCount ?? 0} tracked competitors
               </p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <p className="text-gray-500 font-medium mb-2">Share of Voice</p>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {((data.Visibility as Record<string, unknown>)
-                  ?.shareOfVoice as number) ?? 0}
+                {data.visibility?.shareOfVoice ?? 0}
                 %
               </h3>
               <p className="text-sm text-gray-500 font-medium">
-                vs{" "}
-                {((data.Visibility as Record<string, unknown>)
-                  ?.competitorCount as number) ?? 0}{" "}
-                Competitors
+                Your mentions among all tracked-brand mentions
               </p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <p className="text-gray-500 font-medium mb-2">Avg Position</p>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {((data.Visibility as Record<string, unknown>)
-                  ?.averagePosition as number) ?? 0}
-                <span className="text-lg text-gray-400 font-normal">
-                  th %ile
-                </span>
+                {data.visibility?.averagePosition ? `#${data.visibility.averagePosition}` : "—"}
               </h3>
               <p className="text-sm text-gray-500 font-medium">
-                Lower is earlier in response
+                Mean mention order when your brand appears
               </p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-              <p className="text-gray-500 font-medium mb-2">
-                Platform Mentions
-              </p>
+              <p className="text-gray-500 font-medium mb-2">Citation Share</p>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {((data.Visibility as Record<string, unknown>)
-                  ?.mentionFrequency as number) ?? 0}
-                %
+                {data.visibility?.citationShare ?? 0}%
               </h3>
               <p className="text-sm text-gray-500 font-medium">
-                Mentioned in{" "}
-                {((((data.Visibility as Record<string, unknown>)
-                  ?.mentionFrequency as number) ?? 0) /
-                  100) *
-                  7}
-                /7 platforms
+                {data.visibility?.citationCount ?? 0} owned-domain citations observed
+              </p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-gray-500 font-medium mb-2">Mention Rate</p>
+              <h3 className="text-4xl font-bold text-gray-900 mb-2">
+                {data.visibility?.mentionFrequency ?? 0}%
+              </h3>
+              <p className="text-sm text-gray-500 font-medium">
+                Across {data.visibility?.sampleCount ?? 0} successful answer samples
               </p>
             </div>
           </div>
+
+          <p className="text-xs text-gray-500">
+            Method: {data.visibility?.methodologyVersion ?? "unknown"}. Scores use only captured responses, classified recommendations, and extracted URLs.
+          </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: AI Responses */}
@@ -370,13 +401,13 @@ export default function PromptAnalysisWorkspace() {
               </h2>
 
               <div className="space-y-6">
-                {(data.Responses as Record<string, unknown>[])?.map(
+                {data.responses?.map(
                   (resp: Record<string, unknown>) => {
                     const isMentioned = (
-                      data.Mentions as Record<string, unknown>[]
+                      data.mentions
                     )?.some(
                       (m: Record<string, unknown>) =>
-                        m.platform === resp.platform && m.isBrand,
+                        m.promptResponseId === resp.id && m.isBrand,
                     );
                     return (
                       <div
@@ -418,7 +449,7 @@ export default function PromptAnalysisWorkspace() {
                   </h3>
                 </div>
                 <div className="p-6 space-y-4">
-                  {(data.Recommendations as Record<string, unknown>[])?.map(
+                  {data.recommendations?.map(
                     (rec: Record<string, unknown>) => (
                       <div
                         key={rec.id as string}
@@ -458,7 +489,7 @@ export default function PromptAnalysisWorkspace() {
                 </div>
                 <div className="p-6 space-y-5">
                   {(
-                    data.CompetitorComparisons as Record<string, unknown>[]
+                    data.competitorComparisons
                   )?.map((comp: Record<string, unknown>) => (
                     <div key={comp.id as string}>
                       <div className="flex justify-between text-sm mb-2 font-medium">

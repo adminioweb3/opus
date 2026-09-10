@@ -403,10 +403,10 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b px-6 py-4">
-        <Link href="/dashboard" className="flex flex-col items-start gap-1">
-          <Logo className="overflow-hidden" imgClassName="h-10 w-auto -ml-1" />
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium pl-1">
+      <SidebarHeader className="h-16 shrink-0 border-b px-6 py-0 flex flex-col justify-center">
+        <Link href="/dashboard" className="flex flex-col items-start justify-center gap-0.5">
+          <Logo className="overflow-hidden" imgClassName="h-8 w-auto -ml-1" />
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium leading-none pl-0.5">
             {planLabel}
           </span>
         </Link>

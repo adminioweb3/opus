@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   Trophy, PieChart as PieChartIcon, Eye, ShieldAlert,
   ChevronDown, ChevronUp, Sidebar, Download, RefreshCcw,
-  ArrowUpRight, TrendingUp, TrendingDown, Minus,
-  Layers as Versions, FileCode, Link2, Target, Zap, MessageCircle,
-  AlertTriangle, CheckCircle2, LayoutTemplate, Search
+  TrendingUp, Target, Zap
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -24,19 +22,32 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 type Opportunity = { ic: React.ComponentType<{ className?: string }>; tint: string; bg: string; t: string; why: string; impact: string };
 type CompetitorActivity = { ic: React.ComponentType<{ className?: string }>; tint: string; bg: string; t: string; d: string; time: string };
+type TrendPoint = { date: string; value: number };
+type CompetitorRow = {
+  id: string; name: string; logo: string; color: string; you: boolean; sov: number; sovChg: number;
+  vis: number; visChg: number; threat: string; rank: number; tagline: string; websiteUrl?: string;
+  mentionCount: number; recommendationCount: number; responseCount: number; mentionRate: number;
+  recommendationRate: number; citationCount: number;
+  averagePosition: number; measurementSource: string; discoverySource: string; modelUsed?: string; trend: TrendPoint[];
+};
+type BenchmarkMeta = {
+  provider: string; model: string; responseCount: number; lastMeasured: string;
+  methodologyVersion: string; evidenceWindowDays: number; range: string;
+};
 
 const OPPS: Opportunity[] = [];
 const ACTIVITY: CompetitorActivity[] = [];
 
-const MODEL_ORDER = ['ChatGPT','Claude','Gemini','Perplexity'];
-
 function getSparkline(data: number[]) {
   const w = 80, h = 24;
+  if (data.length < 2) return data.length === 1 ? `0,${h / 2} ${w},${h / 2}` : "";
   const mn = Math.min(...data), mx = Math.max(...data), rng = mx - mn || 1;
   return data.map((v, i) => `${(i / (data.length - 1) * w).toFixed(1)},${(h - ((v - mn) / rng) * h).toFixed(1)}`).join(' ');
 }
 
 const LEADERBOARD_PAGE_SIZE = 10;
+const rankSortValue = (rank: number) => rank > 0 ? rank : Number.MAX_SAFE_INTEGER;
+const rankLabel = (rank: number) => rank > 0 ? `#${rank}` : "Unranked";
 
 export default function CompetitorWatch() {
   const router = useRouter();
@@ -45,8 +56,10 @@ export default function CompetitorWatch() {
   const [range, setRange] = useState('30D');
   
   const { organizationId } = useOrganizationStore();
-  const [YOU, setYOU] = useState<any>(null);
-  const [COMPS, setCOMPS] = useState<any[]>([]);
+  const [YOU, setYOU] = useState<CompetitorRow | null>(null);
+  const [COMPS, setCOMPS] = useState<CompetitorRow[]>([]);
+  const [meta, setMeta] = useState<BenchmarkMeta | null>(null);
+  const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [rescanning, setRescanning] = useState(false);
 
@@ -54,17 +67,21 @@ export default function CompetitorWatch() {
     if (!organizationId) return;
     try {
       setLoading(true);
-      const res = await apiClient.get(`/Dashboard/competitor-watch`, { params: { organizationId } });
+      const res = await apiClient.get(`/Dashboard/competitor-watch`, { params: { organizationId, range } });
       setYOU(res.data.you);
       setCOMPS(res.data.comps);
+      setMeta(res.data.meta ?? null);
+      setEmptyMessage(res.data.message ?? null);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [organizationId]);
+  }, [organizationId, range]);
 
   useEffect(() => {
+    // Fetching is the external synchronization performed by this effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
@@ -72,13 +89,14 @@ export default function CompetitorWatch() {
     if (!organizationId || rescanning) return;
     setRescanning(true);
     try {
-      const res = await apiClient.post(`/Dashboard/competitor-watch/rescan`, null, { params: { organizationId } });
+      const res = await apiClient.post(`/Dashboard/competitor-watch/rescan`, null, { params: { organizationId, range } });
       setYOU(res.data.you);
       setCOMPS(res.data.comps);
-      toast.success("Competitor scan refreshed");
+      setMeta(res.data.meta ?? null);
+      toast.success(`Recalculated from ${res.data.meta?.responseCount ?? 0} OpenAI responses`);
     } catch (err) {
       console.error(err);
-      toast.error("Rescan failed — try again in a moment");
+      toast.error("Recalculation failed — run Prompt Intelligence and try again");
     } finally {
       setRescanning(false);
     }
@@ -89,9 +107,9 @@ export default function CompetitorWatch() {
       toast.error("Nothing to export yet");
       return;
     }
-    const all = [YOU, ...COMPS].sort((a, b) => a.rank - b.rank);
-    const rows = ["Rank,Name,Share of Voice %,SOV Change,Visibility,Threat"];
-    all.forEach((c) => rows.push(`${c.rank},"${(c.name as string).replace(/"/g, '""')}",${c.sov},${c.sovChg},${c.vis},${c.threat ?? ""}`));
+    const all = [YOU, ...COMPS].sort((a, b) => rankSortValue(a.rank) - rankSortValue(b.rank));
+    const rows = ["Rank,Name,OpenAI Visibility,Share of Voice %,Mentions,Recommendations,Responses,Mention Rate %,Recommendation Rate %,Citations,Average Position,Threat"];
+    all.forEach((c) => rows.push(`${c.rank > 0 ? c.rank : "Unranked"},"${c.name.replace(/"/g, '""')}",${c.vis},${c.sov},${c.mentionCount},${c.recommendationCount},${c.responseCount},${c.mentionRate},${c.recommendationRate},${c.citationCount},${c.averagePosition},${c.threat ?? ""}`));
 
     const csv = rows.join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -121,10 +139,9 @@ export default function CompetitorWatch() {
         <Card className="max-w-md border-amber-500/30 bg-amber-500/5">
           <CardContent className="p-6 text-center">
             <ShieldAlert className="w-10 h-10 text-amber-500 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 mb-1.5">No competitor analysis yet</h3>
+            <h3 className="text-base font-bold text-slate-900 mb-1.5">No measured OpenAI evidence yet</h3>
             <p className="text-sm text-slate-500 leading-relaxed">
-              Complete onboarding analysis for this organization — your first competitor scan runs
-              automatically and refreshes every 7 days after that.
+              {emptyMessage ?? "Run Prompt Intelligence for this organization, then recalculate Competitor Watch."}
             </p>
           </CardContent>
         </Card>
@@ -132,9 +149,9 @@ export default function CompetitorWatch() {
     );
   }
 
-  const competitors = [YOU, ...COMPS].sort((a,b) => a.rank - b.rank);
-  const L = competitors[0];
-  const gap = YOU.vis - L.vis;
+  const competitors = [YOU, ...COMPS].sort((a,b) => rankSortValue(a.rank) - rankSortValue(b.rank));
+  const leader = competitors.find(c => c.rank > 0) ?? null;
+  const gap = leader ? YOU.vis - leader.vis : null;
   const activeThreats = COMPS.filter(c => c.threat === 'high' || (c.threat === 'med' && c.sovChg > 0)).length;
 
   // With dozens of real tracked competitors, rendering every row (and every chart line)
@@ -144,20 +161,24 @@ export default function CompetitorWatch() {
   const topSlice = competitors.slice(0, LEADERBOARD_PAGE_SIZE);
   const visibleCompetitors = topSlice.some(c => c.you)
     ? topSlice
-    : [...topSlice.slice(0, LEADERBOARD_PAGE_SIZE - 1), YOU].sort((a, b) => a.rank - b.rank);
+    : [...topSlice.slice(0, LEADERBOARD_PAGE_SIZE - 1), YOU].sort((a, b) => rankSortValue(a.rank) - rankSortValue(b.rank));
 
-  const chartData = Array.from({length: 12}).map((_, i) => {
-    const point: any = { name: `Wk ${i+1}` };
+  const trendDates = Array.from(new Set(visibleCompetitors.flatMap(c => c.trend.map(point => point.date)))).sort();
+  const chartData = trendDates.map(date => {
+    const point: Record<string, string | number> = {
+      name: new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    };
     visibleCompetitors.forEach(c => {
-      point[c.name] = c.trend[i];
+      const measured = c.trend.find(item => item.date === date);
+      if (measured) point[c.name] = measured.value;
     });
     return point;
   });
 
   const kpis = [
-    { key:'position', label:'Competitive position', val:`#${YOU.rank}`, sub:`of ${competitors.length} brands tracked`, tone:'text-amber-500', bg:'bg-amber-50', ic: Trophy, chg: null },
-    { key:'sov', label:'Share of voice', val:`${YOU.sov}%`, chg:`${YOU.sovChg >= 0 ? '+' : ''}${YOU.sovChg}%`, dir: YOU.sovChg >= 0 ? 'up' : 'down', sub:'of AI answer mentions', tone:'text-indigo-500', bg:'bg-indigo-50', ic: PieChartIcon },
-    { key:'gap', label:'Gap vs leader', val:`${gap >= 0 ? '+' : ''}${gap} pts`, sub:`vs ${L.name} visibility`, tone: gap >= 0 ? 'text-emerald-500' : 'text-amber-500', bg: gap >= 0 ? 'bg-emerald-50' : 'bg-amber-50', ic: Eye, chg: null },
+    { key:'position', label:'Competitive position', val:rankLabel(YOU.rank), sub: YOU.rank > 0 ? `of ${competitors.length} brands tracked` : 'Awaiting observed mentions', tone:'text-amber-500', bg:'bg-amber-50', ic: Trophy, chg: null },
+    { key:'sov', label:'Share of voice', val:`${YOU.sov}%`, chg:`${YOU.sovChg >= 0 ? '+' : ''}${YOU.sovChg}%`, dir: YOU.sovChg >= 0 ? 'up' : 'down', sub:'of measured OpenAI mentions', tone:'text-indigo-500', bg:'bg-indigo-50', ic: PieChartIcon },
+    { key:'gap', label:'Gap vs leader', val: gap === null ? '—' : `${gap >= 0 ? '+' : ''}${gap} pts`, sub: leader ? `vs ${leader.name} visibility` : 'No observed leader yet', tone: gap !== null && gap >= 0 ? 'text-emerald-500' : 'text-amber-500', bg: gap !== null && gap >= 0 ? 'bg-emerald-50' : 'bg-amber-50', ic: Eye, chg: null },
     { key:'threats', label:'Active threats', val: activeThreats, sub:'competitors gaining ground', tone:'text-red-500', bg:'bg-red-50', ic: ShieldAlert, chg: null }
   ];
 
@@ -170,7 +191,7 @@ export default function CompetitorWatch() {
             Competitor Watch
           </h1>
           <p className="text-[14px] text-slate-500 mt-1 leading-relaxed">
-            Executive view of where you stand across AI answer engines vs. your top competitors.
+            Measured visibility in OpenAI responses compared with your tracked competitors.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-[13px] font-semibold">
@@ -179,7 +200,7 @@ export default function CompetitorWatch() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            Live
+            Measured {meta?.lastMeasured ?? "recently"}
           </div>
           <div className="flex bg-slate-200/60 p-0.5 rounded-lg">
             {['7D', '30D', '90D'].map(r => (
@@ -193,7 +214,7 @@ export default function CompetitorWatch() {
             ))}
           </div>
           <Button variant="outline" size="sm" onClick={handleRescan} disabled={rescanning}>
-            <RefreshCcw className={`w-3.5 h-3.5 ${rescanning ? "animate-spin" : ""}`} /> {rescanning ? "Rescanning…" : "Rescan"}
+            <RefreshCcw className={`w-3.5 h-3.5 ${rescanning ? "animate-spin" : ""}`} /> {rescanning ? "Recalculating…" : "Recalculate"}
           </Button>
           <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="w-3.5 h-3.5" /> Export <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -226,7 +247,7 @@ export default function CompetitorWatch() {
               {k.key === 'sov' && (
                 <div className="absolute bottom-4 right-5 opacity-40">
                   <svg viewBox="0 0 80 24" preserveAspectRatio="none" className="w-[60px] h-[20px]">
-                    <polyline points={getSparkline(YOU.trend)} fill="none" stroke="#6366F1" strokeWidth="2" />
+                    <polyline points={getSparkline(YOU.trend.map(point => point.value))} fill="none" stroke="#6366F1" strokeWidth="2" />
                   </svg>
                 </div>
               )}
@@ -242,12 +263,12 @@ export default function CompetitorWatch() {
         <div className="xl:col-span-2">
           <div className="mb-4">
             <h2 className="text-[17px] font-bold flex items-center gap-2 text-slate-900"><Trophy className="w-5 h-5 text-amber-500"/> Competitor Leaderboard</h2>
-            <p className="text-[13px] text-slate-500">Ranked by share of voice in AI answers. Expand a row for a snapshot.</p>
+            <p className="text-[13px] text-slate-500">Ranked by measured visibility in OpenAI answers. Expand a row for evidence.</p>
           </div>
           
           <Card className="overflow-hidden py-0 gap-0">
             <div className="divide-y divide-slate-100">
-            {visibleCompetitors.map((c, i) => {
+            {visibleCompetitors.map((c) => {
               const isExpanded = expandedId === c.id;
               const isYou = c.you;
               
@@ -258,7 +279,7 @@ export default function CompetitorWatch() {
                     onClick={() => setExpandedId(isExpanded ? null : c.id)}
                     className="flex items-center gap-4 p-4 hover:bg-slate-50 cursor-pointer select-none"
                   >
-                    <div className="w-6 text-center text-[13px] font-bold text-slate-400 shrink-0">{c.rank}</div>
+                    <div className="w-16 text-center text-[13px] font-bold text-slate-400 shrink-0">{rankLabel(c.rank)}</div>
                     
                     <div className="flex-1 flex items-center gap-3 min-w-0">
                       <LogoAvatar
@@ -270,7 +291,10 @@ export default function CompetitorWatch() {
                       />
                       <div className="truncate">
                         <div className="text-[14.5px] font-bold text-slate-900 flex items-center gap-2">
-                          {c.name} {isYou && <Badge className="bg-indigo-100 text-indigo-700 text-[10px] font-bold">YOU</Badge>}
+                            {c.name} {isYou && <Badge className="bg-indigo-100 text-indigo-700 text-[10px] font-bold">YOU</Badge>}
+                            {!isYou && c.discoverySource && c.discoverySource !== "unknown" && (
+                              <Badge className="bg-slate-100 text-slate-600 text-[10px] font-bold capitalize">{c.discoverySource === "generated" ? "suggested" : c.discoverySource}</Badge>
+                            )}
                         </div>
                         <div className="text-[12px] text-slate-500 truncate">{c.tagline}</div>
                       </div>
@@ -315,41 +339,46 @@ export default function CompetitorWatch() {
                           <div className={`text-[11px] font-medium ${c.sovChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.sovChg >= 0 ? '+' : ''}{c.sovChg}% this period</div>
                         </div>
                         <div>
-                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">AI Visibility</div>
+                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">OpenAI visibility</div>
                           <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.vis}</div>
                           <div className={`text-[11px] font-medium ${c.visChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.visChg >= 0 ? '+' : ''}{c.visChg} pts this period</div>
                         </div>
                         <div>
-                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Citation share</div>
-                          <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.citations.share}</div>
-                          <div className="text-[11px] font-medium text-slate-500">{c.citations.total} total</div>
+                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Observed mentions</div>
+                          <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.mentionCount}</div>
+                          <div className="text-[11px] font-medium text-slate-500">of {c.responseCount} responses</div>
                         </div>
                         <div>
-                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Content velocity</div>
-                          <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.content.velocity.split(' ')[0]}</div>
-                          <div className="text-[11px] font-medium text-slate-500">pages / week</div>
+                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Recommendations</div>
+                          <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.recommendationCount}</div>
+                          <div className="text-[11px] font-medium text-slate-500">{c.recommendationRate}% of responses</div>
                         </div>
                       </div>
                       
                       <div className="mb-6">
-                        <div className="text-[12px] font-bold text-slate-900 mb-3">AI visibility by model (Top 4)</div>
-                        <div className="flex flex-col gap-3">
-                          {MODEL_ORDER.map(m => {
-                            const val = (c.models as any)[m] || 0;
-                            return (
-                              <div key={m} className="flex items-center gap-3">
-                                <span className="w-[75px] text-[12px] font-semibold text-slate-700">{m}</span>
-                                <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                                  <div className="h-full rounded-full transition-all" style={{ width: `${val}%`, backgroundColor: c.color }}></div>
-                                </div>
-                                <span className="w-8 text-right text-[12px] font-bold text-slate-900">{val}</span>
-                              </div>
-                            );
-                          })}
+                        <div className="text-[12px] font-bold text-slate-900 mb-3">OpenAI response coverage</div>
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="w-[90px] text-[12px] font-semibold text-slate-700">Mention rate</span>
+                          <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{ width: `${c.mentionRate}%`, backgroundColor: c.color }}></div>
+                          </div>
+                          <span className="w-10 text-right text-[12px] font-bold text-slate-900">{c.mentionRate}%</span>
+                        </div>
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="w-[90px] text-[12px] font-semibold text-slate-700">Recommend rate</span>
+                          <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{ width: `${c.recommendationRate}%`, backgroundColor: c.color }}></div>
+                          </div>
+                          <span className="w-10 text-right text-[12px] font-bold text-slate-900">{c.recommendationRate}%</span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex flex-wrap gap-x-4 gap-y-1">
+                          <span>Answer position: {c.mentionCount > 0 ? `${c.averagePosition}/100` : "Not observed"}</span>
+                          <span>Owned citations: {c.citationCount}</span>
+                          <span>Model: {c.modelUsed ?? "OpenAI"}</span>
                         </div>
                       </div>
                       
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => router.push("/dashboard/prompt-intelligence")}>
                         <Sidebar className="w-4 h-4" /> View full analysis
                       </Button>
                     </div>
@@ -373,12 +402,12 @@ export default function CompetitorWatch() {
           <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
             <DialogHeader className="p-6 pb-4 border-b border-slate-100">
               <DialogTitle>All tracked competitors</DialogTitle>
-              <DialogDescription>{competitors.length} brands ranked by share of voice in AI answers.</DialogDescription>
+              <DialogDescription>{competitors.length} brands ranked by measured OpenAI visibility.</DialogDescription>
             </DialogHeader>
             <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
               {competitors.map((c) => (
                 <div key={c.id} className={`flex items-center gap-4 p-4 ${c.you ? 'bg-indigo-50/30' : ''}`}>
-                  <div className="w-6 text-center text-[13px] font-bold text-slate-400 shrink-0">{c.rank}</div>
+                  <div className="w-16 text-center text-[13px] font-bold text-slate-400 shrink-0">{rankLabel(c.rank)}</div>
                   <LogoAvatar
                     logoUrl={getDomainLogoUrl(c.websiteUrl)}
                     fallbackInitial={c.logo}

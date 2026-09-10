@@ -206,8 +206,8 @@ export default function VisibilityRadarPage() {
             Visibility radar
           </h1>
           <p className="text-[14px] text-slate-500 mt-1">
-            Track where your brand shows up across every AI platform, and how
-            strong each signal is
+            Track where your brand shows up across configured AI providers, and
+            how strong each signal is
           </p>
         </div>
         <div className="flex items-center gap-4 text-[11px] font-semibold tracking-[0.04em]">

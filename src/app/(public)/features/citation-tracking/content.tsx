@@ -47,7 +47,7 @@ const CAPABILITIES: { icon: LucideIcon; title: string; desc: React.ReactNode }[]
   {
     icon: Quote,
     title: "Complete Citation Ledger",
-    desc: "Every citation recorded across all six engines, with URL, engine, triggering question, and timestamp. It establishes the factual record of which content earns AI trust, ending debates built on anecdotes.",
+    desc: "Every citation recorded across configured providers, with URL, provider, triggering question, and timestamp. It establishes the factual record of which content earns AI trust, ending debates built on anecdotes.",
   },
   {
     icon: FileText,
@@ -94,7 +94,7 @@ const HOW_IT_WORKS: { icon: LucideIcon; title: string; desc: React.ReactNode }[]
   {
     icon: Radar,
     title: "Engines are queried continuously",
-    desc: "All six engines answer those questions on an ongoing schedule.",
+    desc: "Configured AI providers answer those questions on an ongoing schedule.",
   },
   {
     icon: Database,

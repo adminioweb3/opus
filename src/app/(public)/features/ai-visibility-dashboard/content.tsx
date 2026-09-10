@@ -101,7 +101,7 @@ const HOW_IT_WORKS: { icon: LucideIcon; title: string; desc: React.ReactNode }[]
   {
     icon: Radar,
     title: "Engines get queried continuously",
-    desc: "Citationly runs your market's real questions through all six engines on an ongoing schedule.",
+    desc: "Citationly runs your market's real questions through configured AI providers on an ongoing schedule.",
   },
   {
     icon: Database,

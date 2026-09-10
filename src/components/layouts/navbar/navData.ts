@@ -25,7 +25,7 @@ export const PLATFORM_MENU: NavGroup = {
   label: "Platform",
   footer: { label: "See the full platform overview", href: "/features" },
   items: [
-    { icon: Gauge, title: "AI Visibility Dashboard", desc: "One real-time score for every AI platform tracking your brand.", href: "/features/ai-visibility-dashboard" },
+    { icon: Gauge, title: "AI Visibility Dashboard", desc: "One evidence-backed view across the AI providers configured for your workspace.", href: "/features/ai-visibility-dashboard" },
     { icon: Quote, title: "AI Citation Tracking", desc: "See exactly which sources AI engines cite instead of you.", href: "/features/citation-tracking" },
     { icon: Eye, title: "Brand Monitoring", desc: "Know the moment an AI answer misrepresents your brand.", href: "/features/brand-monitoring" },
     { icon: PieChart, title: "Share of Voice", desc: "Your real presence in AI answers, benchmarked weekly.", href: "/features/share-of-voice" },

@@ -25,8 +25,9 @@ import {
 } from "@/lib/api/billingApi"
 
 const PLANS = [
-  { key: "Pro", name: "Pro", priceLabel: "Configured in Cashfree", selfServe: true, feat: ["Higher AI usage limits", "Daily recurring scans", "API access"] },
-  { key: "Enterprise", name: "Enterprise", priceLabel: "Contact sales", selfServe: false, feat: ["Highest AI usage limits", "Regional & persona breakdowns", "Dedicated support"] },
+  { key: "Starter", name: "Starter", priceLabel: "$99/month", selfServe: true, feat: ["1 website", "Weekly scans", "OpenRouter and Exa usage controls"] },
+  { key: "Pro", name: "Professional", priceLabel: "$299/month", selfServe: true, feat: ["Up to 5 websites", "Weekly full scans", "OpenRouter and Exa usage controls"] },
+  { key: "Enterprise", name: "Enterprise", priceLabel: "$999/month", selfServe: false, feat: ["Contract-defined website allowance", "Daily change detection", "Dedicated support"] },
 ]
 
 function formatCents(cents: number, currency: string): string {
@@ -49,7 +50,6 @@ export default function BillingSection() {
   const [customerPhone, setCustomerPhone] = useState("")
 
   const load = useCallback(async () => {
-    setIsLoading(true)
     try {
       const [subResult, usageResult, invoiceResult, methodResult] = await Promise.all([
         getSubscription(),
@@ -70,6 +70,8 @@ export default function BillingSection() {
   }, [])
 
   useEffect(() => {
+    // The state updates happen only after the billing requests settle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load()
   }, [load])
 
@@ -115,7 +117,7 @@ export default function BillingSection() {
     <div className="space-y-5">
       {!billingConfigured && !isLoading && (
         <div className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
-          Billing isn't connected yet - plan changes are unavailable until Cashfree is configured
+          Billing isn&apos;t connected yet - plan changes are unavailable until Cashfree is configured
         </div>
       )}
 
@@ -227,6 +229,20 @@ export default function BillingSection() {
                 value={usage.estimatedAiSpend.currentUsage / 1_000_000}
                 limit={usage.estimatedAiSpend.limit === null ? null : usage.estimatedAiSpend.limit / 1_000_000}
                 unit="USD today"
+                currency
+              />
+              <UsageMetricCard
+                label={usage.openRouterSpend.label}
+                value={usage.openRouterSpend.currentUsage / 1_000_000}
+                limit={usage.openRouterSpend.limit === null ? null : usage.openRouterSpend.limit / 1_000_000}
+                unit="USD this month"
+                currency
+              />
+              <UsageMetricCard
+                label={usage.exaSpend.label}
+                value={usage.exaSpend.currentUsage / 1_000_000}
+                limit={usage.exaSpend.limit === null ? null : usage.exaSpend.limit / 1_000_000}
+                unit="USD this month"
                 currency
               />
               <div className="p-4 rounded-lg border border-border/60 bg-muted/20">

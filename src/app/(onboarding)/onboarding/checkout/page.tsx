@@ -14,24 +14,24 @@ const PLANS = [
   {
     id: "starter",
     name: "Starter",
-    price: 49,
+    price: 99,
     description: "For small businesses starting with AI SEO.",
-    features: ["1 Website", "3 Competitors", "Basic Recommendations", "Monthly Scans"],
+    features: ["1 Website", "3 Competitors", "Basic Recommendations", "Weekly Scans"],
   },
   {
-    id: "growth",
-    name: "Growth",
-    price: 199,
+    id: "professional",
+    name: "Professional",
+    price: 299,
     popular: true,
     description: "For growing brands focused on share of voice.",
     features: ["5 Websites", "10 Competitors", "Advanced AI Recommendations", "Weekly Scans", "Competitor Gap Analysis"],
   },
   {
-    id: "business",
-    name: "Business",
-    price: 499,
+    id: "enterprise",
+    name: "Enterprise",
+    price: 999,
     description: "For agencies and large scale businesses.",
-    features: ["Unlimited Websites", "Unlimited Competitors", "API Access", "Daily Scans", "White-label Reports"],
+    features: ["Up to 10 Websites", "Contract-defined Competitors", "API Access", "Daily Change Detection", "White-label Reports"],
   }
 ]
 
@@ -41,7 +41,7 @@ export default function PaywallCheckoutPage() {
   const router = useRouter()
   const { websiteUrl, businessName, analysisResult } = useJourneyStore()
 
-  const [selectedPlan, setSelectedPlan] = useState("growth")
+  const [selectedPlan, setSelectedPlan] = useState("professional")
   const [loading, setLoading] = useState(false)
 
   const handleSubscribe = async () => {

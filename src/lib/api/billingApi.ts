@@ -31,9 +31,13 @@ export interface BillingUsageResponse {
   planKey: string
   periodStart: string
   periodEnd: string
+  monthlyPeriodStart: string
+  monthlyPeriodEnd: string
   aiCalls: BillingUsageMetric
   estimatedAiSpend: BillingUsageMetric
   publicApiCalls: BillingUsageMetric
+  openRouterSpend: BillingUsageMetric
+  exaSpend: BillingUsageMetric
   recurringScanIntervalDays: number | null
 }
 

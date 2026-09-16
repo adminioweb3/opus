@@ -75,9 +75,9 @@ const TIERS: Tier[] = [
     description: "For global brands running visibility at scale.",
     featureIntro: "Everything in Professional, plus",
     features: [
-      "Unlimited websites",
+      "Up to 10 websites",
       "Priority scan cadence",
-      "Unlimited competitors",
+      "Contract-defined competitor allowance",
       "Executive reporting",
       "API access",
       "Dedicated support",
@@ -106,9 +106,9 @@ const COMPARISON: CompareGroup[] = [
   {
     group: "Monitoring",
     rows: [
-      { label: "Tracked websites", starter: "1", professional: "Up to 5", enterprise: "Unlimited" },
+      { label: "Tracked websites", starter: "1", professional: "Up to 5", enterprise: "Up to 10" },
       { label: "AI providers monitored", starter: "Configured providers", professional: "Configured providers", enterprise: "Configured providers" },
-      { label: "Visibility Radar scan frequency", starter: "Weekly", professional: "Plan-based", enterprise: "Priority cadence" },
+      { label: "Visibility Radar scan frequency", starter: "Weekly", professional: "Weekly", enterprise: "Daily change detection" },
       { label: "Brand Pulse monitoring & accuracy flags", starter: false, professional: true, enterprise: true },
       { label: "Email alerts", starter: false, professional: true, enterprise: true },
     ],
@@ -118,8 +118,8 @@ const COMPARISON: CompareGroup[] = [
     rows: [
       { label: "AI Visibility Score", starter: "Basic score", professional: "Platform breakdown", enterprise: "Platform breakdown" },
       { label: "Citation Intelligence (sources cited instead of you)", starter: false, professional: true, enterprise: true },
-      { label: "Competitor Watch: share of voice", starter: false, professional: "5 competitors", enterprise: "Unlimited" },
-      { label: "Opportunity Finder deep scans", starter: false, professional: "10 / month", enterprise: "Unlimited" },
+      { label: "Competitor Watch: share of voice", starter: false, professional: "5 competitors", enterprise: "Contract-defined" },
+      { label: "Opportunity Finder deep scans", starter: false, professional: "10 / month", enterprise: "Contract-defined" },
       { label: "Answer Simulator", starter: false, professional: true, enterprise: true },
     ],
   },
@@ -130,14 +130,14 @@ const COMPARISON: CompareGroup[] = [
       { label: "AI fix recommendations", starter: false, professional: true, enterprise: true },
       { label: "Content Generator & Optimizer", starter: false, professional: true, enterprise: true },
       { label: "Publishing Center", starter: false, professional: true, enterprise: true },
-      { label: "Knowledge Vault knowledge bases", starter: "1", professional: "5", enterprise: "Unlimited" },
+      { label: "Knowledge Vault knowledge bases", starter: "1", professional: "5", enterprise: "Contract-defined" },
     ],
   },
   {
     group: "Reporting",
     rows: [
       { label: "Command Center dashboard", starter: true, professional: true, enterprise: true },
-      { label: "Executive report exports", starter: false, professional: "Monthly", enterprise: "Unlimited" },
+      { label: "Executive report exports", starter: false, professional: "Monthly", enterprise: "Contract-defined" },
       { label: "Scheduled report delivery", starter: false, professional: true, enterprise: true },
       { label: "API access", starter: false, professional: false, enterprise: true },
       { label: "Integrations", starter: false, professional: "Core", enterprise: "All + custom" },
@@ -146,7 +146,7 @@ const COMPARISON: CompareGroup[] = [
   {
     group: "Support",
     rows: [
-      { label: "Team seats", starter: "2", professional: "10", enterprise: "Unlimited" },
+      { label: "Team seats", starter: "2", professional: "10", enterprise: "Contract-defined" },
       { label: "Roles & permissions", starter: false, professional: true, enterprise: true },
       { label: "Support", starter: "Email", professional: "Priority email + chat", enterprise: "Dedicated success manager" },
       { label: "Onboarding", starter: "Self-serve", professional: "Guided", enterprise: "White-glove" },
@@ -170,7 +170,7 @@ const FAQS = [
   },
   {
     q: "We're an agency managing multiple client sites. Which plan fits?",
-    a: "Professional covers up to 5 tracked websites, which fits most in-house teams and boutique agencies. Agencies managing more clients should look at Enterprise: unlimited websites, unlimited competitors in Competitor Watch, per-client executive reports, and team roles so each strategist only sees their own accounts. Talk to sales for agency-specific terms and volume pricing.",
+    a: "Professional covers up to 5 tracked websites, which fits most in-house teams and boutique agencies. Enterprise starts with up to 10 websites and uses a written allowance for additional websites, competitors, reports, and seats. Talk to sales for agency-specific terms and volume pricing.",
   },
   {
     q: "Can I cancel anytime?",

@@ -274,17 +274,17 @@ export default function CommandCenterPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">
+    <div className="dashboard-page space-y-7">
       {/* HERO */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
+            <span className="w-2 h-2 rounded-full bg-emerald-600" />
             Executive Intelligence ·{" "}
             {data?.lastScanDate ? `scanned ${data.lastScanDate}` : "loading"}
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Command center</h1>
-          <p className="text-muted-foreground text-base max-w-2xl">
+          <h1 className="text-[30px] leading-tight font-bold tracking-[-0.025em]">Command center</h1>
+          <p className="text-muted-foreground text-sm leading-6 max-w-2xl">
             The real, AI-analyzed state of your visibility, GEO, citations,
             competitors and brand perception — aggregated from every scan you're
             running, in one executive view.
@@ -323,11 +323,12 @@ export default function CommandCenterPage() {
       </div>
 
       {/* TOOLBAR */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-6 border-b border-border/50">
+      <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between pb-5 border-b border-border">
         <div className="relative w-full md:max-w-md">
           <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             className="pl-9 h-10"
+            aria-label="Search command center"
             placeholder="Search reports, action items, alerts..."
             autoComplete="off"
             value={search}
@@ -356,9 +357,9 @@ export default function CommandCenterPage() {
       ) : (
         <>
           {/* SECTION: KPIs */}
-          <section className="space-y-4">
+          <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <h2 className="dashboard-section-title flex items-center gap-2">
                 <i className="ti ti-gauge text-muted-foreground" /> Executive
                 KPIs
               </h2>
@@ -367,11 +368,11 @@ export default function CommandCenterPage() {
               {kpis.map((k, i) => (
                 <Card
                   key={i}
-                  className="group hover:border-primary/40 transition-colors"
+                  className="py-0 transition-colors hover:border-[#C7D0DE]"
                 >
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardHeader className="flex flex-row items-center justify-between px-5 pt-5 pb-2">
                     <div
-                      className="p-2.5 rounded-lg transition-transform group-hover:scale-105"
+                      className="p-2 rounded-lg"
                       style={{ backgroundColor: soft(k.tint), color: k.tint }}
                     >
                       <i className={`ti ${k.ic} text-lg`} />
@@ -393,11 +394,11 @@ export default function CommandCenterPage() {
                       {pfArrow(k.delta)} {Math.abs(k.delta)}
                     </Badge>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-5 pb-5">
                     <div className="text-sm font-medium text-muted-foreground mb-1">
                       {k.label}
                     </div>
-                    <div className="text-3xl font-bold tracking-tight mb-2">
+                    <div className="metric-numeral text-[32px] leading-none font-bold tracking-[-0.025em] mb-2">
                       {k.val}
                       {k.suffix && (
                         <span className="text-lg font-medium text-muted-foreground ml-1">
@@ -405,11 +406,11 @@ export default function CommandCenterPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mb-4 h-8">
+                    <p className="text-[13px] leading-5 text-muted-foreground min-h-10">
                       {k.desc}
                     </p>
                     {k.spark.length > 1 && (
-                      <div className="h-10 w-full opacity-80 group-hover:opacity-100 transition-opacity">
+                      <div className="h-8 w-full opacity-85 mt-3">
                         <Sparkline points={k.spark} color={k.tint} />
                       </div>
                     )}
@@ -420,13 +421,13 @@ export default function CommandCenterPage() {
           </section>
 
           {/* SECTION: BREAKDOWN */}
-          <section className="space-y-4">
+          <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <h2 className="dashboard-section-title flex items-center gap-2">
                 <i className="ti ti-layout-grid text-muted-foreground" />{" "}
                 Performance breakdown
               </h2>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-[13px] text-muted-foreground">
                 Current vs previous scan
               </span>
             </div>
@@ -434,11 +435,11 @@ export default function CommandCenterPage() {
               {breakdown.map((b, i) => {
                 const g = b.cur - b.prev;
                 return (
-                  <Card key={i}>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3 mb-4">
+                  <Card key={i} className="py-0">
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-3 mb-3">
                         <div
-                          className="p-2.5 rounded-lg shrink-0"
+                          className="p-2 rounded-lg shrink-0"
                           style={{
                             backgroundColor: soft(b.tint),
                             color: b.tint,
@@ -455,12 +456,12 @@ export default function CommandCenterPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-end justify-between mb-3">
+                      <div className="flex items-end justify-between gap-3 mb-3">
                         <div className="flex items-baseline gap-2">
-                          <span className="text-3xl font-bold tracking-tighter">
+                          <span className="metric-numeral text-[30px] leading-none font-bold tracking-tight">
                             {b.cur}
                           </span>
-                          <span className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground/40">
+                          <span className="metric-numeral text-xs font-medium text-muted-foreground">
                             {b.prev}
                           </span>
                         </div>
@@ -477,16 +478,16 @@ export default function CommandCenterPage() {
                           {pfArrow(g)} {Math.abs(g)} pts
                         </Badge>
                       </div>
-                      <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mb-4">
+                      <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden mb-3">
                         <div
-                          className="h-full rounded-full transition-all duration-1000 ease-out"
+                          className="h-full rounded-full transition-[width] duration-150"
                           style={{
                             width: `${b.cur}%`,
                             backgroundColor: b.tint,
                           }}
                         />
                       </div>
-                      <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg flex gap-2">
+                      <div className="text-xs leading-5 text-muted-foreground bg-muted/60 px-3 py-2.5 rounded-lg flex gap-2">
                         <i className="ti ti-bulb text-amber-500 shrink-0 mt-0.5 text-[15px]" />
                         <span className="leading-relaxed">{b.insight}</span>
                       </div>
@@ -498,13 +499,13 @@ export default function CommandCenterPage() {
           </section>
 
           {/* SECTION: ACTION ITEMS */}
-          <section className="space-y-4">
+          <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <h2 className="dashboard-section-title flex items-center gap-2">
                 <i className="ti ti-list-check text-muted-foreground" /> Action
                 items
               </h2>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-[13px] text-muted-foreground">
                 Aggregated from all 4 feature scans
               </span>
             </div>
@@ -514,18 +515,18 @@ export default function CommandCenterPage() {
                 return (
                   <Card
                     key={i}
-                    className="cursor-pointer hover:border-primary/40 transition-colors"
+                    className="py-0 cursor-pointer hover:border-[#B9C3D2] transition-colors"
                     onClick={() => (window.location.href = a.link)}
                   >
-                    <CardContent className="p-4 flex items-start gap-4">
-                      <div className="p-2.5 rounded-lg shrink-0 mt-0.5 bg-muted/50 text-muted-foreground">
+                    <CardContent className="p-4 flex items-start gap-3.5">
+                      <div className="p-2 rounded-lg shrink-0 bg-muted text-muted-foreground">
                         <i
                           className={`ti ${SOURCE_ICON[a.source] ?? "ti-bulb"} text-lg`}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1 gap-2">
-                          <div className="font-semibold text-[15px]">
+                          <div className="font-semibold text-sm break-words [overflow-wrap:anywhere]">
                             {a.title}
                           </div>
                           <Badge
@@ -536,7 +537,7 @@ export default function CommandCenterPage() {
                             {a.severity}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
+                        <div className="text-[13px] text-muted-foreground line-clamp-2 mb-1.5 leading-5">
                           {a.detail}
                         </div>
                         <div className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">
@@ -558,11 +559,11 @@ export default function CommandCenterPage() {
           </section>
 
           {/* SECTION: ALERTS & INSIGHTS */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-5 items-start">
             {/* ALERTS */}
-            <section className="space-y-4">
+            <section className="space-y-3 min-w-0">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <h2 className="dashboard-section-title flex items-center gap-2">
                   <i className="ti ti-bell-ringing text-muted-foreground" />{" "}
                   Alert center
                 </h2>
@@ -572,7 +573,7 @@ export default function CommandCenterPage() {
                   const sev =
                     SEVERITY_STYLE[al.severity] ?? SEVERITY_STYLE.Medium;
                   return (
-                    <Card key={i}>
+                    <Card key={i} className="py-0">
                       <CardContent className="p-4 flex items-start gap-4">
                         <div
                           className="p-2.5 rounded-lg shrink-0 mt-0.5"
@@ -582,7 +583,7 @@ export default function CommandCenterPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-1 gap-2">
-                            <div className="font-semibold text-[15px] truncate pr-2">
+                            <div className="font-semibold text-sm break-words pr-2">
                               {al.title}
                             </div>
                             <Badge
@@ -593,7 +594,7 @@ export default function CommandCenterPage() {
                               {al.severity}
                             </Badge>
                           </div>
-                          <div className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          <div className="text-[13px] text-muted-foreground line-clamp-2 leading-5">
                             {al.message}
                           </div>
                         </div>
@@ -612,20 +613,20 @@ export default function CommandCenterPage() {
             </section>
 
             {/* INSIGHTS */}
-            <section className="space-y-4">
+            <section className="space-y-3 min-w-0">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <h2 className="dashboard-section-title flex items-center gap-2">
                   <i className="ti ti-bulb text-muted-foreground" /> Business
                   insights
                 </h2>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[13px] text-muted-foreground">
                   AI-generated
                 </span>
               </div>
-              <Card className="bg-gradient-to-br from-primary/5 via-primary/5 to-transparent border-primary/20 overflow-hidden h-fit">
-                <CardHeader className="pb-4 flex flex-row items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20 shadow-sm">
-                    <i className="ti ti-sparkles text-2xl" />
+              <Card className="gap-0 py-0 overflow-hidden h-fit border-border">
+                <CardHeader className="p-5 pb-4 flex flex-row items-center gap-3 border-b border-border bg-muted/45">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/15">
+                    <i className="ti ti-sparkles text-lg" />
                   </div>
                   <div>
                     <CardTitle className="text-lg">Executive Summary</CardTitle>
@@ -634,12 +635,12 @@ export default function CommandCenterPage() {
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2.5">
+                <CardContent className="p-0">
+                  <div className="divide-y divide-border">
                     {(data?.insights ?? []).map((ins, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-3 bg-background/80 backdrop-blur-sm p-3.5 rounded-lg border border-border/50 shadow-sm"
+                        className="flex items-start gap-3 px-5 py-3.5"
                       >
                         <div className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
                           <i className="ti ti-check text-[10px]" />

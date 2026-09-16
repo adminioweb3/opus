@@ -279,11 +279,11 @@ function CollapsibleMenu({
         <SidebarMenuButton
           render={<Link href={category.url} />}
           isActive={hasActive}
-          className="hover:bg-muted/50 w-full"
+          className="h-10 rounded-lg px-3 hover:bg-sidebar-accent/70 w-full data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground"
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
-              <category.icon className="w-4 h-4 text-muted-foreground" />
+              <category.icon className={cn("w-[18px] h-[18px]", hasActive ? "text-primary" : "text-muted-foreground")} />
               <span className="font-medium">{category.title}</span>
             </div>
             {category.tag && (
@@ -305,10 +305,10 @@ function CollapsibleMenu({
       <SidebarMenuButton
         onClick={() => setIsOpen(!isOpen)}
         isActive={hasActive}
-        className="justify-between hover:bg-muted/50 w-full"
+        className="h-10 rounded-lg px-3 justify-between hover:bg-sidebar-accent/70 w-full data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground"
       >
         <div className="flex items-center gap-2">
-          <category.icon className="w-4 h-4 text-muted-foreground" />
+          <category.icon className={cn("w-[18px] h-[18px]", hasActive ? "text-primary" : "text-muted-foreground")} />
           <span className="font-medium">{category.title}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ function CollapsibleMenu({
                   className={cn(
                     "transition-all py-2",
                     isActive
-                      ? "bg-primary/10 border border-primary/20 text-primary font-medium shadow-sm"
+                      ? "bg-primary/10 border border-primary/15 text-primary font-semibold"
                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent",
                   )}
                 >
@@ -412,9 +412,9 @@ export function DashboardSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4">
+      <SidebarContent className="px-3 py-4">
         <SidebarGroup>
-          <SidebarGroupLabel className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <SidebarGroupLabel className="mb-2 px-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">
             Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -432,10 +432,10 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
+      <SidebarFooter className="border-t border-sidebar-border p-3">
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full focus:outline-none">
-            <div className="flex items-center gap-3 w-full p-2 rounded-md hover:bg-slate-100 transition-colors">
+            <div className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-sidebar-accent transition-colors">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm overflow-hidden shrink-0">
                 {(() => {
                   const avatar = user

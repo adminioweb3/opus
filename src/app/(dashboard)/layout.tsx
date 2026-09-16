@@ -76,7 +76,7 @@ function DashboardHeader() {
   }, []);
 
   return (
-    <header className="h-16 border-b flex items-center px-4 shrink-0 bg-card gap-4">
+    <header className="h-16 border-b border-border flex items-center px-4 sm:px-6 shrink-0 bg-card gap-4">
       <SidebarTrigger />
 
 
@@ -87,7 +87,8 @@ function DashboardHeader() {
       <div ref={notificationsRef} className="relative">
         <button
           onClick={() => setNotificationsOpen((o) => !o)}
-          className="relative p-2 rounded-lg hover:bg-muted transition-colors"
+          aria-label="Open notifications"
+          className="relative flex size-9 items-center justify-center rounded-lg hover:bg-muted transition-colors"
         >
           <Bell className="w-5 h-5 text-muted-foreground" />
           {unreadCount > 0 && (
@@ -261,7 +262,7 @@ export default function DashboardLayout({
         <DashboardSidebar />
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-background">
           <DashboardHeader />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto bg-background">{children}</main>
         </div>
       </SidebarProvider>
       <CommandPalette />

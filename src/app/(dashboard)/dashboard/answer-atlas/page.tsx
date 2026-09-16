@@ -69,7 +69,6 @@ import {
   FanoutOverviewRow,
   ExecutionHistoryRow,
   AnalysisResultsResponse,
-  PromptResponseEvidence,
   RankBlock,
   TopicRanking,
   PromptTopic,
@@ -268,18 +267,14 @@ export default function AnswerAtlasPage() {
   }
 
   return (
-    <div className="flex-1 p-6 sm:p-8 text-slate-900 bg-[#f8fafc] min-h-screen">
+    <div className="dashboard-page min-h-screen">
       {/* BANNER */}
       <div
-        className="relative rounded-2xl px-6 py-5 mb-4 overflow-hidden text-white"
-        style={{ background: "linear-gradient(120deg, #111633 0%, #1E1B4B 55%, #312E81 100%)" }}
+        className="relative rounded-2xl px-5 sm:px-6 py-4 mb-4 overflow-hidden text-white border border-white/10"
+        style={{ background: "linear-gradient(112deg, #171A3B 0%, #242052 70%, #36257C 100%)" }}
       >
         <div
-          className="absolute -right-16 -top-20 w-72 h-72 rounded-full opacity-35 pointer-events-none"
-          style={{ background: "radial-gradient(circle, #A855F7 0%, transparent 62%)" }}
-        />
-        <div
-          className="absolute inset-0 opacity-35 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
             backgroundImage: "radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px)",
             backgroundSize: "18px 18px",
@@ -289,12 +284,12 @@ export default function AnswerAtlasPage() {
           <div className="flex items-center gap-2 text-[10.5px] font-bold tracking-[0.14em] text-indigo-200">
             <Compass className="w-3.5 h-3.5" /> ANSWER ATLAS
           </div>
-          <h1 className="font-space-grotesk text-[23px] font-bold mt-1.5 mb-1">Every AI answer, mapped.</h1>
-          <p className="text-[12.5px] text-indigo-100/80 max-w-xl leading-relaxed">
+          <h1 className="text-[22px] leading-tight font-bold tracking-[-0.02em] mt-1.5 mb-1">Every AI answer, mapped.</h1>
+          <p className="text-[13px] text-indigo-100/90 max-w-2xl leading-5">
             Where {organizationId ? "your brand" : "Citationly"} appears across answer engines, which prompts drive
             it, and exactly where to gain ground next.
           </p>
-          <div className="flex items-center gap-2.5 mt-3.5 flex-wrap">
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-100 bg-white/[0.09] border border-white/15 rounded-full px-2.5 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               ON-DEMAND ANALYSIS
@@ -336,19 +331,21 @@ export default function AnswerAtlasPage() {
       )}
 
       {/* TAB BAR */}
-      <div className="flex items-center gap-1.5 p-1.5 mb-5 bg-slate-100 border border-slate-200 rounded-xl overflow-x-auto">
+      <div role="tablist" aria-label="Answer Atlas sections" className="flex items-center gap-1 p-1 mb-6 bg-white border border-border rounded-xl overflow-x-auto">
         {TABS.map((t) => {
           const Icon = t.icon;
           const active = tab === t.key;
           return (
             <button
               key={t.key}
+              role="tab"
+              aria-selected={active}
               onClick={() => {
                 setTab(t.key);
                 setShowDesigner(false);
               }}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[12.5px] font-medium rounded-lg whitespace-nowrap transition-colors ${
-                active ? "bg-white text-indigo-700 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-800"
+              className={`inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-semibold rounded-lg whitespace-nowrap transition-colors ${
+                active ? "bg-primary/10 text-primary" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
               <Icon className="w-[15px] h-[15px]" />
@@ -422,8 +419,8 @@ function MetricSectionHeader({
   return (
     <div className="flex items-end justify-between gap-3 mt-7 mb-3">
       <div>
-        <div className="font-space-grotesk text-[16.5px] font-bold text-slate-900">{title}</div>
-        <div className="text-[12.5px] text-slate-500 mt-0.5">{subtitle}</div>
+        <div className="dashboard-section-title">{title}</div>
+        <div className="dashboard-supporting-text mt-0.5">{subtitle}</div>
       </div>
       <div className="relative shrink-0">
         <button
@@ -467,7 +464,7 @@ function RankPane({ title, block, unit }: { title: string; block: RankBlock; uni
   return (
     <div className="p-5">
       <span className="text-[12px] text-slate-500 font-medium border-b border-dashed border-slate-300 pb-px">{title}</span>
-      <div className="font-mono text-[24px] font-semibold mt-2 flex items-center gap-2">
+      <div className="metric-numeral text-[24px] font-semibold mt-2 flex items-center gap-2">
         {block.position ? `#${block.position}` : "—"} <RankDelta value={block.positionDelta} />
       </div>
       <table className="w-full mt-3.5 text-[13px]">
@@ -498,7 +495,7 @@ function RankPane({ title, block, unit }: { title: string; block: RankBlock; uni
                   )}
                 </span>
               </td>
-              <td className="py-2 text-right font-mono whitespace-nowrap">
+              <td className="metric-numeral py-2 text-right whitespace-nowrap">
                 {r.value}
                 {unit} <ValueDelta delta={r.delta} />
               </td>
@@ -583,14 +580,14 @@ function VisibilityTab({
       <div className="flex items-center gap-2 mb-5 flex-wrap">
         <button
           onClick={onSaveView}
-          className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500 bg-white border border-dashed border-slate-300 rounded-lg px-2.5 py-1.5"
+          className="inline-flex h-9 items-center gap-1.5 text-[12.5px] font-semibold text-slate-600 bg-white border border-dashed border-slate-300 rounded-lg px-3 hover:border-primary/40 hover:text-primary"
         >
           <Plus className="w-3.5 h-3.5" /> Save view
         </button>
         <div className="relative">
           <button
             onClick={() => setRangeOpen(!rangeOpen)}
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5"
+            className="inline-flex h-9 items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 bg-white border border-input rounded-lg px-3 hover:bg-slate-50"
           >
             {rangeLabel} <span className="text-slate-400 font-normal">vs.</span> Prev. Period <ChevronDown className="w-3.5 h-3.5" />
           </button>
@@ -614,7 +611,7 @@ function VisibilityTab({
         <div className="relative">
           <button
             onClick={() => setTopicFilterOpen(!topicFilterOpen)}
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5"
+            className="inline-flex h-9 items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 bg-white border border-input rounded-lg px-3 hover:bg-slate-50"
           >
             # {topicFilter ? summary?.topics.find((t) => t.topicId === topicFilter)?.topicName : "Topics"}
           </button>
@@ -646,7 +643,7 @@ function VisibilityTab({
         </div>
         <button
           onClick={onGoToPlatforms}
-          className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5"
+          className="inline-flex h-9 items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 bg-white border border-input rounded-lg px-3 hover:bg-slate-50"
         >
           <Layers className="w-3.5 h-3.5 text-slate-400" /> Platforms
         </button>
@@ -661,15 +658,15 @@ function VisibilityTab({
         showCompetitors={showCompetitors}
         setShowCompetitors={setShowCompetitors}
       />
-      <div className="grid grid-cols-1 lg:grid-cols-2 border border-slate-200 rounded-2xl bg-white overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
-        <div className="p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <div className="p-5 border border-border rounded-xl bg-white shadow-[var(--shadow-card)]">
           <span className="text-[12px] text-slate-500 font-medium border-b border-dashed border-slate-300 pb-px">
             Visibility Score
           </span>
-          <div className="font-mono text-[26px] font-semibold mt-2 flex items-baseline gap-2.5">
+          <div className="metric-numeral text-[32px] leading-none font-bold mt-2 flex items-baseline gap-2.5">
             {summary?.compositeScore}% <ValueDelta delta={summary?.compositeDelta ?? "+0"} />
           </div>
-          <div className="relative h-[200px] mt-3">
+          <div className="relative h-[168px] mt-3">
             <svg viewBox="0 0 600 160" preserveAspectRatio="none" className="w-full h-full">
               <line x1="0" y1="40" x2="600" y2="40" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 4" />
               <line x1="0" y1="80" x2="600" y2="80" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 4" />
@@ -687,7 +684,7 @@ function VisibilityTab({
             )}
           </div>
         </div>
-        {summary && showCompetitors && <RankPane title="Visibility Score Rank" block={summary.visibilityRank} unit="%" />}
+        {summary && showCompetitors && <div className="border border-border rounded-xl bg-white shadow-[var(--shadow-card)] overflow-hidden"><RankPane title="Visibility Score Rank" block={summary.visibilityRank} unit="%" /></div>}
       </div>
 
       {/* SHARE OF VOICE */}
@@ -697,12 +694,12 @@ function VisibilityTab({
         showCompetitors={showCompetitors}
         setShowCompetitors={setShowCompetitors}
       />
-      <div className="grid grid-cols-1 lg:grid-cols-2 border border-slate-200 rounded-2xl bg-white overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
-        <div className="p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <div className="p-5 border border-border rounded-xl bg-white shadow-[var(--shadow-card)]">
           <span className="text-[12px] text-slate-500 font-medium border-b border-dashed border-slate-300 pb-px">
             Share of Voice
           </span>
-          <div className="font-mono text-[26px] font-semibold mt-2 flex items-baseline gap-2.5">
+          <div className="metric-numeral text-[32px] leading-none font-bold mt-2 flex items-baseline gap-2.5">
             {summary?.shareOfVoice}% <ValueDelta delta={summary?.shareOfVoiceDelta ?? "+0"} />
           </div>
           {showCompetitors && (
@@ -717,16 +714,16 @@ function VisibilityTab({
             </div>
           )}
         </div>
-        {summary && showCompetitors && <RankPane title="Share of Voice Rank" block={summary.shareOfVoiceRank} unit="%" />}
+        {summary && showCompetitors && <div className="border border-border rounded-xl bg-white shadow-[var(--shadow-card)] overflow-hidden"><RankPane title="Share of Voice Rank" block={summary.shareOfVoiceRank} unit="%" /></div>}
       </div>
 
       {/* AVERAGE POSITION */}
       <MetricSectionHeader title="Average Position" subtitle="Your average rank in AI-generated answers" />
-      <div className="border border-slate-200 rounded-2xl bg-white p-5">
+      <div className="border border-border rounded-xl bg-white p-5 shadow-[var(--shadow-card)]">
         <span className="text-[12px] text-slate-500 font-medium border-b border-dashed border-slate-300 pb-px">
           Average Position
         </span>
-        <div className="font-mono text-[26px] font-semibold mt-2 flex items-baseline gap-2.5">
+        <div className="metric-numeral text-[32px] leading-none font-bold mt-2 flex items-baseline gap-2.5">
           {summary?.averagePosition} <ValueDelta delta={summary?.averagePositionDelta ?? "+0"} />
         </div>
         <p className="text-[12px] text-slate-400 mt-2">
@@ -739,17 +736,17 @@ function VisibilityTab({
         title="Visibility Rankings By Topic"
         subtitle="Your visibility rankings across topics"
       />
-      <Card className="py-0 overflow-hidden">
+      <Card className="py-0 gap-0 overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[720px]">
             <TableHeader>
-              <TableRow className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              <TableRow className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider hover:bg-transparent">
                 <TableHead className="p-4">Topic</TableHead>
-                <TableHead className="p-4">Prompts</TableHead>
-                <TableHead className="p-4">Score</TableHead>
-                <TableHead className="p-4">Share of voice</TableHead>
-                <TableHead className="p-4">Avg. position</TableHead>
-                <TableHead className="p-4">Citation share</TableHead>
+                <TableHead className="p-4 text-right">Prompts</TableHead>
+                <TableHead className="p-4 text-right">Score</TableHead>
+                <TableHead className="p-4 text-right">Share of voice</TableHead>
+                <TableHead className="p-4 text-right">Avg. position</TableHead>
+                <TableHead className="p-4 text-right">Citation share</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -761,11 +758,11 @@ function VisibilityTab({
                       {t.rank === 1 ? "Leader" : "Needs work"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{t.promptCount}</TableCell>
-                  <TableCell className="p-4 font-mono font-medium text-[14px] text-slate-700">{t.score}</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{t.shareOfVoice}%</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{t.averagePosition}</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{t.citationShare}%</TableCell>
+                  <TableCell className="p-4 metric-numeral text-right text-[14px] text-slate-600">{t.promptCount}</TableCell>
+                  <TableCell className="p-4 metric-numeral text-right font-semibold text-[14px] text-slate-700">{t.score}</TableCell>
+                  <TableCell className="p-4 metric-numeral text-right text-[14px] text-slate-600">{t.shareOfVoice}%</TableCell>
+                  <TableCell className="p-4 metric-numeral text-right text-[14px] text-slate-600">{t.averagePosition}</TableCell>
+                  <TableCell className="p-4 metric-numeral text-right text-[14px] text-slate-600">{t.citationShare}%</TableCell>
                 </TableRow>
               ))}
               {visibleTopics.length === 0 && (
@@ -866,6 +863,7 @@ function PromptsTab({
       // in "Visibility Rankings By Topic" comes from a separate summary fetch owned by the
       // parent, which otherwise stays stale until the date range changes or the page reloads.
       await Promise.all([reloadTopic(topicId), onAnalyzed()]);
+      onOpenHistory(questionId);
     } catch (err) {
       console.error(err);
       toast.error("Analysis failed to run");
@@ -949,8 +947,8 @@ function PromptsTab({
       {/* HEADER */}
       <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
         <div>
-          <div className="font-space-grotesk text-[16.5px] font-bold text-slate-900">Prompt Analysis</div>
-          <div className="text-[12.5px] text-slate-500 mt-0.5">
+          <div className="dashboard-section-title">Prompt Analysis</div>
+          <div className="dashboard-supporting-text mt-0.5">
             {totalPrompts} prompts across {topics.length} topics, analyzed on demand
           </div>
         </div>
@@ -973,40 +971,40 @@ function PromptsTab({
           <span className="text-[11.5px] text-slate-500">
             {analyzedCount} / {totalPrompts} analyzed
           </span>
-          <Button size="sm" className="gap-1.5 bg-slate-900 hover:bg-slate-800" onClick={onOpenDesigner}>
+          <Button size="sm" className="gap-1.5" onClick={onOpenDesigner}>
             Modify Prompts <ArrowUpRight className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
 
       {/* CHIP FILTERS */}
-      <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-4 rounded-xl border border-border bg-white p-2.5">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPromptFilter(promptFilter === "analyzed" ? "all" : "analyzed")}
-            className={`text-[12px] font-semibold rounded-lg border px-2.5 py-1.5 ${
-              promptFilter === "analyzed" ? "border-slate-300 bg-slate-100 text-slate-900" : "border-slate-200 bg-white text-slate-500"
+            className={`h-8 text-[12px] font-semibold rounded-lg border px-3 ${
+              promptFilter === "analyzed" ? "border-primary/20 bg-primary/10 text-primary" : "border-border bg-white text-slate-600 hover:bg-slate-50"
             }`}
           >
             Analyzed <b className="text-slate-900">{analyzedCount}</b>
           </button>
           <button
             onClick={() => setPromptFilter(promptFilter === "pending" ? "all" : "pending")}
-            className={`text-[12px] font-semibold rounded-lg border px-2.5 py-1.5 ${
-              promptFilter === "pending" ? "border-slate-300 bg-slate-100 text-slate-900" : "border-slate-200 bg-white text-slate-500"
+            className={`h-8 text-[12px] font-semibold rounded-lg border px-3 ${
+              promptFilter === "pending" ? "border-primary/20 bg-primary/10 text-primary" : "border-border bg-white text-slate-600 hover:bg-slate-50"
             }`}
           >
             Pending <b className="text-slate-900">{pendingCount}</b>
           </button>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5">
+        <div className="flex items-center gap-2 flex-wrap sm:justify-end w-full lg:w-auto">
+          <span className="inline-flex h-8 items-center gap-1.5 text-[12px] font-semibold text-slate-700 bg-slate-50 border border-border rounded-lg px-3">
             Group by: Topic
           </span>
           <div className="relative">
             <button
               onClick={() => setColumnsOpen(!columnsOpen)}
-              className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5"
+              className="inline-flex h-8 items-center gap-1.5 text-[12px] font-semibold text-slate-700 bg-white border border-input rounded-lg px-3 hover:bg-slate-50"
             >
               Customize Columns <ChevronDown className="w-3.5 h-3.5" />
             </button>
@@ -1034,33 +1032,34 @@ function PromptsTab({
               </div>
             )}
           </div>
-          <button onClick={handleExport} className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50">
+          <button aria-label="Download prompt analysis" onClick={handleExport} className="w-8 h-8 flex items-center justify-center bg-white border border-input rounded-lg text-slate-600 hover:bg-slate-50">
             <Download className="w-3.5 h-3.5" />
           </button>
-          <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 min-w-[180px]">
+          <label className="inline-flex h-8 flex-1 sm:flex-none items-center gap-1.5 bg-white border border-input rounded-lg px-3 min-w-[200px]">
             <Search className="w-3.5 h-3.5 text-slate-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search Topics"
-              className="text-[12.5px] outline-none flex-1 min-w-0"
+              aria-label="Search topics"
+              className="text-[12.5px] outline-none flex-1 min-w-0 bg-transparent"
             />
-          </div>
+          </label>
         </div>
       </div>
 
       {/* TABLE */}
-      <Card className="py-0 overflow-hidden">
+      <Card className="py-0 gap-0 overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[860px]">
             <TableHeader>
-              <TableRow className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                <TableHead className="p-4 w-[32%]">Topic</TableHead>
-                {visibleCols.rank && <TableHead className="p-4">Visibility Rank</TableHead>}
-                {visibleCols.score && <TableHead className="p-4">Visibility Score</TableHead>}
-                {visibleCols.sov && <TableHead className="p-4">Share of Voice</TableHead>}
-                {visibleCols.pos && <TableHead className="p-4">Average Position</TableHead>}
-                {visibleCols.citation && <TableHead className="p-4">Citation Share</TableHead>}
+              <TableRow className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider hover:bg-transparent">
+                <TableHead className="p-4 w-[40%] min-w-[320px]">Topic</TableHead>
+                {visibleCols.rank && <TableHead className="p-4 text-right">Visibility Rank</TableHead>}
+                {visibleCols.score && <TableHead className="p-4 text-right">Visibility Score</TableHead>}
+                {visibleCols.sov && <TableHead className="p-4 text-right">Share of Voice</TableHead>}
+                {visibleCols.pos && <TableHead className="p-4 text-right">Average Position</TableHead>}
+                {visibleCols.citation && <TableHead className="p-4 text-right">Citation Share</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -1071,7 +1070,7 @@ function PromptsTab({
                 const colSpan = 1 + Object.values(visibleCols).filter(Boolean).length;
                 return (
                   <React.Fragment key={topic.id}>
-                    <TableRow className="cursor-pointer" onClick={() => toggleTopic(topic.id)}>
+                    <TableRow className="cursor-pointer bg-slate-50/75 hover:bg-slate-100/80" onClick={() => toggleTopic(topic.id)}>
                       <TableCell className="p-4 text-[14px] text-slate-900">
                         <div className="flex items-center gap-2 font-semibold">
                           {expanded ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
@@ -1079,33 +1078,33 @@ function PromptsTab({
                         </div>
                         <div className="text-[11px] text-slate-400 mt-0.5 pl-6">{(questionsByTopic[topic.id] ?? []).length} prompts</div>
                       </TableCell>
-                      {visibleCols.rank && <TableCell className="p-4 font-mono text-[13.5px] text-slate-700">{s?.rank ? `#${s.rank}` : "–"}</TableCell>}
+                      {visibleCols.rank && <TableCell className="p-4 metric-numeral text-right text-[13.5px] text-slate-700">{s?.rank ? `#${s.rank}` : "–"}</TableCell>}
                       {visibleCols.score && (
                         <TableCell
-                          className="p-4 font-mono font-medium text-[13.5px] text-slate-700"
+                          className="p-4 metric-numeral text-right font-semibold text-[13.5px] text-slate-700"
                           title={s?.score === 0 ? "The tracked brand was not found in any analyzed response for this topic." : "Percentage of analyzed responses that mentioned the tracked brand."}
                         >
                           {s ? `${s.score}%` : "–"}
                         </TableCell>
                       )}
-                      {visibleCols.sov && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? `${s.shareOfVoice}%` : "–"}</TableCell>}
-                      {visibleCols.pos && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s?.averagePosition ? `#${s.averagePosition}` : "–"}</TableCell>}
-                      {visibleCols.citation && <TableCell className="p-4 font-mono text-[13.5px] text-slate-600">{s ? `${s.citationShare}%` : "–"}</TableCell>}
+                      {visibleCols.sov && <TableCell className="p-4 metric-numeral text-right text-[13.5px] text-slate-600">{s ? `${s.shareOfVoice}%` : "–"}</TableCell>}
+                      {visibleCols.pos && <TableCell className="p-4 metric-numeral text-right text-[13.5px] text-slate-600">{s?.averagePosition ? `#${s.averagePosition}` : "–"}</TableCell>}
+                      {visibleCols.citation && <TableCell className="p-4 metric-numeral text-right text-[13.5px] text-slate-600">{s ? `${s.citationShare}%` : "–"}</TableCell>}
                     </TableRow>
                     {expanded && (
                       <TableRow>
-                        <TableCell colSpan={colSpan} className="p-0 bg-slate-50/60 border-t-0">
+                        <TableCell colSpan={colSpan} className="p-0 bg-white border-t-0">
                           {!questionsLoaded ? (
                             <div className="p-6 text-sm text-slate-500 flex items-center gap-2">
                               <Loader2 className="w-4 h-4 animate-spin" /> Loading prompts…
                             </div>
                           ) : (
-                            <div className="divide-y divide-slate-200">
+                            <div className="divide-y divide-border">
                               {questions.map((q) => (
-                                <div key={q.question.id} className="p-4 flex items-center justify-between gap-4 pl-10">
+                                <div key={q.question.id} className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pl-10 hover:bg-slate-50/70">
                                   <div className="min-w-0">
-                                    <p className="text-[13.5px] text-slate-800 truncate">{q.question.promptText}</p>
-                                    <p className="text-[11.5px] text-slate-400 mt-0.5">
+                                    <p className="text-[13.5px] leading-5 text-slate-800 break-words">{q.question.promptText}</p>
+                                    <p className="text-[12px] leading-5 text-slate-500 mt-0.5">
                                       {q.latestAnalysis
                                         ? `Last run: ${new Date(q.latestAnalysis.runAt).toLocaleDateString()} · ${q.latestAnalysis.status}`
                                         : "Never analyzed"}
@@ -1116,18 +1115,19 @@ function PromptsTab({
                                         : ""}
                                     </p>
                                   </div>
-                                  <div className="shrink-0 flex items-center gap-3">
+                                  <div className="shrink-0 flex items-center gap-2 self-end sm:self-auto">
                                     {progressByQuestion[q.question.id] && (
                                       <span className="text-[11.5px] text-indigo-600 font-medium">{progressByQuestion[q.question.id]}</span>
                                     )}
                                     <Button
                                       size="sm"
                                       variant="ghost"
+                                      aria-label={`View history for ${q.question.promptText}`}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         onOpenHistory(q.question.id);
                                       }}
-                                      className="gap-1.5"
+                                      className="gap-1.5 border border-transparent hover:border-border"
                                     >
                                       <HistoryIcon className="w-3.5 h-3.5" />
                                     </Button>
@@ -1196,7 +1196,7 @@ function EnterpriseGate({ tabLabel, planType }: { tabLabel: string; planType: st
         <div className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-slate-500">
           <Lock className="w-3.5 h-3.5" /> Enterprise
         </div>
-        <h2 className="font-space-grotesk text-[19px] font-bold mt-3 mb-2">{tabLabel} breakdown</h2>
+        <h2 className="text-[19px] font-bold tracking-[-0.015em] mt-3 mb-2">{tabLabel} breakdown</h2>
         <p className="text-[12.5px] text-slate-500 leading-relaxed mb-5">
           {tabLabel} segmentation is available on the Enterprise plan. You&apos;re currently on {planType ?? "Trial"}.
         </p>
@@ -1248,13 +1248,13 @@ function PlatformsTab({ range }: { range: "7D" | "30D" | "90D" }) {
   return (
     <>
       <div className="mb-4">
-        <div className="font-space-grotesk text-[16.5px] font-bold text-slate-900">Matrix View</div>
+        <div className="dashboard-section-title">Matrix View</div>
         <div className="text-[12.5px] text-slate-500 mt-0.5">Analyze your brand&apos;s presence across multiple AI platforms by different dimensions</div>
       </div>
       {data?.matrix && <PlatformMatrixTable matrix={data.matrix} />}
 
       <div className="mt-8 mb-3">
-        <div className="font-space-grotesk text-[16.5px] font-bold text-slate-900">Platform breakdown</div>
+        <div className="dashboard-section-title">Platform breakdown</div>
         <div className="text-[12.5px] text-slate-500 mt-0.5">Your own visibility, share of voice, and citations per platform</div>
       </div>
       <Card className="py-0 overflow-hidden">
@@ -1973,7 +1973,7 @@ function QueryFanoutsTab({
 
       <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
         <div>
-          <div className="font-space-grotesk text-[16.5px] font-bold text-slate-900">Query Fanouts by Prompt</div>
+          <div className="dashboard-section-title">Query Fanouts by Prompt</div>
           <div className="text-[12.5px] text-slate-500 mt-0.5">Understand the queries generated for each prompt</div>
         </div>
         <div className="flex items-center gap-2">
@@ -2086,11 +2086,59 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
   const [detailsLoadingId, setDetailsLoadingId] = useState<string | null>(null);
   const [markingId, setMarkingId] = useState<string | null>(null);
   const [processingImpacts, setProcessingImpacts] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+
+      const drawer = closeButtonRef.current?.closest('[role="dialog"]');
+      const focusable = drawer?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
 
   useEffect(() => {
     setIsLoading(true);
     getQuestionHistory(questionId)
-      .then(setHistory)
+      .then(async (rows) => {
+        setHistory(rows);
+        const latestCompleted = rows.find((row) => row.status === "Completed");
+        if (!latestCompleted) return;
+
+        setOpenAnalysisId(latestCompleted.analysisId);
+        setDetailsLoadingId(latestCompleted.analysisId);
+        try {
+          const details = await getAnalysisResults(latestCompleted.analysisId);
+          setAnalysisDetails({ [latestCompleted.analysisId]: details });
+        } finally {
+          setDetailsLoadingId(null);
+        }
+      })
       .catch((err) => {
         console.error(err);
         toast.error("Failed to load execution history");
@@ -2159,31 +2207,26 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
     }
   };
 
-  const formatCost = (costUsd: number | null) =>
-    costUsd === null ? "Cost unavailable" : `$${costUsd.toFixed(6)}`;
-
-  const formatTokens = (response: PromptResponseEvidence) => {
-    if (response.promptTokens === null && response.completionTokens === null) return "Token usage unavailable";
-    return `${response.promptTokens ?? 0} in / ${response.completionTokens ?? 0} out tokens`;
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
-          <h3 className="font-space-grotesk text-[16px] font-bold text-slate-900">Execution history</h3>
+      <button aria-label="Close action plan" className="absolute inset-0 bg-slate-950/35 cursor-default" onClick={onClose} />
+      <div role="dialog" aria-modal="true" aria-labelledby="action-plan-title" className="relative flex h-dvh w-full max-w-[640px] flex-col overflow-hidden border-l border-border bg-white shadow-[-8px_0_28px_rgba(23,32,51,0.12)]">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-white shrink-0">
+          <div>
+            <h2 id="action-plan-title" className="text-lg font-bold tracking-[-0.015em] text-slate-900">What to change next</h2>
+            <p className="text-[12.5px] leading-5 text-slate-600 mt-0.5">Evidence-backed experiments for this prompt; no AI platform placement is guaranteed.</p>
+          </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 text-[12px]" disabled={processingImpacts} onClick={processDueImpacts}>
               {processingImpacts ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <TrendingUp className="w-3.5 h-3.5" />}
               Process due
             </Button>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700">
+            <button ref={closeButtonRef} aria-label="Close action plan" onClick={onClose} className="flex size-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
-        <div className="p-5">
+        <div className="flex-1 overflow-y-auto p-5 overscroll-contain">
           {isLoading ? (
             <div className="py-12 flex justify-center">
               <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
@@ -2191,14 +2234,14 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
           ) : history.length === 0 ? (
             <p className="text-sm text-slate-500 text-center py-12">No runs yet for this prompt.</p>
           ) : (
-            <div className="space-y-3">
+            <div className="divide-y divide-border border-y border-border">
               {history.map((h) => {
                 const details = analysisDetails[h.analysisId];
                 const implementations = details?.recommendationImplementations ?? [];
                 return (
-                <div key={h.analysisId} className="border border-slate-200 rounded-lg p-3.5">
+                <section key={h.analysisId} className="py-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-semibold text-slate-800">{new Date(h.runAt).toLocaleString()}</span>
+                    <h3 className="metric-numeral text-[13px] font-semibold text-slate-900">{new Date(h.runAt).toLocaleString()}</h3>
                     <Badge
                       className={`text-[10px] ${
                         h.status === "Completed"
@@ -2212,7 +2255,7 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                     </Badge>
                   </div>
                   {h.overallVisibilityScore !== null && (
-                    <div className="flex gap-4 mt-2 text-[12px] text-slate-600 font-mono">
+                    <div className="metric-numeral flex flex-wrap gap-x-5 gap-y-1 mt-2 text-[12px] text-slate-600">
                       <span>Score: {h.overallVisibilityScore}</span>
                       <span>SoV: {h.shareOfVoice}%</span>
                       <span>Pos: {h.averagePosition}</span>
@@ -2221,60 +2264,71 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mt-3 h-8 text-[12px]"
+                    className="mt-3 text-[12px]"
                     disabled={h.status !== "Completed" || detailsLoadingId === h.analysisId}
                     onClick={() => toggleDetails(h.analysisId)}
                   >
                     {detailsLoadingId === h.analysisId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ChevronRight className={`w-3.5 h-3.5 transition-transform ${openAnalysisId === h.analysisId ? "rotate-90" : ""}`} />}
-                    Recommendations
+                    View action plan
                   </Button>
                   {openAnalysisId === h.analysisId && (
-                    <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+                    <div className="mt-4 space-y-4 border-t border-border pt-4">
                       {detailsLoadingId === h.analysisId ? (
                         <div className="py-3 flex justify-center">
                           <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
                         </div>
                       ) : (
                         <>
-                          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                            <div className="text-[12.5px] font-bold text-slate-800">Provider evidence</div>
-                            <div className="mt-1 text-[11.5px] text-slate-500">
-                              {details?.responses.length ?? 0} captured provider response{(details?.responses.length ?? 0) === 1 ? "" : "s"}
-                            </div>
-                            <div className="mt-2 space-y-2">
-                              {(details?.responses ?? []).map((response) => (
-                                <div key={response.id} className="rounded-md border border-slate-200 bg-white p-2.5 text-[11px] text-slate-600">
-                                  <div className="flex items-center justify-between gap-2">
-                                    <span className="font-semibold text-slate-800">{response.platform}</span>
-                                    <Badge className={`text-[9px] ${response.isError ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
-                                      {response.isError ? "Unavailable" : "Captured"}
-                                    </Badge>
-                                  </div>
-                                  <div className="mt-1.5 space-y-0.5">
-                                    <div>{response.providerKey ?? "No provider"} {response.modelUsed ? `- ${response.modelUsed}` : ""}</div>
-                                    <div>{formatTokens(response)} - {formatCost(response.costUsd)}</div>
-                                    <div>{response.wasSearchGrounded ? "Web-search grounded" : "Not web-search grounded"} - {response.promptVersion}</div>
-                                    <div>{new Date(response.createdAt).toLocaleString()}</div>
-                                    {response.isError && response.errorMessage && <div className="pt-1 text-red-700">{response.errorMessage}</div>}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
                           {(details?.recommendations ?? []).length === 0 ? (
                             <p className="text-[12px] text-slate-500">No recommendations were generated for this run.</p>
                           ) : (
                             details!.recommendations.map((rec) => {
                           const implementation = implementations.find((item) => item.promptRecommendationId === rec.id);
+                          let actionSteps: string[] = [];
+                          try {
+                            const parsed = JSON.parse(rec.actionStepsJson || "[]");
+                            actionSteps = Array.isArray(parsed) ? parsed.filter((step): step is string => typeof step === "string") : [];
+                          } catch {
+                            actionSteps = [];
+                          }
                           return (
-                            <div key={rec.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                            <article key={rec.id} className="rounded-xl border border-border bg-white p-4">
                               <div className="flex items-start justify-between gap-2">
                                 <div>
-                                  <div className="text-[12.5px] font-bold text-slate-800">{rec.title}</div>
-                                  <p className="text-[11.5px] text-slate-500 mt-1 leading-relaxed">{rec.description}</p>
+                                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wide text-indigo-600">
+                                    <span>{rec.category}</span>
+                                    <span className="text-slate-300">•</span>
+                                    <span>{rec.confidence || "Medium"} confidence</span>
+                                  </div>
+                                  <h4 className="text-sm leading-5 font-bold text-slate-900 mt-1 break-words">{rec.title}</h4>
                                 </div>
                                 <Badge className="text-[10px] bg-indigo-50 text-indigo-700">{rec.priority}</Badge>
                               </div>
+                              {rec.targetUrl && (
+                                <a href={rec.targetUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-start gap-1 text-[12px] leading-5 font-semibold text-primary hover:underline break-all [overflow-wrap:anywhere]">
+                                  Target: {rec.targetUrl} <ArrowUpRight className="w-3 h-3 shrink-0" />
+                                </a>
+                              )}
+                              <p className="text-[13px] text-slate-600 mt-2 leading-5">{rec.description}</p>
+                              {rec.evidence && (
+                                <div className="mt-3 rounded-lg border-l-2 border-amber-400 bg-amber-50/70 px-3 py-2.5">
+                                  <div className="text-[10px] font-bold uppercase tracking-wide text-amber-800">Why this action</div>
+                                  <p className="text-[12px] text-amber-950 mt-1 leading-5">{rec.evidence}</p>
+                                </div>
+                              )}
+                              {actionSteps.length > 0 && (
+                                <div className="mt-3">
+                                  <div className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Implementation steps</div>
+                                  <ol className="mt-1.5 space-y-1.5 list-decimal pl-4 text-[12.5px] leading-5 text-slate-700">
+                                    {actionSteps.map((step, index) => <li key={`${rec.id}-step-${index}`}>{step}</li>)}
+                                  </ol>
+                                </div>
+                              )}
+                              {rec.validationPlan && (
+                                <div className="mt-3 border-t border-border pt-3 text-[12.5px] text-slate-600 leading-5">
+                                  <span className="font-semibold text-slate-800">How we verify it worked:</span> {rec.validationPlan}
+                                </div>
+                              )}
                               {implementation ? (
                                 <div className="mt-2 text-[11.5px] text-slate-600">
                                   <span className="font-semibold">Impact:</span> {implementation.impactStatus}
@@ -2286,7 +2340,7 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                                 <Button
                                   size="sm"
                                   variant="secondary"
-                                  className="mt-2 h-7 text-[11.5px]"
+                                  className="mt-3 text-[12px]"
                                   disabled={markingId === rec.id}
                                   onClick={() => markImplemented(h.analysisId, rec.id)}
                                 >
@@ -2294,15 +2348,38 @@ function ExecutionHistoryDrawer({ questionId, onClose }: { questionId: string; o
                                   I implemented this
                                 </Button>
                               )}
-                            </div>
+                            </article>
                           );
                             })
                           )}
+                          <div className="border-t border-border pt-4">
+                            <div className="text-[13px] font-bold text-slate-900">Provider evidence</div>
+                            <div className="mt-0.5 text-[12px] text-slate-500">
+                              {details?.responses.length ?? 0} captured provider response{(details?.responses.length ?? 0) === 1 ? "" : "s"}
+                            </div>
+                            <div className="mt-3 divide-y divide-border rounded-lg border border-border bg-slate-50/60">
+                              {(details?.responses ?? []).map((response) => (
+                                <div key={response.id} className="px-3 py-2.5 text-[12px] leading-5 text-slate-600">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-semibold text-slate-900">{response.platform}</span>
+                                    <Badge className={response.isError ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}>
+                                      {response.isError ? "Unavailable" : "Captured"}
+                                    </Badge>
+                                  </div>
+                                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                                    <span>{response.wasSearchGrounded ? "Grounded with web sources" : "Model response without live web grounding"}</span>
+                                    <span className="metric-numeral text-slate-500">{new Date(response.createdAt).toLocaleString()}</span>
+                                  </div>
+                                  {response.isError && response.errorMessage && <div className="pt-1 text-red-700">{response.errorMessage}</div>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </>
                       )}
                     </div>
                   )}
-                </div>
+                </section>
               );
               })}
             </div>
@@ -2470,7 +2547,7 @@ function PromptDesigner({
         <ChevronRight className="w-4 h-4 rotate-180" /> Back to Answer Atlas
       </button>
       <div className="flex items-start justify-between gap-4 mb-1 flex-wrap">
-        <h1 className="text-[24px] font-space-grotesk font-bold tracking-tight text-slate-900">Prompt Designer</h1>
+        <h1 className="text-[24px] font-bold tracking-tight text-slate-900">Prompt Designer</h1>
         <div className="flex items-center gap-2">
           <input
             ref={fileInputRef}

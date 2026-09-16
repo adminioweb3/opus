@@ -1,629 +1,394 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useAuthStore } from "@/lib/stores/auth-store";
-import { getApiBaseUrl } from "@/lib/apiClient";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
-  Sparkles,
-  AlertTriangle,
-  Target,
-  Quote,
-  TrendingUp,
-  Swords,
-  Rocket,
-  Pencil,
-  Globe,
-  Award,
-  Code,
-  MapPin,
-  DollarSign,
-  Paperclip,
-  Mic,
   ArrowUp,
-  Cpu,
-  History,
-  Bot,
-  Plus,
+  Check,
+  Copy,
+  Database,
+  Globe2,
+  Loader2,
+  Menu,
   MessageSquare,
+  Plus,
   Search,
+  Sparkles,
+  Square,
+  Trash2,
+  X,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import apiClient from "@/lib/apiClient";
+import apiClient, { getApiBaseUrl } from "@/lib/apiClient";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
-type Message = {
-  role: "user" | "assistant";
-  content: string;
+type Thread = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
-const ASST_CHIPS = [
-  {
-    icon: AlertTriangle,
-    colorClass: "text-red-600",
-    text: "Win back my lost Perplexity snippet",
-    tag: "$40k at risk",
-    warn: true,
-  },
-  {
-    icon: Target,
-    colorClass: "text-primary",
-    text: "Close my top 3 GEO gaps",
-    tag: "+$80k",
-  },
-  {
-    icon: Quote,
-    colorClass: "text-green-600",
-    text: "How do I boost Gemini citations?",
-    tag: "+6%",
-  },
-  {
-    icon: TrendingUp,
-    colorClass: "text-blue-600",
-    text: "Summarize this week's visibility wins",
-  },
-  {
-    icon: Swords,
-    colorClass: "text-purple-600",
-    text: "What is Competitor A doing differently?",
-  },
-  {
-    icon: Rocket,
-    colorClass: "text-sky-500",
-    text: "Draft & publish 5 FAQ pages",
-  },
+type Message = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+};
+
+type StreamEvent = { event: string; data: Record<string, unknown> };
+
+const suggestions = [
+  { icon: Database, label: "Summarize my AI visibility" },
+  { icon: Search, label: "Where are my biggest citation gaps?" },
+  { icon: Globe2, label: "Compare my platform performance" },
+  { icon: Sparkles, label: "What should I improve first?" },
 ];
 
-const ASST_AGENTS = [
-  {
-    icon: Pencil,
-    colorClass: "text-purple-600",
-    bgClass: "bg-purple-50 dark:bg-purple-950/30",
-    name: "Content",
-  },
-  {
-    icon: Globe,
-    colorClass: "text-primary",
-    bgClass: "bg-primary/10",
-    name: "GEO",
-  },
-  {
-    icon: Quote,
-    colorClass: "text-sky-500",
-    bgClass: "bg-sky-50 dark:bg-sky-950/30",
-    name: "Citation",
-  },
-  {
-    icon: Swords,
-    colorClass: "text-red-600",
-    bgClass: "bg-red-50 dark:bg-red-950/30",
-    name: "Competitor",
-  },
-  {
-    icon: Award,
-    colorClass: "text-green-600",
-    bgClass: "bg-green-50 dark:bg-green-950/30",
-    name: "Authority",
-  },
-  {
-    icon: Code,
-    colorClass: "text-slate-600 dark:text-slate-400",
-    bgClass: "bg-slate-100 dark:bg-slate-800",
-    name: "Technical",
-  },
-  {
-    icon: MapPin,
-    colorClass: "text-amber-600",
-    bgClass: "bg-amber-50 dark:bg-amber-950/30",
-    name: "Local",
-  },
-  {
-    icon: DollarSign,
-    colorClass: "text-emerald-700",
-    bgClass: "bg-emerald-50 dark:bg-emerald-950/30",
-    name: "Revenue",
-  },
-];
+function parseSseBlock(block: string): StreamEvent | null {
+  let event = "message";
+  const data: string[] = [];
 
-const ASST_RECENT = [
-  {
-    icon: Quote,
-    colorClass: "text-sky-500",
-    bgClass: "bg-sky-50 dark:bg-sky-950/30",
-    text: "Improving citation rate on Claude",
-    time: "2h ago",
-  },
-  {
-    icon: Swords,
-    colorClass: "text-red-600",
-    bgClass: "bg-red-50 dark:bg-red-950/30",
-    text: "Competitor A snippet analysis",
-    time: "Yesterday",
-  },
-  {
-    icon: Rocket,
-    colorClass: "text-primary",
-    bgClass: "bg-primary/10",
-    text: "FAQ content batch for Q3",
-    time: "2 days ago",
-  },
-];
+  for (const line of block.split("\n")) {
+    if (line.startsWith("event:")) event = line.slice(6).trim();
+    if (line.startsWith("data:")) data.push(line.slice(5).trimStart());
+  }
+
+  if (!data.length) return null;
+  try {
+    return { event, data: JSON.parse(data.join("\n")) };
+  } catch {
+    return null;
+  }
+}
 
 export default function AssistantPage() {
-  const [input, setInput] = useState("");
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
   const [mode, setMode] = useState<"ask" | "inspect">("ask");
-  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const [status, setStatus] = useState("");
+  const [isLoadingThreads, setIsLoadingThreads] = useState(true);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const [thinkingStatuses, setThinkingStatuses] = useState<string[]>([]);
-  const [isThinking, setIsThinking] = useState(false);
+  const loadThreads = useCallback(async () => {
+    const response = await apiClient.get<Thread[]>("/assistant/threads");
+    setThreads(response.data);
+    return response.data;
+  }, []);
+
+  const openThread = useCallback(async (threadId: string) => {
+    setActiveThreadId(threadId);
+    setSidebarOpen(false);
+    setIsLoadingChat(true);
+    try {
+      const response = await apiClient.get<{ thread: Thread; messages: Message[] }>(`/assistant/threads/${threadId}`);
+      setMessages(response.data.messages);
+    } finally {
+      setIsLoadingChat(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-    }
-  }, [messages, isLoading, thinkingStatuses]);
+    let cancelled = false;
+    // The state update occurs after the API promise resolves; this is initial data loading.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadThreads()
+      .then((items) => {
+        if (!cancelled && items[0]) void openThread(items[0].id);
+      })
+      .catch(() => setThreads([]))
+      .finally(() => setIsLoadingThreads(false));
+    return () => {
+      cancelled = true;
+      abortRef.current?.abort();
+    };
+  }, [loadThreads, openThread]);
 
-  const handleSend = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, status]);
 
-    const userMsg = text.trim();
-    // Inspect mode reframes the question as an AI-visibility check rather than open chat — the
-    // backend has no separate "mode" field, it detects intent from message text, so this is what
-    // actually makes Inspect behave differently instead of being a cosmetic-only toggle.
-    const outgoingMsg = mode === "inspect"
-      ? `Inspect what AI engines currently say in response to this: ${userMsg}`
-      : userMsg;
+  const filteredThreads = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return query ? threads.filter((thread) => thread.title.toLowerCase().includes(query)) : threads;
+  }, [search, threads]);
+
+  const createThread = async () => {
+    abortRef.current?.abort();
+    const response = await apiClient.post<Thread>("/assistant/threads", {});
+    setThreads((current) => [response.data, ...current]);
+    setActiveThreadId(response.data.id);
+    setMessages([]);
     setInput("");
+    setStatus("");
+    setSidebarOpen(false);
+    return response.data.id;
+  };
 
-    const newMessages = [...messages, { role: "user", content: userMsg }];
-    setMessages(newMessages as any);
-    setIsLoading(true);
-    setThinkingStatuses([]);
-    setIsThinking(true);
-
-    try {
-      const baseUrl = getApiBaseUrl();
-      const token = useAuthStore.getState().token;
-
-      const response = await fetch(baseUrl + "/assistant/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          message: outgoingMsg,
-          history: messages,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n\n");
-
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              try {
-                const data = JSON.parse(line.replace("data: ", ""));
-                if (data.status) {
-                  if (data.status === "STATUS_DONE") {
-                    setIsThinking(false);
-                  } else if (data.status.startsWith("RESPONSE:")) {
-                    const finalResponse = data.status.substring(9);
-                    setMessages((prev) => [
-                      ...prev,
-                      { role: "assistant", content: finalResponse },
-                    ]);
-                  } else {
-                    setThinkingStatuses((prev) => [...prev, data.status]);
-                  }
-                }
-              } catch (e) {
-                console.error("Parse error", e, line);
-              }
-            }
-          }
-        }
-      }
-    } catch (err: any) {
-      const errorMsg = err.message || "An error occurred";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `Error: ${errorMsg}` },
-      ]);
-    } finally {
-      setIsLoading(false);
-      setIsThinking(false);
+  const deleteThread = async (threadId: string) => {
+    await apiClient.delete(`/assistant/threads/${threadId}`);
+    const remaining = threads.filter((thread) => thread.id !== threadId);
+    setThreads(remaining);
+    if (activeThreadId === threadId) {
+      setActiveThreadId(null);
+      setMessages([]);
+      if (remaining[0]) void openThread(remaining[0].id);
     }
   };
 
-  const renderComposer = () => (
-    <div className="w-full">
-      <div className="flex items-end gap-2.5 bg-white border border-slate-200 focus-within:border-indigo-600 transition-all rounded-[24px] px-3 py-2 shadow-sm">
-        <button className="w-8.5 h-8.5 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center transition-colors shrink-0">
-          <Paperclip className="w-5 h-5" />
-        </button>
+  const stopGeneration = () => abortRef.current?.abort();
+
+  const sendMessage = async (text = input) => {
+    const content = text.trim();
+    if (!content || isGenerating) return;
+
+    let threadId = activeThreadId;
+    if (!threadId) threadId = await createThread();
+
+    const userMessage: Message = {
+      id: `local-user-${Date.now()}`,
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    };
+    const assistantId = `local-assistant-${Date.now()}`;
+    setMessages((current) => [
+      ...current,
+      userMessage,
+      { id: assistantId, role: "assistant", content: "", createdAt: new Date().toISOString() },
+    ]);
+    setInput("");
+    setStatus("Understanding your request...");
+    setIsGenerating(true);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      const token = useAuthStore.getState().token;
+      const response = await fetch(`${getApiBaseUrl()}/assistant/threads/${threadId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ message: content, mode }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok || !response.body) throw new Error("The assistant is unavailable right now.");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, "\n");
+        const blocks = buffer.split("\n\n");
+        buffer = blocks.pop() ?? "";
+
+        for (const block of blocks) {
+          const parsed = parseSseBlock(block);
+          if (!parsed) continue;
+
+          if (parsed.event === "run.status") setStatus(String(parsed.data.status ?? ""));
+          if (parsed.event === "message.delta") {
+            const delta = String(parsed.data.delta ?? "");
+            setStatus("");
+            setMessages((current) => current.map((message) =>
+              message.id === assistantId ? { ...message, content: message.content + delta } : message));
+          }
+          if (parsed.event === "message.completed" && parsed.data.message) {
+            const completed = parsed.data.message as Message;
+            setMessages((current) => current.map((message) =>
+              message.id === assistantId ? completed : message));
+          }
+          if (parsed.event === "error") throw new Error(String(parsed.data.message ?? "Response failed."));
+        }
+
+        if (done) break;
+      }
+
+      await loadThreads();
+    } catch (error) {
+      if (controller.signal.aborted) {
+        setMessages((current) => current.filter((message) => message.id !== assistantId || message.content.length > 0));
+      } else {
+        const message = error instanceof Error ? error.message : "Response failed.";
+        setMessages((current) => current.map((item) =>
+          item.id === assistantId ? { ...item, content: `**Something went wrong.** ${message}` } : item));
+      }
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
+      setStatus("");
+      setIsGenerating(false);
+    }
+  };
+
+  const copyMessage = async (message: Message) => {
+    await navigator.clipboard.writeText(message.content);
+    setCopiedId(message.id);
+    window.setTimeout(() => setCopiedId(null), 1500);
+  };
+
+  const composer = (
+    <div className="mx-auto w-full max-w-3xl px-4 pb-4">
+      <div className="rounded-2xl border border-slate-300 bg-white p-2 shadow-sm focus-within:border-slate-500">
         <textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSend(input);
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              void sendMessage();
             }
           }}
-          placeholder={mode === "inspect" ? "e.g. What does ChatGPT say about our pricing?" : "Ask Citationly anything..."}
-          className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-1.5 text-[14.5px] text-slate-900 outline-none max-h-30 min-h-6"
+          placeholder={mode === "inspect" ? "Ask about evidence in your Citationly workspace" : "Message Citationly Assistant"}
           rows={1}
-          style={{ height: "auto" }}
+          className="max-h-40 min-h-12 w-full resize-none bg-transparent px-3 py-2 text-[15px] text-slate-900 outline-none placeholder:text-slate-400"
         />
-        <button className="w-8.5 h-8.5 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center transition-colors shrink-0">
-          <Mic className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => handleSend(input)}
-          disabled={!input.trim() || isLoading}
-          className="w-9.5 h-9.5 rounded-full bg-indigo-600 text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shrink-0 shadow-sm shadow-indigo-600/20"
-        >
-          <ArrowUp className="w-5 h-5" />
-        </button>
-      </div>
-      <div className="flex items-center gap-3 mt-3 text-[11.5px] text-muted-foreground font-medium px-1">
-        <div className="flex items-center gap-1.5 hover:bg-muted/50 px-2 py-1 rounded-md cursor-pointer transition-colors">
-          <Cpu className="w-3.5 h-3.5" /> Citationly Opus
-        </div>
-        <div className="flex items-center gap-1.5 hover:bg-muted/50 px-2 py-1 rounded-md cursor-pointer transition-colors">
-          <Globe className="w-3.5 h-3.5" /> Web access on
-        </div>
-        <div className="ml-auto hidden sm:block opacity-60">
-          Enter to send · Shift+Enter for newline
+        <div className="flex items-center justify-between gap-3 px-1">
+          <div className="flex rounded-lg bg-slate-100 p-1" aria-label="Assistant mode">
+            <button
+              type="button"
+              onClick={() => setMode("ask")}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium ${mode === "ask" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+            >
+              Ask
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("inspect")}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium ${mode === "inspect" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+            >
+              Inspect
+            </button>
+          </div>
+          {isGenerating ? (
+            <button type="button" onClick={stopGeneration} title="Stop generating" className="flex size-9 items-center justify-center rounded-full bg-slate-900 text-white">
+              <Square className="size-3.5 fill-current" />
+            </button>
+          ) : (
+            <button type="button" onClick={() => void sendMessage()} disabled={!input.trim()} title="Send message" className="flex size-9 items-center justify-center rounded-full bg-slate-900 text-white disabled:bg-slate-200 disabled:text-slate-400">
+              <ArrowUp className="size-5" />
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] w-full max-w-350 mx-auto bg-white border border-slate-200 rounded-[14px] overflow-hidden shadow-sm">
-      {/* Hub Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] border-b border-slate-200 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-[10px] bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-[15px] font-bold text-slate-900 leading-tight font-space-grotesk">
-              Citationly Assistant
-            </h2>
-            <p className="text-[13px] text-slate-500">
-              Ask anything — or inspect the real answers AI gives about you
-            </p>
-          </div>
-        </div>
+    <div className="relative flex h-[calc(100vh-6rem)] min-h-150 overflow-hidden border border-slate-200 bg-white">
+      {sidebarOpen && <button className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSidebarOpen(false)} aria-label="Close conversations" />}
 
-        <div className="flex items-center p-1 bg-slate-100 border border-slate-200 rounded-[11px]">
-          <button
-            onClick={() => setMode("ask")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "ask" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
-          >
-            <MessageSquare className="w-4 h-4" /> Ask
+      <aside className={`absolute inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-slate-200 bg-slate-50 transition-transform lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex items-center gap-2 p-3">
+          <button onClick={() => void createThread()} className="flex h-10 flex-1 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-800 hover:bg-slate-100">
+            <Plus className="size-4" /> New chat
           </button>
-          <button
-            onClick={() => setMode("inspect")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${mode === "inspect" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
-          >
-            <Search className="w-4 h-4" /> Inspect
+          <button onClick={() => setSidebarOpen(false)} title="Close" className="flex size-10 items-center justify-center text-slate-500 lg:hidden">
+            <X className="size-5" />
           </button>
         </div>
-      </div>
-
-      {messages.length === 0 ? (
-        // Hero Empty State
-        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-          <h1 className="text-[30px] font-space-grotesk font-extrabold tracking-tight text-slate-900 mb-2">
-            Hey there{" "}
-            <motion.span
-              animate={{ y: [0, -4, 0] }}
-              transition={{ repeat: Infinity, duration: 2.2 }}
-              className="inline-block"
-            >
-              👋
-            </motion.span>
-            , let's win the{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-[#A855F7]">
-              AI search game
-            </span>
-          </h1>
-          <p className="text-[15px] text-slate-500 max-w-130 mb-8">
-            Ask me anything about your visibility, or fire off one of these —
-            each tied to real pipeline impact.
-          </p>
-
-          <div className="flex flex-wrap gap-2.5 justify-center max-w-170">
-            {ASST_CHIPS.map((chip, idx) => {
-              const Icon = chip.icon;
-              return (
-                <motion.button
-                  key={idx}
-                  initial={{ opacity: 0, y: 8, scale: 0.92 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: idx * 0.06, duration: 0.45 }}
-                  onClick={() => handleSend(chip.text)}
-                  className="flex items-center gap-2 bg-white border border-slate-200 rounded-[13px] px-4 py-2.5 text-[13px] font-semibold text-slate-700 hover:-translate-y-1 hover:scale-[1.03] hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-600/10 transition-all"
-                >
-                  <Icon className={`w-4.25 h-4.25 ${chip.colorClass}`} />
-                  {chip.text}
-                  {chip.tag && (
-                    <span
-                      className={`text-[11px] px-2 py-0.5 rounded-[6px] ${chip.warn ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}
-                    >
-                      {chip.tag}
-                    </span>
-                  )}
-                </motion.button>
-              );
-            })}
+        <div className="px-3 pb-3">
+          <div className="flex h-9 items-center gap-2 rounded-lg bg-slate-100 px-3 text-slate-500">
+            <Search className="size-4" />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search chats" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400" />
           </div>
-
-          <div className="w-full max-w-170 mt-10">{renderComposer()}</div>
         </div>
-      ) : (
-        // Active Chat Split Layout
-        <div className="flex-1 flex overflow-hidden">
-          {/* Chat Column */}
-          <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200 bg-white">
-            <div
-              ref={chatScrollRef}
-              className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar"
-            >
-              {messages.map((msg, i) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  key={i}
-                  className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
-                >
-                  {msg.role === "assistant" ? (
-                    <div className="w-8 h-8 rounded-[9px] bg-linear-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 rounded-[9px] bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 text-[12px] font-bold mt-1">
-                      ME
-                    </div>
-                  )}
-
-                  <div
-                    className={`p-5 text-[14.5px] leading-[1.6] shadow-[0_1px_3px_rgba(0,0,0,0.02)] ${
-                      msg.role === "user"
-                        ? "bg-indigo-600 text-white rounded-[20px_20px_0_20px]"
-                        : "bg-white border border-slate-200 text-slate-900 rounded-[0_20px_20px_20px]"
-                    }`}
-                  >
-                    {msg.role === "user" ? (
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
-                    ) : (
-                      <div className="prose prose-sm max-w-none overflow-x-auto text-slate-900 prose-p:leading-[1.6] prose-p:mb-[12px]">
-                        <ReactMarkdown
-                          components={{
-                            code({
-                              node,
-                              inline,
-                              className,
-                              children,
-                              ...props
-                            }: any) {
-                              const match = /language-(\w+)/.exec(
-                                className || "",
-                              );
-                              if (!inline && match && match[1] === "chart") {
-                                try {
-                                  const data = JSON.parse(String(children));
-                                  return (
-                                    <div className="h-56 w-full my-3 p-4 rounded-[12px] border bg-white">
-                                      <ResponsiveContainer
-                                        width="100%"
-                                        height="100%"
-                                      >
-                                        <BarChart data={data}>
-                                          <XAxis
-                                            dataKey="name"
-                                            stroke="#888888"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                          />
-                                          <YAxis
-                                            stroke="#888888"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                          />
-                                          <Tooltip
-                                            cursor={{
-                                              fill: "rgba(0,0,0,0.05)",
-                                            }}
-                                            contentStyle={{
-                                              borderRadius: "8px",
-                                            }}
-                                          />
-                                          <Bar
-                                            dataKey="value"
-                                            fill="hsl(var(--primary))"
-                                            radius={[4, 4, 0, 0]}
-                                          />
-                                        </BarChart>
-                                      </ResponsiveContainer>
-                                    </div>
-                                  );
-                                } catch (e) {
-                                  return null;
-                                }
-                              }
-                              return !inline && match ? (
-                                <SyntaxHighlighter
-                                  style={vscDarkPlus as any}
-                                  language={match[1]}
-                                  PreTag="div"
-                                  className="rounded-xl my-2 text-[12px] border w-full"
-                                >
-                                  {String(children).replace(/\n$/, "")}
-                                </SyntaxHighlighter>
-                              ) : (
-                                <code
-                                  className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-800"
-                                  {...props}
-                                >
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {msg.content}
-                        </ReactMarkdown>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-
-              {isThinking && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex gap-3 max-w-[85%]"
-                >
-                  <div className="w-8 h-8 rounded-[9px] bg-linear-to-br from-primary to-[#A855F7] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {thinkingStatuses.map((s, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-[13px] text-muted-foreground flex items-center gap-2"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse" />
-                        {s}
-                      </motion.div>
-                    ))}
-                    <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/20 rounded-[14px] w-fit border border-border/50">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      <span
-                        className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"
-                        style={{ animationDelay: "0.2s" }}
-                      />
-                      <span
-                        className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"
-                        style={{ animationDelay: "0.4s" }}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-
-            <div className="p-4 bg-background border-t border-border/50">
-              {renderComposer()}
-            </div>
-          </div>
-
-          {/* Right Rail */}
-          <div className="w-70 bg-[#f8fafc] hidden lg:flex flex-col overflow-y-auto">
-            <div className="p-4 pt-5 pb-2 border-b border-slate-200">
-              <button
-                onClick={() => setMessages([])}
-                className="w-full py-2.5 px-4 border-2 border-dashed border-indigo-200 text-indigo-600 font-semibold text-[13px] rounded-[11px] flex items-center justify-center gap-2 hover:bg-indigo-50 transition-colors"
-              >
-                <Plus className="w-4 h-4" /> New chat
+        <div className="flex-1 overflow-y-auto px-2 pb-3">
+          {isLoadingThreads ? (
+            <Loader2 className="mx-auto mt-6 size-5 animate-spin text-slate-400" />
+          ) : filteredThreads.length === 0 ? (
+            <p className="px-3 py-6 text-center text-xs text-slate-400">No conversations yet</p>
+          ) : filteredThreads.map((thread) => (
+            <div key={thread.id} className={`group mb-1 flex items-center rounded-lg ${activeThreadId === thread.id ? "bg-slate-200" : "hover:bg-slate-100"}`}>
+              <button onClick={() => void openThread(thread.id)} className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2.5 text-left">
+                <MessageSquare className="size-4 shrink-0 text-slate-500" />
+                <span className="truncate text-sm text-slate-700">{thread.title}</span>
+              </button>
+              <button onClick={() => void deleteThread(thread.id)} title="Delete conversation" className="mr-2 hidden size-7 items-center justify-center rounded-md text-slate-400 hover:bg-white hover:text-red-600 group-hover:flex">
+                <Trash2 className="size-3.5" />
               </button>
             </div>
-
-            <div className="p-4 pb-2">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-slate-500 font-bold mb-3">
-                <History className="w-3.5 h-3.5" /> Recent
-              </div>
-              <div className="flex flex-col gap-1">
-                {ASST_RECENT.map((r, idx) => {
-                  const Icon = r.icon;
-                  return (
-                    <button
-                      key={idx}
-                      className="flex items-center gap-3 p-2.5 rounded-[11px] hover:bg-slate-200/50 transition-colors text-left"
-                    >
-                      <div
-                        className={`w-7.5 h-7.5 shrink-0 rounded-lg flex items-center justify-center ${r.bgClass} ${r.colorClass}`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[12.5px] font-semibold text-slate-900 truncate">
-                          {r.text}
-                        </div>
-                        <div className="text-[11px] text-slate-500">
-                          {r.time}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="p-4 pt-2">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-slate-500 font-bold mb-3">
-                <Bot className="w-3.5 h-3.5" /> Quick agents
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {ASST_AGENTS.map((agent, idx) => {
-                  const Icon = agent.icon;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() =>
-                        handleSend(`Launch the ${agent.name} agent`)
-                      }
-                      className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-[11px] hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-sm transition-all"
-                    >
-                      <div
-                        className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center ${agent.bgClass} ${agent.colorClass}`}
-                      >
-                        <Icon className="w-3.75 h-3.75" />
-                      </div>
-                      <span className="text-[10.5px] font-semibold text-slate-500">
-                        {agent.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      )}
+        <div className="border-t border-slate-200 px-4 py-3 text-xs font-medium text-slate-500">
+          Citationly workspace
+        </div>
+      </aside>
+
+      <main className="flex min-w-0 flex-1 flex-col bg-white">
+        <header className="flex h-14 shrink-0 items-center border-b border-slate-200 px-4">
+          <button onClick={() => setSidebarOpen(true)} title="Open conversations" className="mr-2 flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden">
+            <Menu className="size-5" />
+          </button>
+          <div className="flex size-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
+            <Sparkles className="size-4" />
+          </div>
+          <div className="ml-3 min-w-0">
+            <h1 className="truncate text-sm font-semibold text-slate-900">Citationly Assistant</h1>
+            <p className="text-xs text-slate-500">Workspace data connected</p>
+          </div>
+        </header>
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+          {isLoadingChat ? (
+            <div className="flex h-full items-center justify-center"><Loader2 className="size-6 animate-spin text-slate-400" /></div>
+          ) : messages.length === 0 ? (
+            <div className="mx-auto flex h-full max-w-3xl flex-col justify-center px-6 py-10">
+              <div className="mb-8">
+                <div className="mb-5 flex size-11 items-center justify-center rounded-xl bg-indigo-600 text-white"><Sparkles className="size-5" /></div>
+                <h2 className="text-2xl font-semibold text-slate-900">What can I help you with?</h2>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {suggestions.map(({ icon: Icon, label }) => (
+                  <button key={label} onClick={() => void sendMessage(label)} className="flex min-h-14 items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 text-left text-sm text-slate-700 hover:border-slate-400 hover:bg-slate-50">
+                    <Icon className="size-4 shrink-0 text-indigo-600" /> {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="mx-auto w-full max-w-3xl px-4 py-8">
+              {messages.map((message) => (
+                <motion.article key={message.id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className={`mb-8 flex gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  {message.role === "assistant" && (
+                    <div className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white"><Sparkles className="size-4" /></div>
+                  )}
+                  <div className={message.role === "user" ? "max-w-[82%] rounded-2xl bg-slate-100 px-4 py-3 text-[15px] leading-6 text-slate-900" : "group min-w-0 max-w-[calc(100%-3rem)] flex-1 text-[15px] leading-7 text-slate-800"}>
+                    {message.role === "user" ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content ? (
+                      <>
+                        <div className="prose prose-slate prose-sm max-w-none prose-headings:mt-6 prose-headings:mb-2 prose-p:my-3 prose-li:my-1 prose-pre:overflow-x-auto prose-table:block prose-table:overflow-x-auto">
+                          <ReactMarkdown>{message.content}</ReactMarkdown>
+                        </div>
+                        <button onClick={() => void copyMessage(message)} title="Copy response" className="mt-2 flex size-8 items-center justify-center rounded-md text-slate-400 opacity-0 hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 focus:opacity-100">
+                          {copiedId === message.id ? <Check className="size-4" /> : <Copy className="size-4" />}
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex h-8 items-center gap-1.5"><span className="size-1.5 animate-pulse rounded-full bg-slate-400" /><span className="size-1.5 animate-pulse rounded-full bg-slate-400 [animation-delay:150ms]" /><span className="size-1.5 animate-pulse rounded-full bg-slate-400 [animation-delay:300ms]" /></div>
+                    )}
+                  </div>
+                </motion.article>
+              ))}
+              {status && <div className="ml-12 flex items-center gap-2 pb-4 text-sm text-slate-500"><Loader2 className="size-4 animate-spin" /> {status}</div>}
+            </div>
+          )}
+        </div>
+
+        {composer}
+      </main>
     </div>
   );
 }

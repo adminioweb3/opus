@@ -12,6 +12,7 @@ import {
   Shield,
   Search,
   Zap,
+  ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -450,14 +451,22 @@ export default function PromptAnalysisWorkspace() {
                 </div>
                 <div className="p-6 space-y-4">
                   {data.recommendations?.map(
-                    (rec: Record<string, unknown>) => (
+                    (rec: Record<string, unknown>) => {
+                      let actionSteps: string[] = [];
+                      try {
+                        const parsed = JSON.parse((rec.actionStepsJson as string) || "[]");
+                        actionSteps = Array.isArray(parsed) ? parsed.filter((step): step is string => typeof step === "string") : [];
+                      } catch {
+                        actionSteps = [];
+                      }
+                      return (
                       <div
                         key={rec.id as string}
                         className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                            {rec.category as string}
+                            {rec.category as string} · {(rec.confidence as string) || "Medium"} confidence
                           </span>
                           <span
                             className={`text-xs font-bold px-2 py-1 rounded-md ${rec.priority === "High" ? "bg-rose-50 text-rose-700" : "bg-amber-50 text-amber-700"}`}
@@ -471,11 +480,32 @@ export default function PromptAnalysisWorkspace() {
                         <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                           {rec.description as string}
                         </p>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 w-fit px-2.5 py-1 rounded-md">
-                          +{rec.estimatedVisibilityGain as string}% Est. Gain
-                        </div>
+                        {!!rec.targetUrl && (
+                          <a href={rec.targetUrl as string} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:underline break-all">
+                            Target: {rec.targetUrl as string} <ArrowUpRight size={12} className="shrink-0" />
+                          </a>
+                        )}
+                        {!!rec.evidence && (
+                          <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+                            <span className="font-bold">Observed reason:</span> {rec.evidence as string}
+                          </div>
+                        )}
+                        {actionSteps.length > 0 && (
+                          <ol className="mt-3 list-decimal pl-5 space-y-1.5 text-xs leading-relaxed text-gray-700">
+                            {actionSteps.map((step, index) => <li key={`${rec.id as string}-${index}`}>{step}</li>)}
+                          </ol>
+                        )}
+                        {!!rec.validationPlan && (
+                          <p className="mt-3 pt-3 border-t border-gray-100 text-xs leading-relaxed text-gray-600">
+                            <span className="font-bold text-gray-800">Verify:</span> {rec.validationPlan as string}
+                          </p>
+                        )}
                       </div>
-                    ),
+                    );
+                    },
+                  )}
+                  {(data.recommendations?.length ?? 0) === 0 && (
+                    <p className="text-sm text-gray-500">No action plan was produced for this run.</p>
                   )}
                 </div>
               </div>

@@ -110,19 +110,22 @@ export interface PromptRecommendation {
   priority: string;
   difficulty: string;
   estimatedVisibilityGain: number;
+  targetUrl: string;
+  evidence: string;
+  actionStepsJson: string;
+  validationPlan: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  evidenceType: 'page-and-provider-backed' | 'provider-backed' | string;
 }
 
 export interface PromptResponseEvidence {
   id: string;
   platform: string;
+  responseText: string;
+  sentiment: string | null;
+  sentimentQuote: string | null;
   createdAt: string;
-  providerKey: string | null;
-  modelUsed: string | null;
-  promptTokens: number | null;
-  completionTokens: number | null;
-  costUsd: number | null;
   wasSearchGrounded: boolean;
-  promptVersion: string;
   isError: boolean;
   errorMessage: string | null;
 }

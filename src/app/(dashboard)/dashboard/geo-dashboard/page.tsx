@@ -30,24 +30,25 @@ interface ScoreCard {
   label: string;
   icon: string;
   iconColor: string;
-  value: number;
-  change: string;
-  direction: "up" | "down";
+  value: number | null;
+  change: string | null;
+  direction: "up" | "down" | "flat";
   delay: number;
   provenance: MetricProvenanceKind;
+  status: string;
+  source: string;
+  methodology: string;
+  evidence: string;
 }
 
-// provenance reflects the backend's Phase 3 A1 rework (RunScanCommand.cs): Visibility/Citation/
-// Sentiment/Competitor are now deterministic computations over real prompt-intelligence data;
-// the other four still have no real data source (pending Phase 4's technical GEO audit and
-// Phase 5's fact-accuracy monitor) and remain a single LLM's estimate.
+// Provenance is supplied by the backend per metric. The UI must not infer that a persisted number
+// is measured merely because it is non-zero.
 const SCORE_META: {
   label: string;
   icon: string;
   iconColor: string;
   delay: number;
   key: string;
-  provenance: MetricProvenanceKind;
 }[] = [
   {
     label: "AI Visibility Score",
@@ -55,7 +56,6 @@ const SCORE_META: {
     iconColor: "#6366F1",
     delay: 0,
     key: "visibilityScore",
-    provenance: "derived",
   },
   {
     label: "Citation Score",
@@ -63,7 +63,6 @@ const SCORE_META: {
     iconColor: "#16A34A",
     delay: 50,
     key: "citationScore",
-    provenance: "derived",
   },
   {
     label: "Sentiment Score",
@@ -71,7 +70,6 @@ const SCORE_META: {
     iconColor: "#2563EB",
     delay: 100,
     key: "sentimentScore",
-    provenance: "derived",
   },
   {
     label: "Competitor Score",
@@ -79,7 +77,6 @@ const SCORE_META: {
     iconColor: "#7C3AED",
     delay: 150,
     key: "competitorScore",
-    provenance: "derived",
   },
   {
     label: "Hallucination Risk",
@@ -87,7 +84,6 @@ const SCORE_META: {
     iconColor: "#B45309",
     delay: 200,
     key: "hallucinationRisk",
-    provenance: "ai-inferred",
   },
   {
     label: "SEO Health",
@@ -95,7 +91,6 @@ const SCORE_META: {
     iconColor: "#0EA5E9",
     delay: 250,
     key: "seoHealth",
-    provenance: "ai-inferred",
   },
   {
     label: "AEO Readiness",
@@ -103,7 +98,6 @@ const SCORE_META: {
     iconColor: "#DB2777",
     delay: 300,
     key: "aeoReadiness",
-    provenance: "ai-inferred",
   },
   {
     label: "GEO Readiness",
@@ -111,7 +105,6 @@ const SCORE_META: {
     iconColor: "#16A34A",
     delay: 350,
     key: "geoReadiness",
-    provenance: "ai-inferred",
   },
 ];
 
@@ -134,6 +127,12 @@ const soft = (hex: string) => {
   return `rgba(${r[0]},${r[1]},${r[2]},.13)`;
 };
 
+function provenanceFor(status?: string): MetricProvenanceKind {
+  if (status === "audited" || status === "observed-zero") return "observed";
+  if (status === "derived") return "derived";
+  return "unavailable";
+}
+
 /* ── page component ──────────────────────────────────── */
 export default function GeoDashboardPage() {
   const [activeRange, setActiveRange] = useState<string>("30D");
@@ -146,11 +145,11 @@ export default function GeoDashboardPage() {
 
   // API sections
   const [header, setHeader] = useState<{
-    compositeScore: number;
+    compositeScore: number | null;
     grade: string;
-    industryAverage: number;
-    deltaVsIndustry: number;
-    compositeChange: string;
+    industryAverage: number | null;
+    deltaVsIndustry: number | null;
+    compositeChange: string | null;
     enginesScanned: number;
     promptsTracked: number;
     status: string;
@@ -206,16 +205,23 @@ export default function GeoDashboardPage() {
         setHasData(data.hasData);
 
         const cards: ScoreCard[] = SCORE_META.map((meta) => {
-          const entry = (data.scores as unknown as Record<string, { value: number; change: string; direction: "up" | "down" }>)[meta.key];
+          const entry = (data.scores as unknown as Record<string, {
+            value: number | null; change: string | null; direction: "up" | "down" | "flat";
+            status: string; source: string; methodology: string; evidence: string;
+          }>)[meta.key];
           return {
             label: meta.label,
             icon: meta.icon,
             iconColor: meta.iconColor,
             delay: meta.delay,
-            value: entry?.value ?? 0,
-            change: entry?.change ?? "+0%",
-            direction: entry?.direction ?? "up",
-            provenance: meta.provenance,
+            value: entry?.value ?? null,
+            change: entry?.change ?? null,
+            direction: entry?.direction ?? "flat",
+            provenance: provenanceFor(entry?.status),
+            status: entry?.status ?? "no-data",
+            source: entry?.source ?? "No verified source",
+            methodology: entry?.methodology ?? "unavailable",
+            evidence: entry?.evidence ?? "No verified evidence is available.",
           };
         });
         setScoreCards(cards);
@@ -244,15 +250,23 @@ export default function GeoDashboardPage() {
       return;
     }
 
-    const rows: string[] = ["Metric,Value,Change"];
+    const rows: string[] = ["Metric,Value,Change,Status,Source,Methodology,Evidence"];
     SCORE_META.forEach((meta, i) => {
       const card = scoreCards[i];
-      if (card) rows.push(`${card.label},${card.value},${card.change}`);
+      if (card) rows.push([
+        card.label,
+        card.value ?? "N/A",
+        card.change ?? "No comparable scan",
+        card.status,
+        card.source,
+        card.methodology,
+        card.evidence,
+      ].map(value => `"${String(value).replace(/"/g, '""')}"`).join(","));
     });
     rows.push("");
     rows.push(`Composite Score,${header.compositeScore},${header.compositeChange}`);
     rows.push(`Grade,${header.grade},`);
-    rows.push(`Industry Average,${header.industryAverage},`);
+    rows.push(`Industry Average,N/A,No verified external benchmark`);
     rows.push("");
     rows.push("Pillar,Score");
     pillars.forEach((p) => rows.push(`${p.label},${p.score}`));
@@ -275,16 +289,13 @@ export default function GeoDashboardPage() {
     if (link) router.push(link);
   }, [router]);
 
-  const activeRangeObj = DATE_RANGES.find((r) => r.k === activeRange) || DATE_RANGES[1];
-
-  const comp = header?.compositeScore ?? 0;
+  const comp = header?.compositeScore ?? null;
+  const compForChart = comp ?? 0;
   const grade = header?.grade ?? "—";
-  const industryAvg = header?.industryAverage ?? 0;
-  const deltaVsIndustry = header?.deltaVsIndustry ?? 0;
 
   const r = 44;
   const circ = 2 * Math.PI * r;
-  const off = circ * (1 - comp / 100);
+  const off = circ * (1 - compForChart / 100);
 
   return (
     <div className="p-6 md:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">
@@ -317,10 +328,10 @@ export default function GeoDashboardPage() {
                 </linearGradient>
               </defs>
               <text x="55" y="52" textAnchor="middle" className="text-3xl font-bold fill-foreground tracking-tighter">
-                {comp}
+                {comp ?? "N/A"}
               </text>
               <text x="55" y="68" textAnchor="middle" className="text-[11px] font-semibold fill-muted-foreground">
-                /100
+                {comp === null ? "verified data" : "/100"}
               </text>
             </svg>
           </div>
@@ -335,13 +346,15 @@ export default function GeoDashboardPage() {
             </div>
             <h1 className="text-3xl font-bold tracking-tight">GEO composite: grade {grade}</h1>
             <p className="text-muted-foreground text-[15px] max-w-2xl leading-relaxed">
-              Your Generative Engine Optimization performance over the last {activeRangeObj.lbl} — industry average is <b className="text-foreground font-semibold">{industryAvg}</b>, you&apos;re <b className={`font-semibold ${deltaVsIndustry >= 0 ? "text-emerald-600" : "text-red-600"}`}>{deltaVsIndustry >= 0 ? "+" : ""}{deltaVsIndustry}</b> {deltaVsIndustry >= 0 ? "ahead" : "behind"}.
+              Composite of verified prompt-response measurements and deterministic website audits. No industry comparison is shown because no verified external benchmark is connected.
             </p>
             
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
-              <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors py-1 px-2.5">
-                <i className="ti ti-trending-up mr-1.5 text-sm" /> {header?.compositeChange ?? "+0%"} composite
-              </Badge>
+              {header?.compositeChange && (
+                <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors py-1 px-2.5">
+                  <i className="ti ti-trending-up mr-1.5 text-sm" /> {header.compositeChange} vs previous scan
+                </Badge>
+              )}
               <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors py-1 px-2.5">
                 <i className="ti ti-cpu mr-1.5 text-sm" /> {header?.enginesScanned ?? 0} engines scanned
               </Badge>
@@ -397,15 +410,15 @@ export default function GeoDashboardPage() {
           <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
             <i className="ti ti-gauge text-muted-foreground" /> GEO scorecard
           </h2>
-          <span className="text-sm text-muted-foreground hidden sm:block">Click any score for drivers & fixes</span>
+          <span className="text-sm text-muted-foreground hidden sm:block">Measured zeros are shown; missing evidence is N/A</span>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {scoreCards.map((card) => {
-            const good = card.label === "Hallucination Risk" ? card.change.startsWith("-") : card.change.startsWith("+");
+            const good = card.direction === "up";
 
             return (
-              <Card key={card.label} className="cursor-pointer hover:border-primary/40 transition-all duration-300 group">
+              <Card key={card.label} className="hover:border-primary/40 transition-all duration-300 group">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex flex-col gap-1">
@@ -418,17 +431,25 @@ export default function GeoDashboardPage() {
                   </div>
 
                   <div className="flex items-baseline gap-1 mb-3">
-                    <span className="text-3xl font-bold tracking-tighter">{card.value}</span>
-                    <span className="text-sm font-medium text-muted-foreground/60">/100</span>
+                    <span className="text-3xl font-bold tracking-tighter">{card.value ?? "N/A"}</span>
+                    {card.value !== null && <span className="text-sm font-medium text-muted-foreground/60">/100</span>}
                   </div>
 
                   <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden mb-4">
-                    <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${card.value}%`, backgroundColor: card.iconColor }} />
+                    <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${card.value ?? 0}%`, backgroundColor: card.iconColor }} />
                   </div>
 
-                  <div className={`text-xs font-semibold flex items-center gap-1 ${good ? 'text-emerald-600' : 'text-red-600'}`}>
-                    <i className={`ti ti-trending-${good ? "up" : "down"} text-sm`} />
-                    {card.change} <span className="text-muted-foreground font-medium ml-1">vs prev {activeRangeObj.lbl}</span>
+                  {card.change ? (
+                    <div className={`text-xs font-semibold flex items-center gap-1 ${card.direction === "flat" ? "text-muted-foreground" : good ? 'text-emerald-600' : 'text-red-600'}`}>
+                      <i className={`ti ti-${card.direction === "flat" ? "minus" : `trending-${good ? "up" : "down"}`} text-sm`} />
+                      {card.change} <span className="text-muted-foreground font-medium ml-1">vs previous scan</span>
+                    </div>
+                  ) : (
+                    <div className="text-xs font-medium text-muted-foreground">No comparable previous scan</div>
+                  )}
+                  <div className="mt-3 pt-3 border-t text-[11px] leading-relaxed text-muted-foreground">
+                    <div className="font-semibold text-foreground/80 mb-1">{card.source}</div>
+                    {card.evidence}
                   </div>
                 </CardContent>
               </Card>

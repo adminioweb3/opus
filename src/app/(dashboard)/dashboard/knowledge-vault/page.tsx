@@ -242,7 +242,7 @@ export default function KnowledgeVaultPage() {
                 {
                   const resData = await getScrapeResult(job.jobId);
                   const newPageIds = new Set<string>((resData.pages || []).map((p: any) => p.id));
-                  const jobFolderId: string | undefined = resData.job?.folderId;
+                  const jobFolderId: string | undefined = resData.job?.folderId ?? undefined;
 
                   setVaultSources(prev => {
                     const existing = [...(prev[job.kbId] || [])];

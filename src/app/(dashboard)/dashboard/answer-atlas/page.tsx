@@ -1109,7 +1109,7 @@ function PromptsTab({
                                         ? `Last run: ${new Date(q.latestAnalysis.runAt).toLocaleDateString()} · ${q.latestAnalysis.status}`
                                         : "Never analyzed"}
                                       {q.visibility
-                                        ? q.visibility.methodologyVersion === "prompt-visibility:v4-mention-share"
+                                        ? q.visibility.methodologyVersion === "prompt-visibility:v5-search-grounded-sampled"
                                           ? ` · Observed visibility ${q.visibility.overallVisibilityScore}% · ${Math.round(q.visibility.overallVisibilityScore * q.visibility.sampleCount / 100)}/${q.visibility.sampleCount} AI answers mentioned the brand`
                                           : " · Legacy score — rerun analysis"
                                         : ""}
@@ -1279,12 +1279,17 @@ function PlatformsTab({ range }: { range: "7D" | "30D" | "90D" }) {
                     >
                       {initials(p.platform)}
                     </span>
-                    {p.platform}
+                    <span>{p.platform}</span>
+                    {p.availability !== "available" && (
+                      <Badge className={p.availability === "unavailable" ? "bg-slate-100 text-slate-600" : "bg-amber-50 text-amber-700"}>
+                        {p.availability === "unavailable" ? "Unavailable" : "Partial"}
+                      </Badge>
+                    )}
                   </TableCell>
-                  <TableCell className="p-4 font-mono font-medium text-[14px] text-slate-700">{p.score}</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.shareOfVoice}%</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.averagePosition}</TableCell>
-                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.citationShare}%</TableCell>
+                  <TableCell className="p-4 font-mono font-medium text-[14px] text-slate-700">{p.score === null ? "—" : p.score}</TableCell>
+                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.shareOfVoice === null ? "—" : `${p.shareOfVoice}%`}</TableCell>
+                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.averagePosition === null ? "—" : p.averagePosition}</TableCell>
+                  <TableCell className="p-4 font-mono text-[14px] text-slate-600">{p.citationShare === null ? "—" : `${p.citationShare}%`}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -1297,7 +1302,8 @@ function PlatformsTab({ range }: { range: "7D" | "30D" | "90D" }) {
 
 // Heat-map color interpolation matching the mockup's `heat()` function exactly: light blue
 // (low) to dark navy (high), 45% treated as the practical ceiling for this metric.
-function heatStyle(value: number): React.CSSProperties {
+function heatStyle(value: number | null): React.CSSProperties {
+  if (value === null) return { background: "#f8fafc", color: "#64748b" };
   const max = 45;
   const t = Math.max(0, Math.min(1, value / max));
   const light = [239, 246, 255];
@@ -1351,7 +1357,7 @@ function PlatformMatrixTable({ matrix }: { matrix: PlatformMatrix }) {
                 {r.values.map((v, i) => (
                   <td key={i} className="p-0">
                     <div className="h-10 flex items-center justify-center font-mono text-[12.5px] font-semibold" style={heatStyle(v)}>
-                      {v.toFixed(1)}%
+                      {v === null ? "Unavailable" : `${v.toFixed(1)}%`}
                     </div>
                   </td>
                 ))}

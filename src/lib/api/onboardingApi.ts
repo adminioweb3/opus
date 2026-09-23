@@ -12,6 +12,22 @@ export interface OnboardingPayload {
 }
 
 export interface OnboardingAnalysisResult {
+  sourceContext: {
+    websiteUrl: string;
+    businessName: string;
+    industry: string;
+    targetAudience: string;
+    keywords: string;
+    whoDoYouSellTo: string;
+    knownCompetitors: string;
+    mainOffering: string;
+    scrapeJobId?: string | null;
+    scrapeCompletedAt?: string | null;
+    crawledPageCount: number;
+    crawledPageUrls: string[];
+    crawlStatus: string;
+    analysisBasis: string;
+  };
   businessSummary: { value: string; confidence: number };
   coreServices: { value: string[]; confidence: number };
   products: { value: string[]; confidence: number };

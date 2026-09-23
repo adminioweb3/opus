@@ -25,23 +25,45 @@ export async function startScraping(request: StartScrapeRequest): Promise<StartS
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getScrapeJobs(knowledgeBaseId: string): Promise<any[]> {
-  const response = await apiClient.get<any[]>('/Scraper/jobs', { params: { knowledgeBaseId } });
+export interface ScrapeJobSummary {
+  id: string;
+  url: string;
+  status: string;
+  errorMessage?: string | null;
+  scrapeType: string;
+  knowledgeBaseId?: string | null;
+  folderId?: string | null;
+  totalPages: number;
+  processedPages: number;
+  maxPages: number;
+  createdAt: string;
+  startedAt?: string | null;
+  completedAt?: string | null;
+}
+
+export async function getScrapeJobs(knowledgeBaseId: string): Promise<ScrapeJobSummary[]> {
+  const response = await apiClient.get<ScrapeJobSummary[]>('/Scraper/jobs', { params: { knowledgeBaseId } });
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getScrapeResult(jobId: string): Promise<any> {
-  const response = await apiClient.get(`/Scraper/result/${jobId}`);
+export interface ScrapeResultResponse {
+  job: ScrapeJobSummary;
+  pages: ScrapedPageDetail[];
+}
+
+export async function getScrapeResult(jobId: string): Promise<ScrapeResultResponse> {
+  const response = await apiClient.get<ScrapeResultResponse>(`/Scraper/result/${jobId}`);
   return response.data;
 }
 
 export interface ScrapeStatusResponse {
   status: string;
+  errorMessage: string | null;
   processedPages: number;
   totalPages: number;
   maxPages: number;
+  successfulPages: number;
+  failedPages: number;
 }
 
 export async function getScrapeStatus(jobId: string): Promise<ScrapeStatusResponse> {

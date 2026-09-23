@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { getApiBaseUrl } from "@/lib/apiClient";
+import type { PromptResponseEvidence } from "@/lib/api/answerAtlasApi";
 
 type VisibilityMetrics = {
   overallVisibilityScore: number;
@@ -30,12 +31,16 @@ type VisibilityMetrics = {
   competitorCount: number;
   sampleCount: number;
   methodologyVersion: string;
+  mentionedSampleCount: number;
+  measurementStatus: "Unavailable" | "Preliminary" | "Measured";
+  confidenceLow: number;
+  confidenceHigh: number;
 };
 
 type AnalysisData = {
   visibility: VisibilityMetrics | null;
   mentions: Record<string, unknown>[];
-  responses: Record<string, unknown>[];
+  responses: PromptResponseEvidence[];
   recommendations: Record<string, unknown>[];
   competitorComparisons: Record<string, unknown>[];
 };
@@ -328,13 +333,16 @@ export default function PromptAnalysisWorkspace() {
               <div className="absolute top-0 right-0 p-4 opacity-20">
                 <BarChart2 size={80} />
               </div>
-              <p className="text-blue-100 font-medium mb-2">Visibility Score</p>
+              <p className="text-blue-100 font-medium mb-2">Observed Brand Visibility</p>
               <h3 className="text-5xl font-bold mb-2">
-                {data.visibility?.overallVisibilityScore ?? 0}
-                <span className="text-xl text-blue-200 font-normal">/100</span>
+                {data.visibility ? data.visibility.overallVisibilityScore : "—"}
+                {data.visibility && <span className="text-xl text-blue-200 font-normal">/100</span>}
               </h3>
               <p className="text-sm text-blue-100 flex items-center gap-1 font-medium">
-                <Sparkles size={14} className="text-yellow-300" /> Responses mentioning your brand
+                <Sparkles size={14} className="text-yellow-300" />
+                {data.visibility
+                  ? `${data.visibility.mentionedSampleCount}/${data.visibility.sampleCount} captured answers mentioned your brand`
+                  : "No successful provider samples"}
               </p>
             </div>
 
@@ -385,14 +393,23 @@ export default function PromptAnalysisWorkspace() {
                 {data.visibility?.mentionFrequency ?? 0}%
               </h3>
               <p className="text-sm text-gray-500 font-medium">
-                Across {data.visibility?.sampleCount ?? 0} successful answer samples
+                {data.visibility
+                  ? `${data.visibility.mentionedSampleCount}/${data.visibility.sampleCount} answers · ${data.visibility.measurementStatus}`
+                  : "No successful answer samples"}
               </p>
             </div>
           </div>
 
-          <p className="text-xs text-gray-500">
-            Method: {data.visibility?.methodologyVersion ?? "unknown"}. Scores use only captured responses, classified recommendations, and extracted URLs.
-          </p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
+            <p>
+              Method: {data.visibility?.methodologyVersion ?? "unknown"}. Visibility is the percentage of captured answers that explicitly mention the tracked brand or a verified brand/domain alias. No minimum score is added.
+            </p>
+            {data.visibility && (
+              <p className="mt-1">
+                95% sampling interval: {data.visibility.confidenceLow}–{data.visibility.confidenceHigh}%. A 0% result means 0 mentions were observed in this sample; it does not claim the brand can never appear.
+              </p>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: AI Responses */}
@@ -403,36 +420,62 @@ export default function PromptAnalysisWorkspace() {
 
               <div className="space-y-6">
                 {data.responses?.map(
-                  (resp: Record<string, unknown>) => {
+                  (resp) => {
                     const isMentioned = (
                       data.mentions
                     )?.some(
                       (m: Record<string, unknown>) =>
                         m.promptResponseId === resp.id && m.isBrand,
                     );
+                    const statusLabel = resp.isError ? "Unavailable" : isMentioned ? "Mentioned" : "Not Mentioned";
                     return (
                       <div
-                        key={resp.id as string}
-                        className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm"
+                        key={resp.id}
+                        className={`bg-white border rounded-2xl overflow-hidden shadow-sm ${resp.isError ? "border-slate-300" : "border-gray-200"}`}
                       >
                         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                           <div className="flex items-center gap-3">
                             <div
-                              className={`w-3 h-3 rounded-full ${isMentioned ? "bg-emerald-500" : "bg-rose-500"}`}
+                              className={`w-3 h-3 rounded-full ${resp.isError ? "bg-slate-400" : isMentioned ? "bg-emerald-500" : "bg-rose-500"}`}
                             ></div>
                             <h3 className="font-semibold text-lg text-gray-900">
-                              {resp.platform as string}
+                              {resp.platform}
                             </h3>
                           </div>
                           <span
-                            className={`text-sm font-semibold px-3 py-1 rounded-full border ${isMentioned ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"}`}
+                            className={`text-sm font-semibold px-3 py-1 rounded-full border ${resp.isError ? "bg-slate-100 text-slate-600 border-slate-200" : isMentioned ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"}`}
                           >
-                            {isMentioned ? "Mentioned" : "Not Mentioned"}
+                            {statusLabel}
                           </span>
                         </div>
                         <div className="p-6 text-gray-600 leading-relaxed text-sm max-h-60 overflow-y-auto">
-                          {resp.responseText as string}
+                          {resp.isError ? (
+                            <div>
+                              <p className="font-medium text-slate-700">This provider did not return a measurable answer. It was excluded from visibility metrics.</p>
+                              {resp.errorMessage && <p className="mt-2 text-slate-500">{resp.errorMessage}</p>}
+                            </div>
+                          ) : (
+                            resp.responseText
+                          )}
                         </div>
+                        <div className="border-t border-gray-100 bg-gray-50 px-6 py-3 text-xs text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
+                          <span>{resp.modelUsed ?? resp.providerKey ?? "Model unavailable"}</span>
+                          <span>{resp.gateway ? `Gateway: ${resp.gateway}` : "Direct provider"}</span>
+                          <span>{resp.wasSearchGrounded ? "Web grounded" : "Not web grounded"}</span>
+                        </div>
+                        {resp.sourceUrls?.length > 0 && (
+                          <div className="border-t border-gray-100 px-6 py-3 text-xs text-slate-600">
+                            <span className="font-semibold">Sources:</span>{" "}
+                            {resp.sourceUrls.map((url, index) => (
+                              <React.Fragment key={url}>
+                                {index > 0 && " · "}
+                                <a href={url} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline break-all">
+                                  {new URL(url).hostname}
+                                </a>
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     );
                   },

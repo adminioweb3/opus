@@ -64,9 +64,16 @@ export const runScan = async (): Promise<RunScanResult> => {
 };
 
 export interface ScoreEntry {
-  value: number;
-  change: string;
-  direction: 'up' | 'down';
+  value: number | null;
+  change: string | null;
+  direction: 'up' | 'down' | 'flat';
+  status: 'derived' | 'audited' | 'observed-zero' | 'no-data' | 'insufficient-evidence';
+  source: string;
+  methodology: string;
+  numerator: number | null;
+  denominator: number | null;
+  sampleSize: number | null;
+  evidence: string;
 }
 
 export interface GeoScoreCard {
@@ -81,11 +88,11 @@ export interface GeoScoreCard {
 }
 
 export interface GeoDashboardHeader {
-  compositeScore: number;
+  compositeScore: number | null;
   grade: string;
-  industryAverage: number;
-  deltaVsIndustry: number;
-  compositeChange: string;
+  industryAverage: number | null;
+  deltaVsIndustry: number | null;
+  compositeChange: string | null;
   enginesScanned: number;
   promptsTracked: number;
   status: string;

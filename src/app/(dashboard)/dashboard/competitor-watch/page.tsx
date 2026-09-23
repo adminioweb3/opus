@@ -28,11 +28,13 @@ type CompetitorRow = {
   vis: number; visChg: number; threat: string; rank: number; tagline: string; websiteUrl?: string;
   mentionCount: number; recommendationCount: number; responseCount: number; mentionRate: number;
   recommendationRate: number; citationCount: number;
-  averagePosition: number; measurementSource: string; discoverySource: string; modelUsed?: string; trend: TrendPoint[];
+  averagePosition: number; measurementSource: string; discoverySource: string; modelUsed?: string;
+  rankEligible: boolean; rankReason: string; trend: TrendPoint[];
 };
 type BenchmarkMeta = {
   provider: string; model: string; responseCount: number; lastMeasured: string;
   methodologyVersion: string; evidenceWindowDays: number; range: string;
+  rankedBrandCount: number; rankingReady: boolean; minimumResponseCount: number; benchmarkScope: string;
 };
 
 const OPPS: Opportunity[] = [];
@@ -47,7 +49,7 @@ function getSparkline(data: number[]) {
 
 const LEADERBOARD_PAGE_SIZE = 10;
 const rankSortValue = (rank: number) => rank > 0 ? rank : Number.MAX_SAFE_INTEGER;
-const rankLabel = (rank: number) => rank > 0 ? `#${rank}` : "Unranked";
+const rankLabel = (rank: number) => rank > 0 ? `#${rank}` : "Not ranked";
 
 export default function CompetitorWatch() {
   const router = useRouter();
@@ -152,7 +154,7 @@ export default function CompetitorWatch() {
   const competitors = [YOU, ...COMPS].sort((a,b) => rankSortValue(a.rank) - rankSortValue(b.rank));
   const leader = competitors.find(c => c.rank > 0) ?? null;
   const gap = leader ? YOU.vis - leader.vis : null;
-  const activeThreats = COMPS.filter(c => c.threat === 'high' || (c.threat === 'med' && c.sovChg > 0)).length;
+  const activeThreats = COMPS.filter(c => c.rankEligible && (c.threat === 'high' || (c.threat === 'med' && c.sovChg > 0))).length;
 
   // With dozens of real tracked competitors, rendering every row (and every chart line)
   // unconditionally makes the page unusably long/cluttered — show a manageable top slice here
@@ -176,7 +178,7 @@ export default function CompetitorWatch() {
   });
 
   const kpis = [
-    { key:'position', label:'Competitive position', val:rankLabel(YOU.rank), sub: YOU.rank > 0 ? `of ${competitors.length} brands tracked` : 'Awaiting observed mentions', tone:'text-amber-500', bg:'bg-amber-50', ic: Trophy, chg: null },
+    { key:'position', label:'Workspace position', val:rankLabel(YOU.rank), sub: YOU.rank > 0 ? `of ${meta?.rankedBrandCount ?? 0} evidence-validated brands` : 'Insufficient verified evidence', tone:'text-amber-500', bg:'bg-amber-50', ic: Trophy, chg: null },
     { key:'sov', label:'Share of voice', val:`${YOU.sov}%`, chg:`${YOU.sovChg >= 0 ? '+' : ''}${YOU.sovChg}%`, dir: YOU.sovChg >= 0 ? 'up' : 'down', sub:'of measured OpenAI mentions', tone:'text-indigo-500', bg:'bg-indigo-50', ic: PieChartIcon },
     { key:'gap', label:'Gap vs leader', val: gap === null ? '—' : `${gap >= 0 ? '+' : ''}${gap} pts`, sub: leader ? `vs ${leader.name} visibility` : 'No observed leader yet', tone: gap !== null && gap >= 0 ? 'text-emerald-500' : 'text-amber-500', bg: gap !== null && gap >= 0 ? 'bg-emerald-50' : 'bg-amber-50', ic: Eye, chg: null },
     { key:'threats', label:'Active threats', val: activeThreats, sub:'competitors gaining ground', tone:'text-red-500', bg:'bg-red-50', ic: ShieldAlert, chg: null }
@@ -222,6 +224,16 @@ export default function CompetitorWatch() {
         </div>
       </div>
 
+      <Card className={`mb-8 ${meta?.rankingReady ? "border-emerald-200 bg-emerald-50/50" : "border-amber-200 bg-amber-50/50"}`}>
+        <CardContent className="p-4 text-sm text-slate-700">
+          <div className="font-bold text-slate-900 mb-1">{meta?.rankingReady ? "Evidence-qualified workspace benchmark" : "Rank withheld until evidence is sufficient"}</div>
+          <div>{meta?.benchmarkScope ?? "This is a workspace benchmark, not an industry ranking."}</div>
+          <div className="mt-1 text-xs text-slate-500">
+            {meta?.responseCount ?? 0} measured responses · {meta?.rankedBrandCount ?? 0} validated brands · minimum {meta?.minimumResponseCount ?? 10} responses
+          </div>
+        </CardContent>
+      </Card>
+
       {/* SECTION 1 — KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
         {kpis.map((k, i) => (
@@ -263,10 +275,18 @@ export default function CompetitorWatch() {
         <div className="xl:col-span-2">
           <div className="mb-4">
             <h2 className="text-[17px] font-bold flex items-center gap-2 text-slate-900"><Trophy className="w-5 h-5 text-amber-500"/> Competitor Leaderboard</h2>
-            <p className="text-[13px] text-slate-500">Ranked by measured visibility in OpenAI answers. Expand a row for evidence.</p>
+            <p className="text-[13px] text-slate-500">Only evidence-validated brands are ranked. Suggested peers remain unranked. Expand a row for counts.</p>
           </div>
           
           <Card className="overflow-hidden py-0 gap-0">
+            <div className="flex items-center gap-4 px-4 py-2.5 border-b border-slate-200 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="w-16 text-center shrink-0">Rank</div>
+              <div className="flex-1">Brand</div>
+              <div className="w-24 text-right shrink-0">Share of voice</div>
+              <div className="w-24 text-right shrink-0 hidden sm:block">Mention rate</div>
+              <div className="w-24 text-right shrink-0 hidden md:block">Threat</div>
+              <div className="w-6 shrink-0" />
+            </div>
             <div className="divide-y divide-slate-100">
             {visibleCompetitors.map((c) => {
               const isExpanded = expandedId === c.id;
@@ -318,10 +338,12 @@ export default function CompetitorWatch() {
 
                     {/* Threat Col */}
                     <div className="w-24 shrink-0 text-right hidden md:block">
-                      <Badge className={`text-[10px] uppercase font-bold tracking-wider ${c.threat==='high' ? 'bg-red-50 text-red-600' : c.threat==='med' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${c.threat==='high' ? 'bg-red-500' : c.threat==='med' ? 'bg-amber-500' : 'bg-slate-400'}`}></div>
-                        {c.threat}
+                      {!isYou && (
+                      <Badge className={`text-[10px] uppercase font-bold tracking-wider ${!c.rankEligible ? 'bg-slate-100 text-slate-500' : c.threat==='high' ? 'bg-red-50 text-red-600' : c.threat==='med' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${!c.rankEligible ? 'bg-slate-300' : c.threat==='high' ? 'bg-red-500' : c.threat==='med' ? 'bg-amber-500' : 'bg-slate-400'}`}></div>
+                        {c.rankEligible ? c.threat : "not ranked"}
                       </Badge>
+                      )}
                     </div>
 
                     <div className="w-6 shrink-0 flex justify-end text-slate-400">
@@ -336,12 +358,12 @@ export default function CompetitorWatch() {
                         <div>
                           <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Share of voice</div>
                           <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.sov}%</div>
-                          <div className={`text-[11px] font-medium ${c.sovChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.sovChg >= 0 ? '+' : ''}{c.sovChg}% this period</div>
+                          <div className={`text-[11px] font-medium ${c.sovChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.sovChg >= 0 ? '+' : ''}{c.sovChg}% vs previous scan</div>
                         </div>
                         <div>
-                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">OpenAI visibility</div>
+                          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Mention rate</div>
                           <div className="text-[18px] font-space-grotesk font-bold text-slate-900 leading-none mb-1">{c.vis}</div>
-                          <div className={`text-[11px] font-medium ${c.visChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.visChg >= 0 ? '+' : ''}{c.visChg} pts this period</div>
+                          <div className={`text-[11px] font-medium ${c.visChg >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{c.visChg >= 0 ? '+' : ''}{c.visChg} pts vs previous scan</div>
                         </div>
                         <div>
                           <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Observed mentions</div>
@@ -356,6 +378,9 @@ export default function CompetitorWatch() {
                       </div>
                       
                       <div className="mb-6">
+                        <div className={`mb-4 rounded-md border p-3 text-xs ${c.rankEligible ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+                          <span className="font-bold">Ranking status:</span> {c.rankReason}
+                        </div>
                         <div className="text-[12px] font-bold text-slate-900 mb-3">OpenAI response coverage</div>
                         <div className="flex items-center gap-3 mb-3">
                           <span className="w-[90px] text-[12px] font-semibold text-slate-700">Mention rate</span>
@@ -402,7 +427,7 @@ export default function CompetitorWatch() {
           <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
             <DialogHeader className="p-6 pb-4 border-b border-slate-100">
               <DialogTitle>All tracked competitors</DialogTitle>
-              <DialogDescription>{competitors.length} brands ranked by measured OpenAI visibility.</DialogDescription>
+              <DialogDescription>{meta?.rankedBrandCount ?? 0} evidence-validated brands ranked; suggested peers remain visible but unranked.</DialogDescription>
             </DialogHeader>
             <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
               {competitors.map((c) => (
@@ -430,9 +455,11 @@ export default function CompetitorWatch() {
                   <div className="w-14 shrink-0 text-right hidden sm:block">
                     <div className="text-[13.5px] font-bold text-slate-900">{c.vis}</div>
                   </div>
-                  <Badge className={`text-[10px] uppercase font-bold tracking-wider shrink-0 ${c.threat === 'high' ? 'bg-red-50 text-red-600' : c.threat === 'med' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
-                    {c.threat}
-                  </Badge>
+                  {!c.you && (
+                    <Badge className={`text-[10px] uppercase font-bold tracking-wider shrink-0 ${!c.rankEligible ? 'bg-slate-100 text-slate-500' : c.threat === 'high' ? 'bg-red-50 text-red-600' : c.threat === 'med' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
+                      {c.rankEligible ? c.threat : "not ranked"}
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>

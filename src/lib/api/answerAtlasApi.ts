@@ -99,6 +99,10 @@ export interface PromptVisibility {
   competitorCount: number;
   sampleCount: number;
   methodologyVersion: string;
+  mentionedSampleCount: number;
+  measurementStatus: 'Unavailable' | 'Preliminary' | 'Measured';
+  confidenceLow: number;
+  confidenceHigh: number;
 }
 
 export interface PromptRecommendation {
@@ -125,7 +129,18 @@ export interface PromptResponseEvidence {
   sentiment: string | null;
   sentimentQuote: string | null;
   createdAt: string;
+  providerKey: string | null;
+  modelUsed: string | null;
   wasSearchGrounded: boolean;
+  sourceUrls: string[];
+  gateway: string | null;
+  upstreamProvider: string | null;
+  promptTokens: number | null;
+  completionTokens: number | null;
+  costUsd: number | null;
+  generationId: string | null;
+  latencyMs: number | null;
+  promptVersion: string;
   isError: boolean;
   errorMessage: string | null;
 }
@@ -312,16 +327,19 @@ export async function streamAnalysis(
 
 export interface PlatformSummaryRow {
   platform: string;
-  score: number;
-  shareOfVoice: number;
-  averagePosition: number;
-  citationShare: number;
+  score: number | null;
+  shareOfVoice: number | null;
+  averagePosition: number | null;
+  citationShare: number | null;
+  successfulSamples: number;
+  failedSamples: number;
+  availability: 'available' | 'partial' | 'unavailable';
 }
 
 export interface PlatformMatrixRow {
   name: string;
   owned: boolean;
-  values: number[];
+  values: Array<number | null>;
 }
 
 export interface PlatformMatrix {

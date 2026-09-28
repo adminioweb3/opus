@@ -27,11 +27,18 @@ const SECTION_COMPONENTS: Record<string, React.ComponentType> = {
   security: SecuritySection,
 }
 
+const TAB_ALIASES: Record<string, string> = {
+  organization: "org",
+  websites: "sites",
+  "api-keys": "apikeys",
+}
+
 export default function SettingsPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const tabParam = searchParams.get("tab")
-  const active = SECTION_COMPONENTS[tabParam || ""] ? tabParam! : "org"
+  const normalizedTab = tabParam ? (TAB_ALIASES[tabParam] ?? tabParam) : ""
+  const active = SECTION_COMPONENTS[normalizedTab] ? normalizedTab : "org"
 
   const handleSelect = (id: string) => {
     router.push(`/dashboard/settings?tab=${id}`)

@@ -3,21 +3,15 @@
 import { useState, useEffect } from "react";
 import {
   Settings,
-  Users,
   Target,
   Sparkles,
   Bot,
   FileEdit,
   Globe,
-  Plug,
-  Key,
-  CreditCard,
-  Lock,
   ChevronRight,
   Folder,
   Command,
   Eye,
-  User,
   Compass,
 } from "lucide-react";
 import Link from "next/link";
@@ -44,14 +38,6 @@ import {
   SidebarMenuSubButton,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/ui/logo";
 
 const menuCategories = [
@@ -151,11 +137,10 @@ const menuCategories = [
     ],
   },
   {
-    title: "Citationly agents",
+    title: "Agent Center",
     icon: Bot,
     url: "/dashboard/agents",
     permission: "dashboard.view",
-    tag: "8",
   },
   {
     title: "Workspaces",
@@ -179,7 +164,7 @@ const menuCategories = [
     items: [
       {
         title: "Organization",
-        url: "/dashboard/settings?tab=organization",
+        url: "/dashboard/settings?tab=org",
         permission: "settings.view",
       },
       {
@@ -189,7 +174,7 @@ const menuCategories = [
       },
       {
         title: "Websites",
-        url: "/dashboard/settings?tab=websites",
+        url: "/dashboard/settings?tab=sites",
         permission: "settings.view",
       },
       {
@@ -204,7 +189,7 @@ const menuCategories = [
       },
       {
         title: "API Keys",
-        url: "/dashboard/settings?tab=api-keys",
+        url: "/dashboard/settings?tab=apikeys",
         permission: "apikeys.view",
       },
       {
@@ -433,9 +418,11 @@ export function DashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="w-full focus:outline-none">
-            <div className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-sidebar-accent transition-colors">
+        <Link
+          href="/dashboard/settings?tab=profile"
+          aria-label="Open profile settings"
+          className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-sidebar-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm overflow-hidden shrink-0">
                 {(() => {
                   const avatar = user
@@ -473,66 +460,8 @@ export function DashboardSidebar() {
                   {organizationName}
                 </span>
               </div>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=profile" />}
-              className="cursor-pointer w-full"
-            >
-              <User className="mr-2 h-4 w-4" /> Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=security" />}
-              className="cursor-pointer w-full"
-            >
-              <Lock className="mr-2 h-4 w-4" /> Security
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Organization</DropdownMenuLabel>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=organization" />}
-              className="cursor-pointer w-full"
-            >
-              <Settings className="mr-2 h-4 w-4" /> General
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=team" />}
-              className="cursor-pointer w-full"
-            >
-              <Users className="mr-2 h-4 w-4" /> Team Management
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=websites" />}
-              className="cursor-pointer w-full"
-            >
-              <Globe className="mr-2 h-4 w-4" /> Websites
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=integrations" />}
-              className="cursor-pointer w-full"
-            >
-              <Plug className="mr-2 h-4 w-4" /> Integrations
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=api-keys" />}
-              className="cursor-pointer w-full"
-            >
-              <Key className="mr-2 h-4 w-4" /> API Keys
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href="/dashboard/settings?tab=billing" />}
-              className="cursor-pointer w-full"
-            >
-              <CreditCard className="mr-2 h-4 w-4" /> Billing
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 cursor-pointer">
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+        </Link>
       </SidebarFooter>
     </Sidebar>
   );

@@ -217,7 +217,7 @@ function DashboardHeader() {
               </div>
             </div>
             <Link
-              href="/dashboard/settings"
+              href="/dashboard/settings?tab=profile"
               className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors"
               onClick={() => setProfileOpen(false)}
             >
@@ -225,7 +225,7 @@ function DashboardHeader() {
               Profile
             </Link>
             <Link
-              href="/dashboard/settings"
+              href="/dashboard/settings?tab=org"
               className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors"
               onClick={() => setProfileOpen(false)}
             >
